@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, XeeExtractDeserialize, Extractor};
+use xee_extract::{XeeExtract, XeeExtractDeserialize, Extractor, Error};
 
 #[derive(XeeExtract, Debug)]
 struct SimpleEntry {

@@ -36,7 +36,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             fn deserialize(
                 documents: &mut xee_xpath::Documents,
                 item: &xee_xpath::Item,
-            ) -> Result<Self, xee_extract::Error> {
+            ) -> Result<Self, crate::Error> {
                 use xee_xpath::{Queries, Query};
                 #field_extractions
                 
