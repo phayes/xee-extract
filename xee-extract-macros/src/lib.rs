@@ -127,6 +127,7 @@ fn is_vec_type(ty: &syn::Type) -> bool {
 fn generate_single_query(xpath_expr: &str) -> proc_macro2::TokenStream {
     quote! {
         let query = queries.one(#xpath_expr, |documents, item| {
+            use xee_extract::XeeExtractDeserialize;
             Ok(item.string_value(documents.xot())?)
         })?;
         query.execute(documents, item)?
@@ -136,6 +137,7 @@ fn generate_single_query(xpath_expr: &str) -> proc_macro2::TokenStream {
 fn generate_option_query(xpath_expr: &str) -> proc_macro2::TokenStream {
     quote! {
         let query = queries.option(#xpath_expr, |documents, item| {
+            use xee_extract::XeeExtractDeserialize;
             Ok(item.string_value(documents.xot())?)
         })?;
         query.execute(documents, item)?
@@ -145,6 +147,7 @@ fn generate_option_query(xpath_expr: &str) -> proc_macro2::TokenStream {
 fn generate_vec_query(xpath_expr: &str) -> proc_macro2::TokenStream {
     quote! {
         let query = queries.many(#xpath_expr, |documents, item| {
+            use xee_extract::XeeExtractDeserialize;
             Ok(item.string_value(documents.xot())?)
         })?;
         query.execute(documents, item)?
