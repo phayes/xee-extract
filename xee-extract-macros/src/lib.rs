@@ -91,11 +91,11 @@ fn generate_field_extraction(
     
     // Generate the appropriate query based on the field type
     let query_code = if is_option_type(field_type) {
-        generate_option_query(xpath_expr)
+        generate_option_query(xpath_expr, field_type)
     } else if is_vec_type(field_type) {
-        generate_vec_query(xpath_expr)
+        generate_vec_query(xpath_expr, field_type)
     } else {
-        generate_single_query(xpath_expr)
+        generate_single_query(xpath_expr, field_type)
     };
     
     Ok(quote! {
@@ -124,31 +124,97 @@ fn is_vec_type(ty: &syn::Type) -> bool {
     false
 }
 
-fn generate_single_query(xpath_expr: &str) -> proc_macro2::TokenStream {
+fn extract_option_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
+    if let syn::Type::Path(type_path) = ty {
+        if let Some(segment) = type_path.path.segments.last() {
+            if segment.ident == "Option" {
+                if let syn::PathArguments::AngleBracketed(args) = &segment.arguments {
+                    if let Some(syn::GenericArgument::Type(inner_type)) = args.args.first() {
+                        return Some(inner_type);
+                    }
+                }
+            }
+        }
+    }
+    None
+}
+
+fn extract_vec_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
+    if let syn::Type::Path(type_path) = ty {
+        if let Some(segment) = type_path.path.segments.last() {
+            if segment.ident == "Vec" {
+                if let syn::PathArguments::AngleBracketed(args) = &segment.arguments {
+                    if let Some(syn::GenericArgument::Type(inner_type)) = args.args.first() {
+                        return Some(inner_type);
+                    }
+                }
+            }
+        }
+    }
+    None
+}
+
+fn generate_single_query(xpath_expr: &str, field_type: &syn::Type) -> proc_macro2::TokenStream {
     quote! {
         let query = queries.one(#xpath_expr, |documents, item| {
             use xee_extract::XeeExtractDeserialize;
-            Ok(item.string_value(documents.xot())?)
+            <#field_type>::deserialize(documents, item)
+                .map_err(|e| {
+                    // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                    // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                    match e {
+                        xee_extract::Error::DeserializationError(msg) => {
+                            xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                        }
+                        _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                    }
+                })
         })?;
         query.execute(documents, item)?
     }
 }
 
-fn generate_option_query(xpath_expr: &str) -> proc_macro2::TokenStream {
+fn generate_option_query(xpath_expr: &str, field_type: &syn::Type) -> proc_macro2::TokenStream {
+    let inner_type = extract_option_inner_type(field_type)
+        .expect("Option type should have inner type");
+    
     quote! {
         let query = queries.option(#xpath_expr, |documents, item| {
             use xee_extract::XeeExtractDeserialize;
-            Ok(item.string_value(documents.xot())?)
+            <#inner_type>::deserialize(documents, item)
+                .map_err(|e| {
+                    // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                    // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                    match e {
+                        xee_extract::Error::DeserializationError(msg) => {
+                            xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                        }
+                        _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                    }
+                })
         })?;
         query.execute(documents, item)?
     }
 }
 
-fn generate_vec_query(xpath_expr: &str) -> proc_macro2::TokenStream {
+fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type) -> proc_macro2::TokenStream {
+    let inner_type = extract_vec_inner_type(field_type)
+        .expect("Vec type should have inner type");
+    
     quote! {
         let query = queries.many(#xpath_expr, |documents, item| {
             use xee_extract::XeeExtractDeserialize;
-            Ok(item.string_value(documents.xot())?)
+            <#inner_type>::deserialize(documents, item)
+                .map_err(|e| {
+                    // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                    // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                    match e {
+                        xee_extract::Error::DeserializationError(msg) => {
+                            xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                        }
+                        _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                    }
+                })
         })?;
         query.execute(documents, item)?
     }

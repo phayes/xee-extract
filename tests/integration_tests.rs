@@ -14,7 +14,28 @@ struct Book {
     #[xpath("//book/price/text()")]
     price: String,
 
-    #[xpath("//book/genre/text()")]
+    #[xpath("//book/@genre")]
+    genre: Option<String>,
+
+    #[xpath("//book/tags/tag/text()")]
+    tags: Vec<String>,
+}
+
+#[derive(XeeExtract, Debug, PartialEq)]
+struct BookWithNumericPrice {
+    #[xpath("//book/@id")]
+    id: String,
+
+    #[xpath("//book/title/text()")]
+    title: String,
+
+    #[xpath("//book/author/text()")]
+    author: String,
+
+    #[xpath("//book/price/text()")]
+    price: f64,
+
+    #[xpath("//book/@genre")]
     genre: Option<String>,
 
     #[xpath("//book/tags/tag/text()")]
