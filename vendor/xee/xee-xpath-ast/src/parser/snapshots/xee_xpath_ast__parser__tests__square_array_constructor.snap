@@ -1,0 +1,26 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"[1, 2]\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(ArrayConstructor(Square(Expr([
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        )),
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              2,
+            ])))),
+          ],
+        )),
+      ])))),
+    ],
+  )),
+])))

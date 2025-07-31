@@ -1,0 +1,23 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"'a' || 'b'\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Binary(BinaryExpr(
+        operator: Concat,
+        left: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(String("a"))),
+          ],
+        ),
+        right: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(String("b"))),
+          ],
+        ),
+      )),
+    ])))),
+  ],
+)))

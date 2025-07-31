@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"('2019-01' cast as xs:gYearMonth) cast as xs:string\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "2019-01",
+                ),
+            ),
+        },
+    ),
+)

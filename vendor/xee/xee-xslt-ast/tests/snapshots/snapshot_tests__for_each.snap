@@ -1,0 +1,67 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:for-each xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\"><xsl:sort>Sort 1</xsl:sort><xsl:sort>Sort 2</xsl:sort>Sequence constructor</xsl:for-each>\"#)"
+---
+Ok(Instruction(ForEach(ForEach(
+  select: Expression(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          PrimaryExpr(FunctionCall(FunctionCall(
+            name: OwnedName(
+              local_name_str: "true",
+              namespace_str: "http://www.w3.org/2005/xpath-functions",
+              prefix_str: "",
+            ),
+            arguments: [],
+          ))),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 71,
+      end: 77,
+    ),
+  ),
+  sort: [
+    Sort(
+      select: None,
+      lang: None,
+      order: None,
+      collation: None,
+      stable: None,
+      case_order: None,
+      data_type: None,
+      sequence_constructor: [
+        Content(Text("Sort 1")),
+      ],
+      span: Span(
+        start: 80,
+        end: 88,
+      ),
+    ),
+    Sort(
+      select: None,
+      lang: None,
+      order: None,
+      collation: None,
+      stable: None,
+      case_order: None,
+      data_type: None,
+      sequence_constructor: [
+        Content(Text("Sort 2")),
+      ],
+      span: Span(
+        start: 107,
+        end: 115,
+      ),
+    ),
+  ],
+  sequence_constructor: [
+    Content(Text("Sequence constructor")),
+  ],
+  span: Span(
+    start: 1,
+    end: 13,
+  ),
+))))

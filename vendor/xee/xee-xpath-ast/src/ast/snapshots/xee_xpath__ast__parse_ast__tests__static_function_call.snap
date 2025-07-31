@@ -1,0 +1,51 @@
+---
+source: xee-xpath/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"my_function()\")"
+---
+Spanned {
+    value: Path(
+        PathExpr {
+            steps: [
+                Spanned {
+                    value: PrimaryExpr(
+                        Spanned {
+                            value: FunctionCall(
+                                FunctionCall {
+                                    name: Name {
+                                        name: "my_function",
+                                        namespace: None,
+                                    },
+                                    arguments: [],
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    0,
+                                ),
+                                length: SourceOffset(
+                                    13,
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            0,
+                        ),
+                        length: SourceOffset(
+                            13,
+                        ),
+                    },
+                },
+            ],
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            13,
+        ),
+    },
+}

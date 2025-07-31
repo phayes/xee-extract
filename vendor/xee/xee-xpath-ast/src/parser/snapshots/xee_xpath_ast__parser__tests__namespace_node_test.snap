@@ -1,0 +1,13 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"self::namespace-node()\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    AxisStep(AxisStep(
+      axis: Self_,
+      node_test: KindTest(NamespaceNode),
+      predicates: [],
+    )),
+  ],
+)))

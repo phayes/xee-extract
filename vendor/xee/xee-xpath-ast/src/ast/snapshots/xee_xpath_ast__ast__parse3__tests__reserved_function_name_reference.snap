@@ -1,0 +1,5 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"switch#2\")"
+---
+Err("[Cannot use \'switch\' as a function name as it is a reserved name at 0..8]")

@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(\"<doc/>\", \"fn:last()\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    1,
+                ),
+            ),
+        },
+    ),
+)

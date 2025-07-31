@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'f' cast as xs:hexBinary\")"
+---
+Err(
+    SpannedError {
+        error: FORG0001,
+        span: Some(
+            SourceSpan(
+                0,
+                24,
+            ),
+        ),
+    },
+)

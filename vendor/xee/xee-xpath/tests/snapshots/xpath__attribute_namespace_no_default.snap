@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml_default_ns(r#\"<doc xmlns=\"http://example.com\" a=\"hello\"/>\"#,\n\"doc / @a / local-name()\", \"http://example.com\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "a",
+                ),
+            ),
+        },
+    ),
+)

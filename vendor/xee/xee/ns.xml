@@ -1,0 +1,1 @@
+<doc xmlns:a="http://example.com"><a:p>Hello world!</a:p><a:p>Bye!</a:p><a:p a="A">Has attribute</a:p></doc>

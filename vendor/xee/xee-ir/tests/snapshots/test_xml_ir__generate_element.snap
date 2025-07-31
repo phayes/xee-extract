@@ -1,0 +1,29 @@
+---
+source: xee-ir/tests/test_xml_ir.rs
+expression: "decode_instructions(&program.functions[0].chunk)"
+---
+[
+    XmlDocument,
+    Const(
+        0,
+    ),
+    Const(
+        1,
+    ),
+    XmlName,
+    Var(
+        4,
+    ),
+    XmlElement,
+    LetDone,
+    Var(
+        3,
+    ),
+    Var(
+        4,
+    ),
+    XmlAppend,
+    LetDone,
+    LetDone,
+    Return,
+]

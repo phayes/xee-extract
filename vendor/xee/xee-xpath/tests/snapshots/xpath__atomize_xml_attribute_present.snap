@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(r#\"<doc><a f=\"FOO\"/></doc>\"#, \"doc/a/@f eq 'FOO'\",)"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Boolean(
+                    true,
+                ),
+            ),
+        },
+    ),
+)

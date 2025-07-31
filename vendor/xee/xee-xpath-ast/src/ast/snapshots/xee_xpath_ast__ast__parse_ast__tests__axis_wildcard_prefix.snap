@@ -1,0 +1,41 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"child::*:foo\")"
+---
+Spanned {
+    value: Path(
+        PathExpr {
+            steps: [
+                Spanned {
+                    value: AxisStep(
+                        AxisStep {
+                            axis: Child,
+                            node_test: NameTest(
+                                LocalName(
+                                    "foo",
+                                ),
+                            ),
+                            predicates: [],
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            0,
+                        ),
+                        length: SourceOffset(
+                            12,
+                        ),
+                    },
+                },
+            ],
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            12,
+        ),
+    },
+}

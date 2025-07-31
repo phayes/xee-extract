@@ -1,0 +1,22 @@
+[package]
+name = "xee-schema-type"
+version = "0.1.3"
+edition = "2021"
+authors = ["The Xee Project Developers"]
+keywords = ["xml", "xpath"]
+license = "MIT"
+description = "XML Schema type information"
+repository = "https://github.com/Paligo/xee"
+readme = "README.md"
+documentation = "https://docs.rs/xee-schema-type"
+homepage = "https://github.com/Paligo/xee"
+
+[dependencies]
+ahash = { workspace = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+
+[dev-dependencies]
+insta = { workspace = true, features = ["yaml", "glob"] }
+
+[features]
+serde = ["dep:serde"]

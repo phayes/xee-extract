@@ -1,0 +1,23 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"1 castable as xs:string\")"
+---
+Ok(
+    Spanned {
+        value: Castable(
+            Castable {
+                atom: Spanned {
+                    value: Const(
+                        Integer(
+                            1,
+                        ),
+                    ),
+                    span: 0..1,
+                },
+                xs: String,
+                empty_sequence_allowed: false,
+            },
+        ),
+        span: 0..23,
+    },
+)

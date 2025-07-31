@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"1 cast as xs:untyped\")"
+---
+Err(
+    SpannedError {
+        error: XQST0052,
+        span: Some(
+            SourceSpan(
+                0,
+                20,
+            ),
+        ),
+    },
+)

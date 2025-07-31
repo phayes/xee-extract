@@ -1,0 +1,27 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"1 cast as xs:integer\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Apply(ApplyExpr(
+        path_expr: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        ),
+        operator: Cast(SingleType(
+          name: OwnedName(
+            local_name_str: "integer",
+            namespace_str: "http://www.w3.org/2001/XMLSchema",
+            prefix_str: "xs",
+          ),
+          optional: false,
+        )),
+      )),
+    ])))),
+  ],
+)))

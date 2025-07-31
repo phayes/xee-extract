@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"compare('a', 'b', ((), 'http://www.w3.org/2005/xpath-functions/collation/codepoint', ()))\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    -1,
+                ),
+            ),
+        },
+    ),
+)

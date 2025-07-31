@@ -1,0 +1,54 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"let $f := function($x) { (: there's nothing here :)} return $f(2)\")"
+---
+Ok(XPath(Expr([
+  Let(LetExpr(
+    var_name: OwnedName(
+      local_name_str: "f",
+      namespace_str: "",
+      prefix_str: "",
+    ),
+    var_expr: Path(PathExpr(
+      steps: [
+        PrimaryExpr(InlineFunction(InlineFunction(
+          params: [
+            Param(
+              name: OwnedName(
+                local_name_str: "x",
+                namespace_str: "",
+                prefix_str: "",
+              ),
+              type_: None,
+            ),
+          ],
+          return_type: None,
+          body: None,
+          wrapper: false,
+        ))),
+      ],
+    )),
+    return_expr: Path(PathExpr(
+      steps: [
+        PostfixExpr(
+          primary: VarRef(OwnedName(
+            local_name_str: "f",
+            namespace_str: "",
+            prefix_str: "",
+          )),
+          postfixes: [
+            ArgumentList([
+              Path(PathExpr(
+                steps: [
+                  PrimaryExpr(Literal(Integer((Positive, [
+                    2,
+                  ])))),
+                ],
+              )),
+            ]),
+          ],
+        ),
+      ],
+    )),
+  )),
+])))

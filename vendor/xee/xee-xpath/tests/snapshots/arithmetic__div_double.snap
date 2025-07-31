@@ -1,0 +1,15 @@
+---
+source: xee-xpath/tests/arithmetic.rs
+expression: "run(\"12 div 3.0e0\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Double(
+                    4.0,
+                ),
+            ),
+        },
+    ),
+)

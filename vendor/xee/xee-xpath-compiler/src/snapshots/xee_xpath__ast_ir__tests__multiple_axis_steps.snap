@@ -1,0 +1,135 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_xpath(\"child::a/child::b\")"
+---
+Ok(
+    Spanned {
+        value: FunctionDefinition(
+            FunctionDefinition {
+                params: [
+                    Param {
+                        name: Name(
+                            "v0",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v1",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v2",
+                        ),
+                        type_: None,
+                    },
+                ],
+                return_type: None,
+                body: Spanned {
+                    value: Let(
+                        Let {
+                            name: Name(
+                                "v3",
+                            ),
+                            var_expr: Spanned {
+                                value: Step(
+                                    Step {
+                                        step: Step {
+                                            axis: Child,
+                                            node_test: NameTest(
+                                                Name(
+                                                    Spanned {
+                                                        value: OwnedName {
+                                                            local_name_str: "a",
+                                                            namespace_str: "",
+                                                            prefix_str: "",
+                                                        },
+                                                        span: 7..8,
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                        context: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v0",
+                                                ),
+                                            ),
+                                            span: 0..0,
+                                        },
+                                    },
+                                ),
+                                span: 0..8,
+                            },
+                            return_expr: Spanned {
+                                value: Deduplicate(
+                                    Spanned {
+                                        value: Map(
+                                            Map {
+                                                context_names: ContextNames {
+                                                    item: Name(
+                                                        "v4",
+                                                    ),
+                                                    position: Name(
+                                                        "v5",
+                                                    ),
+                                                    last: Name(
+                                                        "v6",
+                                                    ),
+                                                },
+                                                var_atom: Spanned {
+                                                    value: Variable(
+                                                        Name(
+                                                            "v3",
+                                                        ),
+                                                    ),
+                                                    span: 0..8,
+                                                },
+                                                return_expr: Spanned {
+                                                    value: Step(
+                                                        Step {
+                                                            step: Step {
+                                                                axis: Child,
+                                                                node_test: NameTest(
+                                                                    Name(
+                                                                        Spanned {
+                                                                            value: OwnedName {
+                                                                                local_name_str: "b",
+                                                                                namespace_str: "",
+                                                                                prefix_str: "",
+                                                                            },
+                                                                            span: 16..17,
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            },
+                                                            context: Spanned {
+                                                                value: Variable(
+                                                                    Name(
+                                                                        "v4",
+                                                                    ),
+                                                                ),
+                                                                span: 0..0,
+                                                            },
+                                                        },
+                                                    ),
+                                                    span: 9..17,
+                                                },
+                                            },
+                                        ),
+                                        span: 9..17,
+                                    },
+                                ),
+                                span: 9..17,
+                            },
+                        },
+                    ),
+                    span: 9..17,
+                },
+            },
+        ),
+        span: 0..17,
+    },
+)

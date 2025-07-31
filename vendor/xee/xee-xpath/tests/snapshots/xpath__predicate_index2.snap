@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"(1, 2, 3)[2] + (4, 5)[1]\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    6,
+                ),
+            ),
+        },
+    ),
+)

@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'foo\\nbar' cast as xs:normalizedString\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    NormalizedString,
+                    "foo bar",
+                ),
+            ),
+        },
+    ),
+)

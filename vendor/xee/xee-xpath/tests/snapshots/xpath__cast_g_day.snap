@@ -1,0 +1,18 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'---01' cast as xs:gDay\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                GDay(
+                    GDay {
+                        day: 1,
+                        offset: None,
+                    },
+                ),
+            ),
+        },
+    ),
+)

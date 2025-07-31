@@ -1,0 +1,23 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse(\"hello{{world\")"
+---
+Ok([
+  String(
+    text: "hello",
+    span: Span(
+      start: 0,
+      end: 5,
+    ),
+  ),
+  Curly(
+    c: '{',
+  ),
+  String(
+    text: "world",
+    span: Span(
+      start: 7,
+      end: 12,
+    ),
+  ),
+])

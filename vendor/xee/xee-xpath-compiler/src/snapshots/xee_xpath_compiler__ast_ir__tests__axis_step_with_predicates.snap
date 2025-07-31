@@ -1,0 +1,124 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_xpath(\"child::a[. gt 1]\")"
+---
+Ok(
+    Spanned {
+        value: FunctionDefinition(
+            FunctionDefinition {
+                params: [
+                    Param {
+                        name: Name(
+                            "v0",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v1",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v2",
+                        ),
+                        type_: None,
+                    },
+                ],
+                return_type: None,
+                body: Spanned {
+                    value: Let(
+                        Let {
+                            name: Name(
+                                "v3",
+                            ),
+                            var_expr: Spanned {
+                                value: Step(
+                                    Step {
+                                        step: Step {
+                                            axis: Child,
+                                            node_test: NameTest(
+                                                Name(
+                                                    Spanned {
+                                                        value: OwnedName {
+                                                            local_name_str: "a",
+                                                            namespace_str: "",
+                                                            prefix_str: "",
+                                                        },
+                                                        span: 7..8,
+                                                    },
+                                                ),
+                                            ),
+                                        },
+                                        context: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v0",
+                                                ),
+                                            ),
+                                            span: 0..0,
+                                        },
+                                    },
+                                ),
+                                span: 0..16,
+                            },
+                            return_expr: Spanned {
+                                value: Filter(
+                                    Filter {
+                                        context_names: ContextNames {
+                                            item: Name(
+                                                "v4",
+                                            ),
+                                            position: Name(
+                                                "v5",
+                                            ),
+                                            last: Name(
+                                                "v6",
+                                            ),
+                                        },
+                                        var_atom: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v3",
+                                                ),
+                                            ),
+                                            span: 0..16,
+                                        },
+                                        return_expr: Spanned {
+                                            value: Binary(
+                                                Binary {
+                                                    left: Spanned {
+                                                        value: Variable(
+                                                            Name(
+                                                                "v4",
+                                                            ),
+                                                        ),
+                                                        span: 0..0,
+                                                    },
+                                                    op: ValueGt,
+                                                    right: Spanned {
+                                                        value: Const(
+                                                            Integer(
+                                                                1,
+                                                            ),
+                                                        ),
+                                                        span: 14..15,
+                                                    },
+                                                },
+                                            ),
+                                            span: 9..15,
+                                        },
+                                    },
+                                ),
+                                span: 9..15,
+                            },
+                        },
+                    ),
+                    span: 9..15,
+                },
+            },
+        ),
+        span: 0..16,
+    },
+)

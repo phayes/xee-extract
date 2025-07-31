@@ -1,0 +1,53 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"$foo()\")"
+---
+Spanned {
+    value: Path(
+        PathExpr {
+            steps: [
+                Spanned {
+                    value: PostfixExpr {
+                        primary: Spanned {
+                            value: VarRef(
+                                Name {
+                                    name: "foo",
+                                    namespace: None,
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    0,
+                                ),
+                                length: SourceOffset(
+                                    4,
+                                ),
+                            },
+                        },
+                        postfixes: [
+                            ArgumentList(
+                                [],
+                            ),
+                        ],
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            0,
+                        ),
+                        length: SourceOffset(
+                            6,
+                        ),
+                    },
+                },
+            ],
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            6,
+        ),
+    },
+}

@@ -1,0 +1,37 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"(1, 2)[2]\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PostfixExpr(
+      primary: Expr(Some(Expr([
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        )),
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              2,
+            ])))),
+          ],
+        )),
+      ]))),
+      postfixes: [
+        Predicate(Expr([
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                2,
+              ])))),
+            ],
+          )),
+        ])),
+      ],
+    ),
+  ],
+)))

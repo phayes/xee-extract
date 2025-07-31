@@ -1,0 +1,30 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"map { 1: 2 }\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(MapConstructor(MapConstructor(
+        entries: [
+          MapConstructorEntry(
+            key: Path(PathExpr(
+              steps: [
+                PrimaryExpr(Literal(Integer((Positive, [
+                  1,
+                ])))),
+              ],
+            )),
+            value: Path(PathExpr(
+              steps: [
+                PrimaryExpr(Literal(Integer((Positive, [
+                  2,
+                ])))),
+              ],
+            )),
+          ),
+        ],
+      ))),
+    ],
+  )),
+])))

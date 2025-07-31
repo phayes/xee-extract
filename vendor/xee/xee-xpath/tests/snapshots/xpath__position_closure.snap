@@ -1,0 +1,24 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"(3, 4) ! (let $p := fn:position#0 return $p())\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    Integer(
+                        Integer,
+                        1,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        2,
+                    ),
+                ),
+            ],
+        },
+    ),
+)

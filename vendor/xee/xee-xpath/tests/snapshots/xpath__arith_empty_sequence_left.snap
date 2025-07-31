@@ -1,0 +1,9 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"() + 1\")"
+---
+Ok(
+    Empty(
+        Empty,
+    ),
+)

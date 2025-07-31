@@ -1,0 +1,49 @@
+[workspace]
+members = [
+  "xee",
+  "xee-name",
+  "xee-schema-type",
+  "xee-xpath-type",
+  "xee-interpreter",
+  "xee-ir",
+  "xee-xpath",
+  "xee-xpath-lexer",
+  "xee-xpath-ast",
+  "xee-xpath-macros",
+  "xee-xpath-compiler",
+  "xee-xpath-load",
+  "xee-xslt-ast",
+  "xee-testrunner",
+  "xee-xslt-compiler",
+]
+# even if all crates are set to edition 2021, we still need to force the
+# resolver to 2
+# https://github.com/gfx-rs/wgpu/issues/2356#issuecomment-1005134986
+resolver = "2"
+
+[workspace.dependencies]
+anyhow = "1.0.97"
+xot = "0.31.2"
+ahash = "0.8.11"
+strum = { version = "0.27", features = ["derive"] }
+clap = "4.5.32"
+ibig = "0.3.6"
+ordered-float = "5.0.0"
+rust_decimal = "1.36.0"
+rust_decimal_macros = "1.36.0"
+chumsky = "=1.0.0-alpha.8"
+icu = "1.5.0"
+icu_provider_adapters = "1.5.0"
+serde = "1"
+chrono = "0.4.40"
+blanket = "0.4.0"
+thiserror = "2.0.12"
+regexml = "0.2.1"
+regex = "1.11.1"
+iri-string = "0.7.7"
+json = "0.12.4"
+insta = "1.42.2"
+ron = "0.8.1"
+
+# [profile.test.package.xot]
+# opt-level = 3

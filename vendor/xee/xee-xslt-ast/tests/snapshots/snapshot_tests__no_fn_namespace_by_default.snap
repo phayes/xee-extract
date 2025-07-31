@@ -1,0 +1,12 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:if xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" test=\"fn:true()\">Hello</xsl:if>\"#)"
+---
+Err(Attribute(XPathParser(UnknownPrefix(
+  span: SimpleSpan(
+    start: 63,
+    end: 70,
+    context: (),
+  ),
+  prefix: "fn",
+))))

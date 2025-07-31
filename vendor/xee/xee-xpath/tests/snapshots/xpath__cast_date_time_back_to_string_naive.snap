@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"('2019-01-03T15:14:30' cast as xs:dateTime) cast as xs:string\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "2019-01-03T15:14:30",
+                ),
+            ),
+        },
+    ),
+)

@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"(xs:date('0001-01-01Z') - xs:dayTimeDuration('P11DT02H02M')) cast as xs:string\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "0000-12-20Z",
+                ),
+            ),
+        },
+    ),
+)

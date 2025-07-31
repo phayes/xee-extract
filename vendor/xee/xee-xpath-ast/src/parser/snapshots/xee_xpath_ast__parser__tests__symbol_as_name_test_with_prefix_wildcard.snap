@@ -1,0 +1,15 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"*:if\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      AxisStep(AxisStep(
+        axis: Child,
+        node_test: NameTest(LocalName("if")),
+        predicates: [],
+      )),
+    ],
+  )),
+])))

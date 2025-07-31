@@ -1,0 +1,62 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_xpath(\"my_function#2\")"
+---
+Ok(
+    Spanned {
+        value: FunctionDefinition(
+            FunctionDefinition {
+                params: [
+                    Param {
+                        name: Name(
+                            "v0",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v1",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v2",
+                        ),
+                        type_: None,
+                    },
+                ],
+                return_type: None,
+                body: Spanned {
+                    value: Atom(
+                        Spanned {
+                            value: Const(
+                                StaticFunctionReference(
+                                    StaticFunctionId(
+                                        0,
+                                    ),
+                                    Some(
+                                        ContextNames {
+                                            item: Name(
+                                                "v0",
+                                            ),
+                                            position: Name(
+                                                "v1",
+                                            ),
+                                            last: Name(
+                                                "v2",
+                                            ),
+                                        },
+                                    ),
+                                ),
+                            ),
+                            span: 0..13,
+                        },
+                    ),
+                    span: 0..13,
+                },
+            },
+        ),
+        span: 0..13,
+    },
+)

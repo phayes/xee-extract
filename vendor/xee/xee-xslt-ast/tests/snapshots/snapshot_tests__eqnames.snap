@@ -1,0 +1,35 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:copy xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" use-attribute-sets=\"foo bar baz\">Hello</xsl:copy>\"#)"
+---
+Ok(Instruction(Copy(Copy(
+  select: None,
+  copy_namespaces: true,
+  inherit_namespaces: true,
+  use_attribute_sets: Some([
+    OwnedName(
+      local_name_str: "foo",
+      namespace_str: "",
+      prefix_str: "",
+    ),
+    OwnedName(
+      local_name_str: "bar",
+      namespace_str: "",
+      prefix_str: "",
+    ),
+    OwnedName(
+      local_name_str: "baz",
+      namespace_str: "",
+      prefix_str: "",
+    ),
+  ]),
+  type_: None,
+  validation: Strip,
+  sequence_constructor: [
+    Content(Text("Hello")),
+  ],
+  span: Span(
+    start: 1,
+    end: 9,
+  ),
+))))

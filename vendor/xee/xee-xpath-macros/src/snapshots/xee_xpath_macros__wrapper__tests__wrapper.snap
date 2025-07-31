@@ -1,0 +1,5 @@
+---
+source: xee-xpath-macros/src/wrapper.rs
+expression: "xpath_fn_wrapper(&ast, &options).unwrap().to_string()"
+---
+"# [doc (hidden)] mod foo { pub (crate) struct MakeWrapper ; pub (crate) const WRAPPER : crate :: function :: StaticFunctionType = MakeWrapper :: WRAPPER ; pub (crate) const SIGNATURE : & str = \"fn:foo($x as xs:int) as xs:string\" ; pub (crate) const KIND : & str = \"\" ; } const _ : () = { impl foo :: MakeWrapper { const WRAPPER : crate :: function :: StaticFunctionType = wrapper_foo ; } fn wrapper_foo (context : & crate :: context :: DynamicContext , interpreter : & mut crate :: interpreter :: Interpreter , arguments : & [crate :: sequence :: Sequence]) -> Result < crate :: sequence :: Sequence , crate :: error :: Error > { # [allow (non_snake_case)] let x = crate :: occurrence :: one (& mut arguments [0usize] . unboxed_atomized (interpreter . xot () , | atomic | std :: convert :: TryInto :: < i32 > :: try_into (atomic))) ? ; ; let value = foo (x) ; Ok (value . into ()) } } ;"

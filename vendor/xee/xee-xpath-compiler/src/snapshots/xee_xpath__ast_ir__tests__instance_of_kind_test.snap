@@ -1,0 +1,29 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_expr_single(\"1 instance of node()\")"
+---
+Ok(
+    Spanned {
+        value: InstanceOf(
+            InstanceOf {
+                atom: Spanned {
+                    value: Const(
+                        Integer(
+                            1,
+                        ),
+                    ),
+                    span: 0..1,
+                },
+                sequence_type: Item(
+                    Item {
+                        item_type: KindTest(
+                            Any,
+                        ),
+                        occurrence: One,
+                    },
+                ),
+            },
+        ),
+        span: 0..20,
+    },
+)

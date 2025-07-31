@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"() castable as xs:integer\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Boolean(
+                    false,
+                ),
+            ),
+        },
+    ),
+)

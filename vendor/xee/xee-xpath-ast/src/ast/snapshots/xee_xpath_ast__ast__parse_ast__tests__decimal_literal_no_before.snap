@@ -1,0 +1,7 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_literal(\".5\")"
+---
+Decimal(
+    0.5,
+)

@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"1 lt 2\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Boolean(
+                    true,
+                ),
+            ),
+        },
+    ),
+)

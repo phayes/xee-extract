@@ -1,0 +1,73 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:analyze-string xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\" regex=\"foo\"><xsl:non-matching-substring>Nonmatching</xsl:non-matching-substring><xsl:fallback>Fallback 1</xsl:fallback><xsl:fallback>Fallback 2</xsl:fallback></xsl:analyze-string>\"#)"
+---
+Ok(Instruction(AnalyzeString(AnalyzeString(
+  select: Expression(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          PrimaryExpr(FunctionCall(FunctionCall(
+            name: OwnedName(
+              local_name_str: "true",
+              namespace_str: "http://www.w3.org/2005/xpath-functions",
+              prefix_str: "",
+            ),
+            arguments: [],
+          ))),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 77,
+      end: 83,
+    ),
+  ),
+  regex: ValueTemplate(
+    template: [
+      String(
+        text: "foo",
+        span: Span(
+          start: 92,
+          end: 95,
+        ),
+      ),
+    ],
+    phantom: PhantomData,
+  ),
+  flags: None,
+  matching_substring: None,
+  non_matching_substring: Some(NonMatchingSubstring(
+    sequence_constructor: [
+      Content(Text("Nonmatching")),
+    ],
+    span: Span(
+      start: 98,
+      end: 124,
+    ),
+  )),
+  fallbacks: [
+    Fallback(
+      sequence_constructor: [
+        Content(Text("Fallback 1")),
+      ],
+      span: Span(
+        start: 166,
+        end: 178,
+      ),
+    ),
+    Fallback(
+      sequence_constructor: [
+        Content(Text("Fallback 2")),
+      ],
+      span: Span(
+        start: 205,
+        end: 217,
+      ),
+    ),
+  ],
+  span: Span(
+    start: 1,
+    end: 19,
+  ),
+))))

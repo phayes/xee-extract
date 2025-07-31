@@ -1,0 +1,37 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"/else\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(FunctionCall(FunctionCall(
+        name: Name(
+          name: "root",
+          prefix: None,
+          namespace: Some("http://www.w3.org/2005/xpath-functions"),
+        ),
+        arguments: [
+          Path(PathExpr(
+            steps: [
+              AxisStep(AxisStep(
+                axis: Self_,
+                node_test: KindTest(Any),
+                predicates: [],
+              )),
+            ],
+          )),
+        ],
+      ))),
+      AxisStep(AxisStep(
+        axis: Child,
+        node_test: NameTest(Name(Name(
+          name: "else",
+          prefix: None,
+          namespace: None,
+        ))),
+        predicates: [],
+      )),
+    ],
+  )),
+])))

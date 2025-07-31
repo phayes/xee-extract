@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'flurb' cast as xs:base64Binary\")"
+---
+Err(
+    SpannedError {
+        error: FORG0001,
+        span: Some(
+            SourceSpan(
+                0,
+                31,
+            ),
+        ),
+    },
+)

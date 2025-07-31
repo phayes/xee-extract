@@ -1,0 +1,63 @@
+---
+source: xee-xslt-ast/tests/snapshot_tests.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:apply-templates xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:sort>Sort</xsl:sort><xsl:with-param name=\"a\">With param</xsl:with-param></xsl:apply-templates>\"#)"
+---
+Ok(Instruction(ApplyTemplates(ApplyTemplates(
+  select: Expression(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          AxisStep(AxisStep(
+            axis: Child,
+            node_test: KindTest(Any),
+            predicates: [],
+          )),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 0,
+      end: 0,
+    ),
+  ),
+  mode: Unnamed,
+  content: [
+    Sort(Sort(
+      select: None,
+      lang: None,
+      order: None,
+      collation: None,
+      stable: None,
+      case_order: None,
+      data_type: None,
+      sequence_constructor: [
+        Content(Text("Sort")),
+      ],
+      span: Span(
+        start: 71,
+        end: 79,
+      ),
+    )),
+    WithParam(WithParam(
+      name: OwnedName(
+        local_name_str: "a",
+        namespace_str: "",
+        prefix_str: "",
+      ),
+      select: None,
+      as_: None,
+      tunnel: false,
+      sequence_constructor: [
+        Content(Text("With param")),
+      ],
+      span: Span(
+        start: 96,
+        end: 110,
+      ),
+    )),
+  ],
+  span: Span(
+    start: 1,
+    end: 20,
+  ),
+))))

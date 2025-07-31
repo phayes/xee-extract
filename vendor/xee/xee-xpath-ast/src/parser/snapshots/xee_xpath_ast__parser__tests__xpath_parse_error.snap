@@ -1,0 +1,11 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"1 + 2 +\")"
+---
+Err(ExpectedFound(
+  span: SimpleSpan(
+    start: 7,
+    end: 7,
+    context: (),
+  ),
+))

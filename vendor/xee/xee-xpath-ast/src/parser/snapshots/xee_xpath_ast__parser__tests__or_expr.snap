@@ -1,0 +1,27 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"1 or 2\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Binary(BinaryExpr(
+        operator: Or,
+        left: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        ),
+        right: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              2,
+            ])))),
+          ],
+        ),
+      )),
+    ])))),
+  ],
+)))

@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(r#\"<doc><a/></doc>\"#, \"doc/a instance of element(b)\",)"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Boolean(
+                    false,
+                ),
+            ),
+        },
+    ),
+)

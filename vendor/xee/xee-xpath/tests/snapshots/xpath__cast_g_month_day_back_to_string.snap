@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"('--06-21' cast as xs:gMonthDay) cast as xs:string\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "--06-21",
+                ),
+            ),
+        },
+    ),
+)

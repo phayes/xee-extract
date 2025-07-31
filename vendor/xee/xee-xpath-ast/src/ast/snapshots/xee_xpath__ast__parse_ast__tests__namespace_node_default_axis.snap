@@ -1,0 +1,63 @@
+---
+source: xee-xpath/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"foo/namespace-node()\")"
+---
+Spanned {
+    value: Path(
+        PathExpr {
+            steps: [
+                Spanned {
+                    value: AxisStep(
+                        AxisStep {
+                            axis: Child,
+                            node_test: NameTest(
+                                Name(
+                                    Name {
+                                        name: "foo",
+                                        namespace: None,
+                                    },
+                                ),
+                            ),
+                            predicates: [],
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            0,
+                        ),
+                        length: SourceOffset(
+                            3,
+                        ),
+                    },
+                },
+                Spanned {
+                    value: AxisStep(
+                        AxisStep {
+                            axis: Namespace,
+                            node_test: KindTest(
+                                NamespaceNode,
+                            ),
+                            predicates: [],
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            4,
+                        ),
+                        length: SourceOffset(
+                            16,
+                        ),
+                    },
+                },
+            ],
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            20,
+        ),
+    },
+}

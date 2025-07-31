@@ -1,0 +1,50 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"(/) * 5\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Binary(BinaryExpr(
+          operator: Mul,
+          left: PathExpr(
+            steps: [
+              PrimaryExpr(Expr(Some(Expr([
+                Path(PathExpr(
+                  steps: [
+                    PrimaryExpr(FunctionCall(FunctionCall(
+                      name: Name(
+                        name: "root",
+                        prefix: None,
+                        namespace: Some("http://www.w3.org/2005/xpath-functions"),
+                      ),
+                      arguments: [
+                        Path(PathExpr(
+                          steps: [
+                            AxisStep(AxisStep(
+                              axis: Self_,
+                              node_test: KindTest(Any),
+                              predicates: [],
+                            )),
+                          ],
+                        )),
+                      ],
+                    ))),
+                  ],
+                )),
+              ])))),
+            ],
+          ),
+          right: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                5,
+              ])))),
+            ],
+          ),
+        )),
+      ])))),
+    ],
+  )),
+])))

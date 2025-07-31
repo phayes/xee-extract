@@ -1,0 +1,48 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"-+1\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v1",
+                ),
+                var_expr: Spanned {
+                    value: Unary(
+                        Unary {
+                            op: Plus,
+                            atom: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 2..3,
+                            },
+                        },
+                    ),
+                    span: 0..3,
+                },
+                return_expr: Spanned {
+                    value: Unary(
+                        Unary {
+                            op: Minus,
+                            atom: Spanned {
+                                value: Variable(
+                                    Name(
+                                        "v1",
+                                    ),
+                                ),
+                                span: 0..3,
+                            },
+                        },
+                    ),
+                    span: 0..3,
+                },
+            },
+        ),
+        span: 0..3,
+    },
+)

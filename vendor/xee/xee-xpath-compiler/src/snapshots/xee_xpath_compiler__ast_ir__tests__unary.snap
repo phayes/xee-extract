@@ -1,0 +1,22 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"-1\")"
+---
+Ok(
+    Spanned {
+        value: Unary(
+            Unary {
+                op: Minus,
+                atom: Spanned {
+                    value: Const(
+                        Integer(
+                            1,
+                        ),
+                    ),
+                    span: 1..2,
+                },
+            },
+        ),
+        span: 0..2,
+    },
+)

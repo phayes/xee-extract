@@ -1,0 +1,9 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_name(\"Q{http://example.com}foo\")"
+---
+Ok(Name(
+  name: "foo",
+  prefix: None,
+  namespace: Some("http://example.com"),
+))

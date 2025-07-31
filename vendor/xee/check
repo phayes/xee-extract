@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+cargo test
+cargo run --release --bin xee-testrunner -- check vendor/xpath-tests/
+cargo run --release --bin xee-testrunner -- check vendor/xslt-tests/
+

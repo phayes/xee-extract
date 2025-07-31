@@ -1,0 +1,11 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:copy xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" use-attribute-sets=\"foo br!ken bar\">Hello</xsl:copy>\"#)"
+---
+Err(Attribute(InvalidEqName(
+  value: "br!ken",
+  span: Span(
+    start: 83,
+    end: 89,
+  ),
+)))

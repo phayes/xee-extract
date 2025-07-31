@@ -1,0 +1,39 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"self::comment()\")"
+---
+Spanned {
+    value: Path(
+        PathExpr {
+            steps: [
+                Spanned {
+                    value: AxisStep(
+                        AxisStep {
+                            axis: Self_,
+                            node_test: KindTest(
+                                Comment,
+                            ),
+                            predicates: [],
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            0,
+                        ),
+                        length: SourceOffset(
+                            15,
+                        ),
+                    },
+                },
+            ],
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            15,
+        ),
+    },
+}

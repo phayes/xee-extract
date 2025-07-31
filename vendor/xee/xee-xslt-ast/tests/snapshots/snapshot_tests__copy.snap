@@ -1,0 +1,38 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:copy xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\" copy-namespaces=\"no\" inherit-namespaces=\"no\" validation=\"strict\">Hello</xsl:copy>\"#)"
+---
+Ok(Instruction(Copy(Copy(
+  select: Some(Expression(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          PrimaryExpr(FunctionCall(FunctionCall(
+            name: OwnedName(
+              local_name_str: "true",
+              namespace_str: "http://www.w3.org/2005/xpath-functions",
+              prefix_str: "",
+            ),
+            arguments: [],
+          ))),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 67,
+      end: 73,
+    ),
+  )),
+  copy_namespaces: false,
+  inherit_namespaces: false,
+  use_attribute_sets: None,
+  type_: None,
+  validation: Strict,
+  sequence_constructor: [
+    Content(Text("Hello")),
+  ],
+  span: Span(
+    start: 1,
+    end: 9,
+  ),
+))))

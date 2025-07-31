@@ -1,0 +1,74 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_transform(r#\"<xsl:transform version=\"3.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:accumulator name=\"foo\" initial-value=\"1\"><xsl:accumulator-rule match=\"foo\"/></xsl:accumulator></xsl:transform>\"#)"
+---
+Ok(Transform(
+  id: None,
+  input_type_annotations: None,
+  extension_element_prefixes: None,
+  declarations: [
+    Accumulator(Accumulator(
+      name: OwnedName(
+        local_name_str: "foo",
+        namespace_str: "",
+        prefix_str: "",
+      ),
+      initial_value: Expression(
+        xpath: XPath(Expr([
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                1,
+              ])))),
+            ],
+          )),
+        ])),
+        span: Span(
+          start: 121,
+          end: 122,
+        ),
+      ),
+      as_: None,
+      streamable: false,
+      rules: [
+        AccumulatorRule(
+          match_: Pattern(
+            pattern: Expr(Path(PathExpr(
+              root: Relative,
+              steps: [
+                AxisStep(AxisStep(
+                  forward: Child,
+                  node_test: NameTest(Name(OwnedName(
+                    local_name_str: "foo",
+                    namespace_str: "",
+                    prefix_str: "",
+                  ))),
+                  predicates: [],
+                )),
+              ],
+            ))),
+            span: Span(
+              start: 153,
+              end: 156,
+            ),
+          ),
+          phase: None,
+          select: None,
+          sequence_constructor: [],
+          span: Span(
+            start: 125,
+            end: 145,
+          ),
+        ),
+      ],
+      span: Span(
+        start: 79,
+        end: 94,
+      ),
+    )),
+  ],
+  span: Span(
+    start: 1,
+    end: 14,
+  ),
+))

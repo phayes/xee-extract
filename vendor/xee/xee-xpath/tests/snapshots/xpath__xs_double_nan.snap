@@ -1,0 +1,15 @@
+---
+source: xee-xpath/tests/xpath.rs
+expression: "run(\"xs:double('NaN')\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Double(
+                    NaN,
+                ),
+            ),
+        },
+    ),
+)

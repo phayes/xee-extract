@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>Writing and Submitting tests for the QT3 Test Suite</title>
+  <link
+  href="http://www.w3.org/XML/Group/xquery-test/TestSuiteStagingArXQTSCatalogExplain.html"
+  rel="stylesheet" type="text/css" />
+</head>
+
+<body xml:lang="en" lang="en">
+  <p><img alt="W3C" src="http://www.w3.org/Icons/WWW/w3c_home.gif" /></p>
+
+<h1 style="text-align: center;">Writing and Submitting tests for the QT3 Test Suite</h1>
+  
+  <p><b>This document has been lightly updated to reflect the fact that the test suite is now in GitHub rather
+  than on the W3C CVS repository, and that the W3C Working Groups that created the test suite are
+  no longer active. - Michael Kay, 2020-01-08</b></p>
+
+<h2>Policy</h2>
+  
+  <p>W3C originally welcomed submissions of test cases from individuals and organizations
+  whether or not they were already participating in a relevant Working Group. </p>
+  
+  <p>The relevant working groups are no longer active, but a number of individuals continue to
+  make incremental improvements to the test suite in its new GitHub home, and contributions can
+  be made using the usual GitHub mechanism of submitting a pull request.</p>
+  
+ 
+  <p>If you would like to submit test cases, then you musts ubmit your test cases using <a>Grant II: Grant of License for
+      Contributed Test Cases Published Outside a W3C Recommendation</a>. This
+      license grant, for non-Participant test case Contributors, is described
+      in <a href="http://www.w3.org/2004/10/27-testcases.html">Policies for
+        Contribution of Test Cases to W3C</a>.</p>
+  
+  <p><i>Contributors to the test suite agree to make material available under the terms described in this policy,
+    and take responsibility for ensuring that they are entitled to make the material available. In the event that anyone 
+    encounters material which should not have been submitted and published, however, they should raise a GitHub issue, 
+    so that it can be withdrawn.</i></p>
+  
+  
+  <h2>The test repository</h2>
+  
+  <p>The master version of the test suite is now in GitHub in repository <code>w3c/qt3tests</code>.</p>
+  
+ 
+  
+  <h2>Approval Process</h2>
+  
+  
+  <p>The approval process for changes to the test suite is informal and based on consensus, but because the test suite is stable,
+  changes will not be accepted without critical review.</p>
+  
+  <h3>Submitting new tests</h3>
+  
+  
+  
+  <p>You should not
+  submit a test until you have established that there is at least one implementation capable of running the test successfully.
+  You should also take care to ensure that any dependencies on features of that implementation are properly documented in the
+  metadata. Tests of optional features in the specification are welcome, but tests of vendor extensions are not.</p>
+  
+  <p>Tests should generally be small and self-contained. There are a few "system" tests designed to show that larger-scale
+  queries can be executed interoperably, but these need to be very carefully designed to ensure that the results are easily
+  compared. Tests that produce a large result file and expect it to be exactly equal to a supplied result file are
+  best avoided, since it can be very hard to isolate differences in the results and work back to their causes.</p>
+  
+  <p>Each test should have a description that summarizes the intent of the test: what is it designed to prove?</p>
+  
+  <p>Try to allocate any new test to the most appropriate existing test set, and to respect the naming conventions used
+  in that part of the test suite. Try to reuse existing test environments (source documents and schemas) if possible,
+  rather than adding new source documents. Try to use test assertions that reflect the purpose of the test.</p>
+  
+  <p>When you make changes to the test catalog, you should check before committing the change that the catalog is valid
+  against its schema, and conforms to other required consistency checks. The easiest way of checking this is to run
+  the test set named <code>CatalogCheck</code>, which performs these checks automatically.</p>
+  
+  <h3>Modifying existing tests</h3>
+  
+
+  <p>Three levels of changes to tests can be identified:</p>
+  
+  <ol>
+    <li>Cosmetic changes, for example tidying the layout or improving the description. Such changes will generally be accepted without
+    formality.</li>
+    <li>Metadata changes, for example noting that a test is dependent on support for schema-awareness. Such changes do not
+      require a bug report, but should be logged: you should add a "modified by" element indicating your name, the date of the change, and
+      the reason. Splitting a test into multiple tests with different dependencies also falls into this category.</li>
+    <li>Substantive changes, that is changes to the test query or to its expected results (including adding alternative results). Such changes
+    should not be made without raising an issue and giving the community the opportunity to dispute the change.
+    If the error is obvious and uncontroversial (for example a misspelt variable or function name), and
+    in particular if the test was only recently submitted, then you may correct the error and close the bug without further consultation.
+    Normally, however, a bug report should not be closed until there is evidence of consensus (which might simply be the concurrence
+    of one other person and the absence of dissent.) In all cases, when a substantive change is made, the test should be updated with a "modified by"
+    element that cross-references the GitHub issue.</li>
+  </ol>
+  
+  
+  <p>You SHOULD NOT add an alternative expected result to a test purely because your own implementation delivers that result,
+  however strongly you believe that the alternative result is legitimate.</p>
+  
+  
+  
+  <h2>Documentation</h2>
+  
+  <p>The primary documentation of the test suite (alongside this document) is the schema for the catalog and test-set files,
+    which is found at <a href="../catalog-schema.xsd">catalog-schema.xsd</a>. If viewed directly in an XSLT-capable browser,
+    the schema is rendered automatically into HTML. In case this mechanism does not work, a pre-rendered version of the HTML
+    is at <a href="../catalog-schema.html">catalog-schema.html</a>. (In many browsers the pre-rendered form is more readable).</p>
+  
+  
+    
+
+
+
+
+<hr />
+<address>
+  <a href="http://www.w3.org/Help/Webmaster">Webmaster</a> · Last modified:
+  $Date: 2020-01-17 19:02:21 $ by $Author: mkay $ 
+</address>
+
+<p><a rel="Copyright"
+href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> ©
+1994-2013 <a href="http://www.w3.org/"><acronym
+title="World Wide Web Consortium">W3C</acronym></a><sup>®</sup> (<a
+href="http://www.csail.mit.edu/"><acronym
+title="Massachusetts Institute of Technology">MIT</acronym></a>, <a
+href="http://www.ercim.org/"><acronym
+title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>,
+<a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a
+href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>,
+<a
+href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a>,
+<a rel="Copyright"
+href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a>
+and <a rel="Copyright"
+href="http://www.w3.org/Consortium/Legal/copyright-software">software
+licensing</a> rules apply. Your interactions with this site are in accordance
+with our <a
+href="http://www.w3.org/Consortium/Legal/privacy-statement#Public">public</a>
+and <a
+href="http://www.w3.org/Consortium/Legal/privacy-statement#Members">Member</a>
+privacy statements.</p>
+
+<p>GitHub version updated 2020-01-17 by Michael Kay, Saxonica </p>
+</body>
+</html>

@@ -1,0 +1,61 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"(1, 2) ! (. * 2)\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Apply(ApplyExpr(
+        path_expr: PathExpr(
+          steps: [
+            PrimaryExpr(Expr(Some(Expr([
+              Path(PathExpr(
+                steps: [
+                  PrimaryExpr(Literal(Integer((Positive, [
+                    1,
+                  ])))),
+                ],
+              )),
+              Path(PathExpr(
+                steps: [
+                  PrimaryExpr(Literal(Integer((Positive, [
+                    2,
+                  ])))),
+                ],
+              )),
+            ])))),
+          ],
+        ),
+        operator: SimpleMap([
+          PathExpr(
+            steps: [
+              PrimaryExpr(Expr(Some(Expr([
+                Path(PathExpr(
+                  steps: [
+                    PrimaryExpr(Expr(Some(Expr([
+                      Binary(BinaryExpr(
+                        operator: Mul,
+                        left: PathExpr(
+                          steps: [
+                            PrimaryExpr(ContextItem),
+                          ],
+                        ),
+                        right: PathExpr(
+                          steps: [
+                            PrimaryExpr(Literal(Integer((Positive, [
+                              2,
+                            ])))),
+                          ],
+                        ),
+                      )),
+                    ])))),
+                  ],
+                )),
+              ])))),
+            ],
+          ),
+        ]),
+      )),
+    ])))),
+  ],
+)))

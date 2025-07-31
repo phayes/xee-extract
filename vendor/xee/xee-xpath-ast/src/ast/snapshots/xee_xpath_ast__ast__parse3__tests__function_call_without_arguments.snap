@@ -1,0 +1,18 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"fn:foo()\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(FunctionCall(FunctionCall(
+        name: Name(
+          name: "foo",
+          prefix: Some("fn"),
+          namespace: Some("http://www.w3.org/2005/xpath-functions"),
+        ),
+        arguments: [],
+      ))),
+    ],
+  )),
+])))

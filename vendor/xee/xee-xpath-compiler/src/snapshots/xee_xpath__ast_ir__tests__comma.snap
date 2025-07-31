@@ -1,0 +1,58 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_xpath(\"1, 2\")"
+---
+Ok(
+    Spanned {
+        value: FunctionDefinition(
+            FunctionDefinition {
+                params: [
+                    Param {
+                        name: Name(
+                            "v0",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v1",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v2",
+                        ),
+                        type_: None,
+                    },
+                ],
+                return_type: None,
+                body: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 0..1,
+                            },
+                            op: Comma,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 3..4,
+                            },
+                        },
+                    ),
+                    span: 0..4,
+                },
+            },
+        ),
+        span: 0..4,
+    },
+)

@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"let $x := 1, $y := $x + 3 return $y + 5\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    9,
+                ),
+            ),
+        },
+    ),
+)

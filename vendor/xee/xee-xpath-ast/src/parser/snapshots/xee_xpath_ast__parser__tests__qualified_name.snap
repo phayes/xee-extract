@@ -1,0 +1,9 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_name(\"Q{http://example.com}foo\", &namespaces)"
+---
+Ok(OwnedName(
+  local_name_str: "foo",
+  namespace_str: "http://example.com",
+  prefix_str: "",
+))

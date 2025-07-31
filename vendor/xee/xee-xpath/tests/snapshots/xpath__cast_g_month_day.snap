@@ -1,0 +1,19 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'--01-01' cast as xs:gMonthDay\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                GMonthDay(
+                    GMonthDay {
+                        month: 1,
+                        day: 1,
+                        offset: None,
+                    },
+                ),
+            ),
+        },
+    ),
+)

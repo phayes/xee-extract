@@ -1,0 +1,13 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_xpath(\"function() { . }\")"
+---
+Err(
+    SpannedError {
+        error: XPDY0002,
+        span: SourceSpan(
+            13,
+            14,
+        ),
+    },
+)

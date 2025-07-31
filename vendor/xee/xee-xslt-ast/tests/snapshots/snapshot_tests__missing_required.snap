@@ -1,0 +1,14 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:variable xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\">Hello</xsl:variable>\"#)"
+---
+Err(Attribute(NotFound(
+  name: XmlName(
+    namespace: "",
+    local: "name",
+  ),
+  span: Span(
+    start: 1,
+    end: 13,
+  ),
+)))

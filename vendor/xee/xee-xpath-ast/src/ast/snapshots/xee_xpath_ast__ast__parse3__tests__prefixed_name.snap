@@ -1,0 +1,9 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_name(\"xs:foo\")"
+---
+Ok(Name(
+  name: "foo",
+  prefix: Some("xs"),
+  namespace: Some("http://www.w3.org/2001/XMLSchema"),
+))

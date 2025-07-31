@@ -1,0 +1,41 @@
+# Following a bunch of recommendations from
+# https://corrode.dev/blog/tips-for-faster-ci-builds/
+
+name: Cargo Build & Test
+
+on:
+  push:
+    branches: 
+      - main 
+  pull_request:
+
+env: 
+  CARGO_TERM_COLOR: always
+  # disable incremental compilation for faster from scratch builds
+  CARGO_INCREMENTAL: 0
+  # disable debug info to increase caching efficiency
+  CARGO_PROFILE_TEST_DEBUG: 0
+
+jobs:
+  build_and_test:
+    name: Cargo Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      # caching
+      - name: Cache Dependencies
+        id: cache-dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --verbose
+      
+      - name: Test
+        run: cargo test --verbose
+      
+      # we run these conformance tests in debug mode. While the debug tests run
+      # more slowly we catch some bounds check errors that release mode
+      # doesn't.
+      - name: Check (conformance suite)
+        run: cargo run --bin xee-testrunner -- -v check vendor/xpath-tests/

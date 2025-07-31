@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'foo:bar' cast as xs:Name\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    Name,
+                    "foo:bar",
+                ),
+            ),
+        },
+    ),
+)

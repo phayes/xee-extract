@@ -1,0 +1,16 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"my_function()\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(FunctionCall(FunctionCall(
+      name: Name(
+        name: "my_function",
+        prefix: None,
+        namespace: Some("http://www.w3.org/2005/xpath-functions"),
+      ),
+      arguments: [],
+    ))),
+  ],
+)))

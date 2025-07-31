@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+   
+<head>
+    <title>XSLT 3.0 Test Case</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">      
+    <script src="Saxon-JS-1.0.0/SaxonJS.min.js"></script>
+    <script>
+    window.onload = function() {
+      SaxonJS.transform({
+         "stylesheetLocation":"testcase.sef",
+         "initialTemplate":"main"
+         })
+    }     
+    </script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+<h1 id="title"></h1>
+
+<div class="full-width">
+  <h2>Test details</h2>
+  <div id="metadata"></div>
+</div>
+  
+<div class="left">
+  <h2>Stylesheet</h2>
+  <div id="stylesheet"></div>
+</div>
+  
+<div class="right">
+  <h2>Source document</h2>
+  <div id="source"></div>
+</div>  
+
+<script>
+function colorize(id) {
+  hljs.highlightBlock(document.getElementById(id));
+  return "";
+}
+</script>
+
+</body>
+</html>

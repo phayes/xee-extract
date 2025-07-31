@@ -1,0 +1,20 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'2019-01-01Z' cast as xs:date\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Date(
+                    NaiveDateWithOffset {
+                        date: 2019-01-01,
+                        offset: Some(
+                            +00:00,
+                        ),
+                    },
+                ),
+            ),
+        },
+    ),
+)

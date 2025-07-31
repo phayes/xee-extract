@@ -1,0 +1,22 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple_element_ns(\"element(foo)\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      AxisStep(AxisStep(
+        axis: Child,
+        node_test: KindTest(Element(Some(ElementOrAttributeTest(
+          name_or_wildcard: Name(OwnedName(
+            local_name_str: "foo",
+            namespace_str: "http://example.com",
+            prefix_str: "",
+          )),
+          type_name: None,
+        )))),
+        predicates: [],
+      )),
+    ],
+  )),
+])))

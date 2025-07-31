@@ -1,0 +1,20 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse(\"hello {}!\", &namespaces)"
+---
+Ok([
+  String(
+    text: "hello ",
+    span: Span(
+      start: 0,
+      end: 6,
+    ),
+  ),
+  String(
+    text: "!",
+    span: Span(
+      start: 8,
+      end: 9,
+    ),
+  ),
+])

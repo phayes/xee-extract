@@ -1,0 +1,28 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::Signature::parse(\"fn:foo-bar($a as node()?) as xs:integer\", &namespaces)"
+---
+Ok(Signature(
+  name: OwnedName(
+    local_name_str: "foo-bar",
+    namespace_str: "http://www.w3.org/2005/xpath-functions",
+    prefix_str: "fn",
+  ),
+  params: [
+    SignatureParam(
+      name: OwnedName(
+        local_name_str: "a",
+        namespace_str: "",
+        prefix_str: "",
+      ),
+      type_: Item(Item(
+        item_type: KindTest(Any),
+        occurrence: Option,
+      )),
+    ),
+  ],
+  return_type: Item(Item(
+    item_type: AtomicOrUnionType(Integer),
+    occurrence: One,
+  )),
+))

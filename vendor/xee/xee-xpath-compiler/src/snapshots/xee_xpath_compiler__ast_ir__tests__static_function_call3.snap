@@ -1,0 +1,144 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"my_function(1 + 2 + 3, 4 + 5)\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v3",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 12..13,
+                            },
+                            op: Add,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 16..17,
+                            },
+                        },
+                    ),
+                    span: 12..17,
+                },
+                return_expr: Spanned {
+                    value: Let(
+                        Let {
+                            name: Name(
+                                "v5",
+                            ),
+                            var_expr: Spanned {
+                                value: Binary(
+                                    Binary {
+                                        left: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v3",
+                                                ),
+                                            ),
+                                            span: 12..17,
+                                        },
+                                        op: Add,
+                                        right: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    3,
+                                                ),
+                                            ),
+                                            span: 20..21,
+                                        },
+                                    },
+                                ),
+                                span: 12..21,
+                            },
+                            return_expr: Spanned {
+                                value: Let(
+                                    Let {
+                                        name: Name(
+                                            "v8",
+                                        ),
+                                        var_expr: Spanned {
+                                            value: Binary(
+                                                Binary {
+                                                    left: Spanned {
+                                                        value: Const(
+                                                            Integer(
+                                                                4,
+                                                            ),
+                                                        ),
+                                                        span: 23..24,
+                                                    },
+                                                    op: Add,
+                                                    right: Spanned {
+                                                        value: Const(
+                                                            Integer(
+                                                                5,
+                                                            ),
+                                                        ),
+                                                        span: 27..28,
+                                                    },
+                                                },
+                                            ),
+                                            span: 23..28,
+                                        },
+                                        return_expr: Spanned {
+                                            value: FunctionCall(
+                                                FunctionCall {
+                                                    atom: Spanned {
+                                                        value: Const(
+                                                            StaticFunctionReference(
+                                                                StaticFunctionId(
+                                                                    0,
+                                                                ),
+                                                                None,
+                                                            ),
+                                                        ),
+                                                        span: 0..0,
+                                                    },
+                                                    args: [
+                                                        Spanned {
+                                                            value: Variable(
+                                                                Name(
+                                                                    "v5",
+                                                                ),
+                                                            ),
+                                                            span: 12..21,
+                                                        },
+                                                        Spanned {
+                                                            value: Variable(
+                                                                Name(
+                                                                    "v8",
+                                                                ),
+                                                            ),
+                                                            span: 23..28,
+                                                        },
+                                                    ],
+                                                },
+                                            ),
+                                            span: 0..29,
+                                        },
+                                    },
+                                ),
+                                span: 0..29,
+                            },
+                        },
+                    ),
+                    span: 0..29,
+                },
+            },
+        ),
+        span: 0..29,
+    },
+)

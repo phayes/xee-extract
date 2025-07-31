@@ -1,0 +1,13 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"$foo\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(VarRef(Name(
+      name: "foo",
+      prefix: None,
+      namespace: None,
+    ))),
+  ],
+)))

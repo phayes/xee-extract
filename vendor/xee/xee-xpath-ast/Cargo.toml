@@ -1,0 +1,48 @@
+[package]
+name = "xee-xpath-ast"
+version = "0.1.3"
+edition = "2021"
+authors = ["The Xee Project Developers"]
+keywords = ["xml", "xpath"]
+license = "MIT"
+description = "XPath parser and AST implementation"
+repository = "https://github.com/Paligo/xee"
+readme = "README.md"
+documentation = "https://docs.rs/xee-xpath-ast"
+homepage = "https://github.com/Paligo/xee"
+
+[features]
+serde = [
+    "dep:serde",
+    "ibig/serde",
+    "ordered-float/serde",
+    "chumsky/serde",
+    "xee-schema-type/serde",
+    "xee-xpath-type/serde",
+    "xee-name/serde",
+    "xot/serde",
+]
+
+[dependencies]
+xee-schema-type = { path = "../xee-schema-type", version = "0.1.3" }
+xee-name = { path = "../xee-name", version = "0.1.4" }
+xee-xpath-type = { path = "../xee-xpath-type", version = "0.1.3" }
+xee-xpath-lexer = { path = "../xee-xpath-lexer", version = "0.1.3" }
+ahash = { workspace = true }
+chumsky = { workspace = true }
+blanket = { workspace = true }
+ordered-float = { workspace = true }
+ibig = { workspace = true }
+rust_decimal = { workspace = true }
+thiserror = { workspace = true }
+xot = { workspace = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+
+
+[dev-dependencies]
+# we want to depend on serde feature during tests
+xee-xpath-ast = { path = ".", features = ["serde"] }
+insta = { workspace = true, features = ["ron", "glob"] }
+xot = { workspace = true, features = ["proptest"] }
+rust_decimal_macros = { workspace = true }
+ron = { workspace = true }

@@ -1,0 +1,22 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"-1\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Apply(ApplyExpr(
+        path_expr: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        ),
+        operator: Unary([
+          Minus,
+        ]),
+      )),
+    ])))),
+  ],
+)))

@@ -1,0 +1,53 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"'$' => fn:concat(?)\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(InlineFunction(InlineFunction(
+        params: [
+          Param(
+            name: OwnedName(
+              local_name_str: "placeholder0",
+              namespace_str: "",
+              prefix_str: "",
+            ),
+            type_: None,
+          ),
+        ],
+        return_type: None,
+        body: Some(Expr([
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(FunctionCall(FunctionCall(
+                name: OwnedName(
+                  local_name_str: "concat",
+                  namespace_str: "http://www.w3.org/2005/xpath-functions",
+                  prefix_str: "fn",
+                ),
+                arguments: [
+                  Path(PathExpr(
+                    steps: [
+                      PrimaryExpr(Literal(String("$"))),
+                    ],
+                  )),
+                  Path(PathExpr(
+                    steps: [
+                      PrimaryExpr(VarRef(OwnedName(
+                        local_name_str: "placeholder0",
+                        namespace_str: "",
+                        prefix_str: "",
+                      ))),
+                    ],
+                  )),
+                ],
+              ))),
+            ],
+          )),
+        ])),
+        wrapper: true,
+      ))),
+    ],
+  )),
+])))

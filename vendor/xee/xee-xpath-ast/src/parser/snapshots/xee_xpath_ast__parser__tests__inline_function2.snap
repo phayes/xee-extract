@@ -1,0 +1,59 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"function($x, $y) { $x + $y }\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(InlineFunction(InlineFunction(
+      params: [
+        Param(
+          name: OwnedName(
+            local_name_str: "x",
+            namespace_str: "",
+            prefix_str: "",
+          ),
+          type_: None,
+        ),
+        Param(
+          name: OwnedName(
+            local_name_str: "y",
+            namespace_str: "",
+            prefix_str: "",
+          ),
+          type_: None,
+        ),
+      ],
+      return_type: None,
+      body: Some(Expr([
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Expr(Some(Expr([
+              Binary(BinaryExpr(
+                operator: Add,
+                left: PathExpr(
+                  steps: [
+                    PrimaryExpr(VarRef(OwnedName(
+                      local_name_str: "x",
+                      namespace_str: "",
+                      prefix_str: "",
+                    ))),
+                  ],
+                ),
+                right: PathExpr(
+                  steps: [
+                    PrimaryExpr(VarRef(OwnedName(
+                      local_name_str: "y",
+                      namespace_str: "",
+                      prefix_str: "",
+                    ))),
+                  ],
+                ),
+              )),
+            ])))),
+          ],
+        )),
+      ])),
+      wrapper: false,
+    ))),
+  ],
+)))

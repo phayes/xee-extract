@@ -1,0 +1,23 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"'foo' instance of array(*)\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Apply(ApplyExpr(
+          path_expr: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(String("foo"))),
+            ],
+          ),
+          operator: InstanceOf(Item(Item(
+            item_type: ArrayTest(AnyArrayTest),
+            occurrence: One,
+          ))),
+        )),
+      ])))),
+    ],
+  )),
+])))

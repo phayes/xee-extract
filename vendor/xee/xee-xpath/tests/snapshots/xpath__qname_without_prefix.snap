@@ -1,0 +1,19 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"QName('http://example.com', 'foo')\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                QName(
+                    OwnedName {
+                        local_name_str: "foo",
+                        namespace_str: "http://example.com",
+                        prefix_str: "",
+                    },
+                ),
+            ),
+        },
+    ),
+)

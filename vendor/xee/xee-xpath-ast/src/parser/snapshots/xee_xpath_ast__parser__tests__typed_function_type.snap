@@ -1,0 +1,19 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::SequenceType::parse(\"function(xs:integer) as xs:integer\", &namespaces)"
+---
+Ok(Item(Item(
+  item_type: FunctionTest(TypedFunctionTest(TypedFunctionTest(
+    parameter_types: [
+      Item(Item(
+        item_type: AtomicOrUnionType(Integer),
+        occurrence: One,
+      )),
+    ],
+    return_type: Item(Item(
+      item_type: AtomicOrUnionType(Integer),
+      occurrence: One,
+    )),
+  ))),
+  occurrence: One,
+)))

@@ -1,0 +1,16 @@
+---
+source: xee-xpath/tests/xpath.rs
+expression: "run_xml(r#\"<doc><a/><b/><c/></doc>\"#, \"generate-id(doc/a)\",)"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "id1s2",
+                ),
+            ),
+        },
+    ),
+)

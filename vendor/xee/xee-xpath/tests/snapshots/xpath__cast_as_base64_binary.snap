@@ -1,0 +1,22 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'aGVsbG8=' cast as xs:base64Binary\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Binary(
+                    Base64,
+                    [
+                        104,
+                        101,
+                        108,
+                        108,
+                        111,
+                    ],
+                ),
+            ),
+        },
+    ),
+)

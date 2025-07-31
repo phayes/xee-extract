@@ -1,0 +1,19 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple_element_ns(\"attribute::foo\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      AxisStep(AxisStep(
+        axis: Attribute,
+        node_test: NameTest(Name(Name(
+          name: "foo",
+          prefix: None,
+          namespace: None,
+        ))),
+        predicates: [],
+      )),
+    ],
+  )),
+])))

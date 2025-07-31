@@ -1,0 +1,17 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<foo/>\"#)"
+---
+Ok(Content(Element(ElementNode(
+  name: OwnedName(
+    local_name_str: "foo",
+    namespace_str: "",
+    prefix_str: "",
+  ),
+  attributes: [],
+  sequence_constructor: [],
+  span: Span(
+    start: 1,
+    end: 4,
+  ),
+))))

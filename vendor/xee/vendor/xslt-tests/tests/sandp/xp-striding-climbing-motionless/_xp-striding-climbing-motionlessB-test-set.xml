@@ -1,0 +1,1800 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2012/10/xslt-test-catalog" name="xp-striding-climbing-motionlessB">
+   <description>
+                    CP: Striding, RP: Climbing, RS: Motionless
+                    Self axis on climbing axis, provided node type is same, inherits the climbing axis: climbing and motionless
+                </description>
+   <dependencies>
+      <sweep_and_posture satisfied="true" value="supports-sweep-and-posture-assessments"/>
+   </dependencies>
+   <test-case name="xp-striding-climbing-motionlessB001">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute()/self::node()</xpath>
+            <xpath part="2">attribute()/self::attribute()</xpath>
+            <xpath part="3">attribute()/self::attribute(*)</xpath>
+            <xpath part="4">attribute()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute()/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB002">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::foo/self::node()</xpath>
+            <xpath part="2">attribute::foo/self::attribute()</xpath>
+            <xpath part="3">attribute::foo/self::attribute(*)</xpath>
+            <xpath part="4">attribute::foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB003">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::ex:foo/self::node()</xpath>
+            <xpath part="2">attribute::ex:foo/self::attribute()</xpath>
+            <xpath part="3">attribute::ex:foo/self::attribute(*)</xpath>
+            <xpath part="4">attribute::ex:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::ex:foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB004">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::Q{http://example.com}foo/self::node()</xpath>
+            <xpath part="2">attribute::Q{http://example.com}foo/self::attribute()</xpath>
+            <xpath part="3">attribute::Q{http://example.com}foo/self::attribute(*)</xpath>
+            <xpath part="4">attribute::Q{http://example.com}foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::Q{http://example.com}foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB005">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::Q{http://example.com}*/self::node()</xpath>
+            <xpath part="2">attribute::Q{http://example.com}*/self::attribute()</xpath>
+            <xpath part="3">attribute::Q{http://example.com}*/self::attribute(*)</xpath>
+            <xpath part="4">attribute::Q{http://example.com}*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::Q{http://example.com}*/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB006">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::*:foo/self::node()</xpath>
+            <xpath part="2">attribute::*:foo/self::attribute()</xpath>
+            <xpath part="3">attribute::*:foo/self::attribute(*)</xpath>
+            <xpath part="4">attribute::*:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::*:foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB007">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::ex:*/self::node()</xpath>
+            <xpath part="2">attribute::ex:*/self::attribute()</xpath>
+            <xpath part="3">attribute::ex:*/self::attribute(*)</xpath>
+            <xpath part="4">attribute::ex:*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::ex:*/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB008">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::*/self::node()</xpath>
+            <xpath part="2">attribute::*/self::attribute()</xpath>
+            <xpath part="3">attribute::*/self::attribute(*)</xpath>
+            <xpath part="4">attribute::*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::*/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB009">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::node()/self::node()</xpath>
+            <xpath part="2">attribute::node()/self::attribute()</xpath>
+            <xpath part="3">attribute::node()/self::attribute(*)</xpath>
+            <xpath part="4">attribute::node()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::node()/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB010">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::attribute()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::attribute()/self::node()</xpath>
+            <xpath part="2">attribute::attribute()/self::attribute()</xpath>
+            <xpath part="3">attribute::attribute()/self::attribute(*)</xpath>
+            <xpath part="4">attribute::attribute()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::attribute()/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB011">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::attribute(*)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::attribute(*)/self::node()</xpath>
+            <xpath part="2">attribute::attribute(*)/self::attribute()</xpath>
+            <xpath part="3">attribute::attribute(*)/self::attribute(*)</xpath>
+            <xpath part="4">attribute::attribute(*)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::attribute(*)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB012">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::attribute(ex:foo)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::attribute(ex:foo)/self::node()</xpath>
+            <xpath part="2">attribute::attribute(ex:foo)/self::attribute()</xpath>
+            <xpath part="3">attribute::attribute(ex:foo)/self::attribute(*)</xpath>
+            <xpath part="4">attribute::attribute(ex:foo)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::attribute(ex:foo)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB013">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: attribute::attribute(Q{http://example.com}foo)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">attribute::attribute(Q{http://example.com}foo)/self::node()</xpath>
+            <xpath part="2">attribute::attribute(Q{http://example.com}foo)/self::attribute()</xpath>
+            <xpath part="3">attribute::attribute(Q{http://example.com}foo)/self::attribute(*)</xpath>
+            <xpath part="4">attribute::attribute(Q{http://example.com}foo)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">attribute::attribute(Q{http://example.com}foo)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB014">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@foo/self::node()</xpath>
+            <xpath part="2">@foo/self::attribute()</xpath>
+            <xpath part="3">@foo/self::attribute(*)</xpath>
+            <xpath part="4">@foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB015">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@ex:foo/self::node()</xpath>
+            <xpath part="2">@ex:foo/self::attribute()</xpath>
+            <xpath part="3">@ex:foo/self::attribute(*)</xpath>
+            <xpath part="4">@ex:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@ex:foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB016">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@Q{http://example.com}foo/self::node()</xpath>
+            <xpath part="2">@Q{http://example.com}foo/self::attribute()</xpath>
+            <xpath part="3">@Q{http://example.com}foo/self::attribute(*)</xpath>
+            <xpath part="4">@Q{http://example.com}foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@Q{http://example.com}foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB017">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@Q{http://example.com}*/self::node()</xpath>
+            <xpath part="2">@Q{http://example.com}*/self::attribute()</xpath>
+            <xpath part="3">@Q{http://example.com}*/self::attribute(*)</xpath>
+            <xpath part="4">@Q{http://example.com}*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@Q{http://example.com}*/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB018">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@*:foo/self::node()</xpath>
+            <xpath part="2">@*:foo/self::attribute()</xpath>
+            <xpath part="3">@*:foo/self::attribute(*)</xpath>
+            <xpath part="4">@*:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@*:foo/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB019">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@ex:*/self::node()</xpath>
+            <xpath part="2">@ex:*/self::attribute()</xpath>
+            <xpath part="3">@ex:*/self::attribute(*)</xpath>
+            <xpath part="4">@ex:*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@ex:*/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB020">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@*/self::node()</xpath>
+            <xpath part="2">@*/self::attribute()</xpath>
+            <xpath part="3">@*/self::attribute(*)</xpath>
+            <xpath part="4">@*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@*/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB021">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@node()/self::node()</xpath>
+            <xpath part="2">@node()/self::attribute()</xpath>
+            <xpath part="3">@node()/self::attribute(*)</xpath>
+            <xpath part="4">@node()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@node()/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB022">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @attribute()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@attribute()/self::node()</xpath>
+            <xpath part="2">@attribute()/self::attribute()</xpath>
+            <xpath part="3">@attribute()/self::attribute(*)</xpath>
+            <xpath part="4">@attribute()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@attribute()/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB023">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @attribute(*)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@attribute(*)/self::node()</xpath>
+            <xpath part="2">@attribute(*)/self::attribute()</xpath>
+            <xpath part="3">@attribute(*)/self::attribute(*)</xpath>
+            <xpath part="4">@attribute(*)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@attribute(*)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB024">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @attribute(ex:foo)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@attribute(ex:foo)/self::node()</xpath>
+            <xpath part="2">@attribute(ex:foo)/self::attribute()</xpath>
+            <xpath part="3">@attribute(ex:foo)/self::attribute(*)</xpath>
+            <xpath part="4">@attribute(ex:foo)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@attribute(ex:foo)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB025">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: @attribute(Q{http://example.com}foo)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">@attribute(Q{http://example.com}foo)/self::node()</xpath>
+            <xpath part="2">@attribute(Q{http://example.com}foo)/self::attribute()</xpath>
+            <xpath part="3">@attribute(Q{http://example.com}foo)/self::attribute(*)</xpath>
+            <xpath part="4">@attribute(Q{http://example.com}foo)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">@attribute(Q{http://example.com}foo)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB026">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace-node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace-node()/self::node()</xpath>
+            <xpath part="2">namespace-node()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB027">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::namespace-node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::namespace-node()/self::node()</xpath>
+            <xpath part="2">namespace::namespace-node()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB028">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::foo/self::node()</xpath>
+            <xpath part="2">namespace::foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB029">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::Q{}foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::Q{}foo/self::node()</xpath>
+            <xpath part="2">namespace::Q{}foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB030">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::Q{}*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::Q{}*/self::node()</xpath>
+            <xpath part="2">namespace::Q{}*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB031">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::*:foo/self::node()</xpath>
+            <xpath part="2">namespace::*:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB032">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::*/self::node()</xpath>
+            <xpath part="2">namespace::*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB033">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: namespace::node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">namespace::node()/self::node()</xpath>
+            <xpath part="2">namespace::node()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB034">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::foo/self::foo</xpath>
+            <xpath part="2">parent::foo/self::ex:foo</xpath>
+            <xpath part="3">parent::foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::foo/self::*:foo</xpath>
+            <xpath part="6">parent::foo/self::ex:*</xpath>
+            <xpath part="7">parent::foo/self::*</xpath>
+            <xpath part="8">parent::foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB035">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::ex:foo/self::foo</xpath>
+            <xpath part="2">parent::ex:foo/self::ex:foo</xpath>
+            <xpath part="3">parent::ex:foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::ex:foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::ex:foo/self::*:foo</xpath>
+            <xpath part="6">parent::ex:foo/self::ex:*</xpath>
+            <xpath part="7">parent::ex:foo/self::*</xpath>
+            <xpath part="8">parent::ex:foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB036">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::Q{http://example.com}foo/self::foo</xpath>
+            <xpath part="2">parent::Q{http://example.com}foo/self::ex:foo</xpath>
+            <xpath part="3">parent::Q{http://example.com}foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::Q{http://example.com}foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::Q{http://example.com}foo/self::*:foo</xpath>
+            <xpath part="6">parent::Q{http://example.com}foo/self::ex:*</xpath>
+            <xpath part="7">parent::Q{http://example.com}foo/self::*</xpath>
+            <xpath part="8">parent::Q{http://example.com}foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB037">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::Q{http://example.com}*/self::foo</xpath>
+            <xpath part="2">parent::Q{http://example.com}*/self::ex:foo</xpath>
+            <xpath part="3">parent::Q{http://example.com}*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::Q{http://example.com}*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::Q{http://example.com}*/self::*:foo</xpath>
+            <xpath part="6">parent::Q{http://example.com}*/self::ex:*</xpath>
+            <xpath part="7">parent::Q{http://example.com}*/self::*</xpath>
+            <xpath part="8">parent::Q{http://example.com}*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB038">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::*:foo/self::foo</xpath>
+            <xpath part="2">parent::*:foo/self::ex:foo</xpath>
+            <xpath part="3">parent::*:foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::*:foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::*:foo/self::*:foo</xpath>
+            <xpath part="6">parent::*:foo/self::ex:*</xpath>
+            <xpath part="7">parent::*:foo/self::*</xpath>
+            <xpath part="8">parent::*:foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB039">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::ex:*/self::foo</xpath>
+            <xpath part="2">parent::ex:*/self::ex:foo</xpath>
+            <xpath part="3">parent::ex:*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::ex:*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::ex:*/self::*:foo</xpath>
+            <xpath part="6">parent::ex:*/self::ex:*</xpath>
+            <xpath part="7">parent::ex:*/self::*</xpath>
+            <xpath part="8">parent::ex:*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB040">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::*/self::foo</xpath>
+            <xpath part="2">parent::*/self::ex:foo</xpath>
+            <xpath part="3">parent::*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::*/self::*:foo</xpath>
+            <xpath part="6">parent::*/self::ex:*</xpath>
+            <xpath part="7">parent::*/self::*</xpath>
+            <xpath part="8">parent::*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB041">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::node()/self::foo</xpath>
+            <xpath part="2">parent::node()/self::ex:foo</xpath>
+            <xpath part="3">parent::node()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">parent::node()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">parent::node()/self::*:foo</xpath>
+            <xpath part="6">parent::node()/self::ex:*</xpath>
+            <xpath part="7">parent::node()/self::*</xpath>
+            <xpath part="8">parent::node()/self::node()</xpath>
+            <xpath part="9">parent::node()/self::document-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB042">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: parent::document-node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">parent::document-node()/self::node()</xpath>
+            <xpath part="2">parent::document-node()/self::document-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB043">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::foo/self::foo</xpath>
+            <xpath part="2">ancestor::foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor::foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::foo/self::*:foo</xpath>
+            <xpath part="6">ancestor::foo/self::ex:*</xpath>
+            <xpath part="7">ancestor::foo/self::*</xpath>
+            <xpath part="8">ancestor::foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB044">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::ex:foo/self::foo</xpath>
+            <xpath part="2">ancestor::ex:foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor::ex:foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::ex:foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::ex:foo/self::*:foo</xpath>
+            <xpath part="6">ancestor::ex:foo/self::ex:*</xpath>
+            <xpath part="7">ancestor::ex:foo/self::*</xpath>
+            <xpath part="8">ancestor::ex:foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB045">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::Q{http://example.com}foo/self::foo</xpath>
+            <xpath part="2">ancestor::Q{http://example.com}foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor::Q{http://example.com}foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::Q{http://example.com}foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::Q{http://example.com}foo/self::*:foo</xpath>
+            <xpath part="6">ancestor::Q{http://example.com}foo/self::ex:*</xpath>
+            <xpath part="7">ancestor::Q{http://example.com}foo/self::*</xpath>
+            <xpath part="8">ancestor::Q{http://example.com}foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB046">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::Q{http://example.com}*/self::foo</xpath>
+            <xpath part="2">ancestor::Q{http://example.com}*/self::ex:foo</xpath>
+            <xpath part="3">ancestor::Q{http://example.com}*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::Q{http://example.com}*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::Q{http://example.com}*/self::*:foo</xpath>
+            <xpath part="6">ancestor::Q{http://example.com}*/self::ex:*</xpath>
+            <xpath part="7">ancestor::Q{http://example.com}*/self::*</xpath>
+            <xpath part="8">ancestor::Q{http://example.com}*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB047">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::*:foo/self::foo</xpath>
+            <xpath part="2">ancestor::*:foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor::*:foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::*:foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::*:foo/self::*:foo</xpath>
+            <xpath part="6">ancestor::*:foo/self::ex:*</xpath>
+            <xpath part="7">ancestor::*:foo/self::*</xpath>
+            <xpath part="8">ancestor::*:foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB048">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::ex:*/self::foo</xpath>
+            <xpath part="2">ancestor::ex:*/self::ex:foo</xpath>
+            <xpath part="3">ancestor::ex:*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::ex:*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::ex:*/self::*:foo</xpath>
+            <xpath part="6">ancestor::ex:*/self::ex:*</xpath>
+            <xpath part="7">ancestor::ex:*/self::*</xpath>
+            <xpath part="8">ancestor::ex:*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB049">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::*/self::foo</xpath>
+            <xpath part="2">ancestor::*/self::ex:foo</xpath>
+            <xpath part="3">ancestor::*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::*/self::*:foo</xpath>
+            <xpath part="6">ancestor::*/self::ex:*</xpath>
+            <xpath part="7">ancestor::*/self::*</xpath>
+            <xpath part="8">ancestor::*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB050">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::node()/self::foo</xpath>
+            <xpath part="2">ancestor::node()/self::ex:foo</xpath>
+            <xpath part="3">ancestor::node()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor::node()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor::node()/self::*:foo</xpath>
+            <xpath part="6">ancestor::node()/self::ex:*</xpath>
+            <xpath part="7">ancestor::node()/self::*</xpath>
+            <xpath part="8">ancestor::node()/self::node()</xpath>
+            <xpath part="9">ancestor::node()/self::document-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB051">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor::document-node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor::document-node()/self::node()</xpath>
+            <xpath part="2">ancestor::document-node()/self::document-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB052">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::foo/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::foo/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::foo/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::foo/self::*</xpath>
+            <xpath part="8">ancestor-or-self::foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB053">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::ex:foo/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::ex:foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::ex:foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::ex:foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::ex:foo/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::ex:foo/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::ex:foo/self::*</xpath>
+            <xpath part="8">ancestor-or-self::ex:foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB054">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::Q{http://example.com}foo/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::Q{http://example.com}foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::Q{http://example.com}foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::Q{http://example.com}foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::Q{http://example.com}foo/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::Q{http://example.com}foo/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::Q{http://example.com}foo/self::*</xpath>
+            <xpath part="8">ancestor-or-self::Q{http://example.com}foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB055">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::Q{http://example.com}*/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::Q{http://example.com}*/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::Q{http://example.com}*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::Q{http://example.com}*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::Q{http://example.com}*/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::Q{http://example.com}*/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::Q{http://example.com}*/self::*</xpath>
+            <xpath part="8">ancestor-or-self::Q{http://example.com}*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB056">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::*:foo/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::*:foo/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::*:foo/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::*:foo/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::*:foo/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::*:foo/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::*:foo/self::*</xpath>
+            <xpath part="8">ancestor-or-self::*:foo/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB057">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::ex:*/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::ex:*/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::ex:*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::ex:*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::ex:*/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::ex:*/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::ex:*/self::*</xpath>
+            <xpath part="8">ancestor-or-self::ex:*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB058">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::*
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::*/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::*/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::*/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::*/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::*/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::*/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::*/self::*</xpath>
+            <xpath part="8">ancestor-or-self::*/self::node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB059">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::node()/self::foo</xpath>
+            <xpath part="2">ancestor-or-self::node()/self::ex:foo</xpath>
+            <xpath part="3">ancestor-or-self::node()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">ancestor-or-self::node()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">ancestor-or-self::node()/self::*:foo</xpath>
+            <xpath part="6">ancestor-or-self::node()/self::ex:*</xpath>
+            <xpath part="7">ancestor-or-self::node()/self::*</xpath>
+            <xpath part="8">ancestor-or-self::node()/self::node()</xpath>
+            <xpath part="9">ancestor-or-self::node()/self::document-node()</xpath>
+            <xpath part="10">ancestor-or-self::node()/self::attribute()</xpath>
+            <xpath part="11">ancestor-or-self::node()/self::attribute(*)</xpath>
+            <xpath part="12">ancestor-or-self::node()/self::attribute(ex:foo)</xpath>
+            <xpath part="13">ancestor-or-self::node()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="14">ancestor-or-self::node()/self::comment()</xpath>
+            <xpath part="15">ancestor-or-self::node()/self::processing-instruction()</xpath>
+            <xpath part="16">ancestor-or-self::node()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="17">ancestor-or-self::node()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="18">ancestor-or-self::node()/self::text()</xpath>
+            <xpath part="19">ancestor-or-self::node()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB060">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::document-node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::document-node()/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::document-node()/self::document-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB061">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::attribute()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::attribute()/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::attribute()/self::attribute()</xpath>
+            <xpath part="3">ancestor-or-self::attribute()/self::attribute(*)</xpath>
+            <xpath part="4">ancestor-or-self::attribute()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">ancestor-or-self::attribute()/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB062">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::attribute(*)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::attribute(*)/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::attribute(*)/self::attribute()</xpath>
+            <xpath part="3">ancestor-or-self::attribute(*)/self::attribute(*)</xpath>
+            <xpath part="4">ancestor-or-self::attribute(*)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">ancestor-or-self::attribute(*)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB063">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::attribute(ex:foo)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::attribute(ex:foo)/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::attribute(ex:foo)/self::attribute()</xpath>
+            <xpath part="3">ancestor-or-self::attribute(ex:foo)/self::attribute(*)</xpath>
+            <xpath part="4">ancestor-or-self::attribute(ex:foo)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">ancestor-or-self::attribute(ex:foo)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB064">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::attribute(Q{http://example.com}foo)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::attribute(Q{http://example.com}foo)/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::attribute(Q{http://example.com}foo)/self::attribute()</xpath>
+            <xpath part="3">ancestor-or-self::attribute(Q{http://example.com}foo)/self::attribute(*)</xpath>
+            <xpath part="4">ancestor-or-self::attribute(Q{http://example.com}foo)/self::attribute(ex:foo)</xpath>
+            <xpath part="5">ancestor-or-self::attribute(Q{http://example.com}foo)/self::attribute(Q{http://example.com}foo)</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB065">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::comment()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::comment()/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::comment()/self::comment()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB066">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::processing-instruction()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::processing-instruction()/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::processing-instruction()/self::processing-instruction()</xpath>
+            <xpath part="3">ancestor-or-self::processing-instruction()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="4">ancestor-or-self::processing-instruction()/self::processing-instruction('xml-stylesheet')</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB067">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::processing-instruction(xsl-stylesheet)
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::processing-instruction(xsl-stylesheet)/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::processing-instruction(xsl-stylesheet)/self::processing-instruction()</xpath>
+            <xpath part="3">ancestor-or-self::processing-instruction(xsl-stylesheet)/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="4">ancestor-or-self::processing-instruction(xsl-stylesheet)/self::processing-instruction('xml-stylesheet')</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB068">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::processing-instruction('xsl-stylesheet')
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::processing-instruction('xsl-stylesheet')/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::processing-instruction('xsl-stylesheet')/self::processing-instruction()</xpath>
+            <xpath part="3">ancestor-or-self::processing-instruction('xsl-stylesheet')/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="4">ancestor-or-self::processing-instruction('xsl-stylesheet')/self::processing-instruction('xml-stylesheet')</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB069">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::text()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::text()/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::text()/self::text()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-climbing-motionlessB070">
+      <description>
+                CP: striding, RP: climbing, RS: motionless
+                Base expression: ancestor-or-self::namespace-node()
+                Separators:      / 
+                With axes:       self
+                With node types: element, document, attribute, namespace, comment, pi, text, any-node, elem-doc
+                Invariant:       node-type-equal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ancestor-or-self::namespace-node()/self::node()</xpath>
+            <xpath part="2">ancestor-or-self::namespace-node()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="climbing" result-sweep="motionless"/>
+      </result>
+   </test-case>
+</test-set>

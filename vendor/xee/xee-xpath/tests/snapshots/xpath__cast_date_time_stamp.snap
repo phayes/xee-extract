@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'2019-01-01T00:00:00.123+01:00' cast as xs:dateTimeStamp\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                DateTimeStamp(
+                    2019-01-01T01:00:00.123+01:00,
+                ),
+            ),
+        },
+    ),
+)

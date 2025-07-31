@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_with_variables(\"$foo + $bar\",\nVariables::from([(ast::Name::name(\"foo\"),\nItem::from(Atomic::from(1i64)).into()),\n(ast::Name::name(\"bar\"), Item::from(Atomic::from(2i64)).into())]))"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    3,
+                ),
+            ),
+        },
+    ),
+)

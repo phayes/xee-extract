@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"function() { let $x := 3 return function() { let $y := 4 return function() { $x + $y }} }()()()\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    7,
+                ),
+            ),
+        },
+    ),
+)

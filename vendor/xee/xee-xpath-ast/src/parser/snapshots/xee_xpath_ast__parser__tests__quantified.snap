@@ -1,0 +1,55 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"every $x in (1, 2) satisfies $x > 0\")"
+---
+Ok(Quantified(QuantifiedExpr(
+  quantifier: Every,
+  var_name: OwnedName(
+    local_name_str: "x",
+    namespace_str: "",
+    prefix_str: "",
+  ),
+  var_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        )),
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              2,
+            ])))),
+          ],
+        )),
+      ])))),
+    ],
+  )),
+  satisfies_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Binary(BinaryExpr(
+          operator: GenGt,
+          left: PathExpr(
+            steps: [
+              PrimaryExpr(VarRef(OwnedName(
+                local_name_str: "x",
+                namespace_str: "",
+                prefix_str: "",
+              ))),
+            ],
+          ),
+          right: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [])))),
+            ],
+          ),
+        )),
+      ])))),
+    ],
+  )),
+)))

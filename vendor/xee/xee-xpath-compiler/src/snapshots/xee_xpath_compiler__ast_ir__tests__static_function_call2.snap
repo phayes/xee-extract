@@ -1,0 +1,110 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"my_function(1 + 2, 3 + 4)\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v3",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 12..13,
+                            },
+                            op: Add,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 16..17,
+                            },
+                        },
+                    ),
+                    span: 12..17,
+                },
+                return_expr: Spanned {
+                    value: Let(
+                        Let {
+                            name: Name(
+                                "v6",
+                            ),
+                            var_expr: Spanned {
+                                value: Binary(
+                                    Binary {
+                                        left: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    3,
+                                                ),
+                                            ),
+                                            span: 19..20,
+                                        },
+                                        op: Add,
+                                        right: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    4,
+                                                ),
+                                            ),
+                                            span: 23..24,
+                                        },
+                                    },
+                                ),
+                                span: 19..24,
+                            },
+                            return_expr: Spanned {
+                                value: FunctionCall(
+                                    FunctionCall {
+                                        atom: Spanned {
+                                            value: Const(
+                                                StaticFunctionReference(
+                                                    StaticFunctionId(
+                                                        0,
+                                                    ),
+                                                    None,
+                                                ),
+                                            ),
+                                            span: 0..0,
+                                        },
+                                        args: [
+                                            Spanned {
+                                                value: Variable(
+                                                    Name(
+                                                        "v3",
+                                                    ),
+                                                ),
+                                                span: 12..17,
+                                            },
+                                            Spanned {
+                                                value: Variable(
+                                                    Name(
+                                                        "v6",
+                                                    ),
+                                                ),
+                                                span: 19..24,
+                                            },
+                                        ],
+                                    },
+                                ),
+                                span: 0..25,
+                            },
+                        },
+                    ),
+                    span: 0..25,
+                },
+            },
+        ),
+        span: 0..25,
+    },
+)

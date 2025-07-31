@@ -1,0 +1,109 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"let $x := 1 return $x\")"
+---
+Spanned {
+    value: Let(
+        LetExpr {
+            var_name: Name {
+                name: "x",
+                namespace: None,
+            },
+            var_expr: Spanned {
+                value: Path(
+                    PathExpr {
+                        steps: [
+                            Spanned {
+                                value: PrimaryExpr(
+                                    Spanned {
+                                        value: Literal(
+                                            Integer(
+                                                "1",
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                10,
+                                            ),
+                                            length: SourceOffset(
+                                                1,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        10,
+                                    ),
+                                    length: SourceOffset(
+                                        1,
+                                    ),
+                                },
+                            },
+                        ],
+                    },
+                ),
+                span: SourceSpan {
+                    offset: SourceOffset(
+                        10,
+                    ),
+                    length: SourceOffset(
+                        2,
+                    ),
+                },
+            },
+            return_expr: Spanned {
+                value: Path(
+                    PathExpr {
+                        steps: [
+                            Spanned {
+                                value: PrimaryExpr(
+                                    Spanned {
+                                        value: VarRef(
+                                            Name {
+                                                name: "x",
+                                                namespace: None,
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                19,
+                                            ),
+                                            length: SourceOffset(
+                                                2,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        19,
+                                    ),
+                                    length: SourceOffset(
+                                        2,
+                                    ),
+                                },
+                            },
+                        ],
+                    },
+                ),
+                span: SourceSpan {
+                    offset: SourceOffset(
+                        19,
+                    ),
+                    length: SourceOffset(
+                        2,
+                    ),
+                },
+            },
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            21,
+        ),
+    },
+}

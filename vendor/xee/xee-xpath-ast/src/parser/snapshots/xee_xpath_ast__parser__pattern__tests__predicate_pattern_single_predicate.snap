@@ -1,0 +1,17 @@
+---
+source: xee-xpath-ast/src/parser/pattern.rs
+expression: "pattern::Pattern::parse(\".[1]\", &namespaces, &variable_names)"
+---
+Ok(Predicate(PredicatePattern(
+  predicates: [
+    Expr([
+      Path(PathExpr(
+        steps: [
+          PrimaryExpr(Literal(Integer((Positive, [
+            1,
+          ])))),
+        ],
+      )),
+    ]),
+  ],
+)))

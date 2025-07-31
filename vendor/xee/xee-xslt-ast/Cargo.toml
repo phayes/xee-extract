@@ -1,0 +1,39 @@
+[package]
+name = "xee-xslt-ast"
+version = "0.1.5"
+edition = "2021"
+authors = ["The Xee Project Developers"]
+keywords = ["xml", "xslt"]
+license = "MIT"
+description = "XSLT parser and AST implementation"
+repository = "https://github.com/Paligo/xee"
+readme = "README.md"
+documentation = "https://docs.rs/xee-xslt"
+homepage = "https://github.com/Paligo/xee-xslt"
+
+[features]
+serde = [
+    "dep:serde",
+    "xee-xpath-ast/serde",
+    "xee-xpath-compiler/serde",
+    "xot/serde",
+]
+
+[dependencies]
+xee-xpath-ast = { path = "../xee-xpath-ast", version = "0.1.3" }
+xee-xpath-compiler = { path = "../xee-xpath-compiler", version = "0.1.4" }
+xee-name = { path = "../xee-name", version = "0.1.4" }
+ahash = { workspace = true }
+thiserror = { workspace = true }
+xot = { workspace = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+strum = { workspace = true }
+blanket = { workspace = true }
+rust_decimal = { workspace = true }
+
+[dev-dependencies]
+# we want to depend on serde feature during tests
+xee-xslt-ast = { path = ".", features = ["serde"] }
+insta = { workspace = true, features = ["ron", "glob"] }
+xot = { workspace = true, features = ["proptest"] }
+ron = { workspace = true }

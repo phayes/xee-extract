@@ -1,0 +1,23 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"..[1]\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    AxisStep(AxisStep(
+      axis: Parent,
+      node_test: KindTest(Any),
+      predicates: [
+        Expr([
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                1,
+              ])))),
+            ],
+          )),
+        ]),
+      ],
+    )),
+  ],
+)))

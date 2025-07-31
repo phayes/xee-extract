@@ -1,0 +1,36 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(r#\"<doc xmlns=\"http://example.com/\" xmlns:e=\"http://example.com/e\"><a/><b><e:c/></b></doc>\"#,\n\"descendant::* / fn:namespace-uri()\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    String(
+                        AnyURI,
+                        "http://example.com/",
+                    ),
+                ),
+                Atomic(
+                    String(
+                        AnyURI,
+                        "http://example.com/",
+                    ),
+                ),
+                Atomic(
+                    String(
+                        AnyURI,
+                        "http://example.com/",
+                    ),
+                ),
+                Atomic(
+                    String(
+                        AnyURI,
+                        "http://example.com/e",
+                    ),
+                ),
+            ],
+        },
+    ),
+)

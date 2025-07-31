@@ -1,0 +1,14 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:if xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" test=\"true()\" unsupported=\"Unsupported\">Hello</xsl:if>\"#)"
+---
+Err(Attribute(Unexpected(
+  name: XmlName(
+    namespace: "",
+    local: "unsupported",
+  ),
+  span: Span(
+    start: 71,
+    end: 82,
+  ),
+)))

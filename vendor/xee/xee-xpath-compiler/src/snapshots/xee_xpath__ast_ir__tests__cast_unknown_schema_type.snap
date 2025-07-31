@@ -1,0 +1,13 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_expr_single(\"1 cast as unknown\")"
+---
+Err(
+    SpannedError {
+        error: XQST0052,
+        span: SourceSpan(
+            0,
+            17,
+        ),
+    },
+)

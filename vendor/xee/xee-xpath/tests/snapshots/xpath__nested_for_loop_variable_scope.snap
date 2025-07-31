@@ -1,0 +1,36 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"for $i in (10, 20), $j in ($i + 1, $i + 2) return $i + $j\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    Integer(
+                        Integer,
+                        21,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        22,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        41,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        42,
+                    ),
+                ),
+            ],
+        },
+    ),
+)

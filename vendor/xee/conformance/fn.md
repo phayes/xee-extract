@@ -1,0 +1,155 @@
+- [x] abs
+- [x] adjust-dateTime-to-timezone
+- [x] adjust-date-to-timezone
+- [x] adjust-time-to-timezone
+- [x] analyze-string (regex, generates nodes)
+- [x] apply (hof, array)
+- [x] available-environment-variables
+- [x] avg
+- [x] base-uri
+- [x] boolean
+- [x] ceiling
+- [x] codepoint-equal
+- [x] codepoints-to-string
+- [ ] collation-key (icu4x does not provide this)
+- [x] collection
+- [x] compare
+- [x] concat
+- [x] contains (UCA collation units aren't supported, https://github.com/unicode-org/icu4x/discussions/3981)
+- [x] contains-token
+- [x] count
+- [x] current-date
+- [x] current-dateTime
+- [x] current-time
+- [x] data
+- [x] dateTime
+- [x] day-from-date
+- [x] day-from-dateTime
+- [x] days-from-duration
+- [x] deep-equal
+- [x] default-collation
+- [ ] default-language
+- [x] distinct-values
+- [x] doc
+- [x] doc-available
+- [x] document-uri
+- [x] element-with-id
+- [x] empty
+- [x] encode-for-uri
+- [x] ends-with
+- [x] environment-variable
+- [x] error
+- [x] escape-html-uri
+- [x] exactly-one
+- [x] exists
+- [x] false
+- [x] filter (hof)
+- [x] floor
+- [x] fold-left (hof)
+- [x] fold-right (hof)
+- [x] for-each (hof)
+- [x] for-each-pair (hof)
+- [ ] format-date (icu4x)
+- [ ] format-dateTime (icu4x)
+- [ ] format-integer
+- [ ] format-number
+- [ ] format-time (icu4x)
+- [x] function-arity (hof)
+- [x] function-lookup (hof)
+- [x] function-name (hof)
+- [x] generate-id
+- [x] has-children
+- [x] head
+- [x] hours-from-dateTime
+- [x] hours-from-duration
+- [x] hours-from-time
+- [x] id
+- [ ] idref
+- [x] implicit-timezone
+- [x] index-of
+- [x] innermost
+- [x] in-scope-prefixes
+- [x] insert-before
+- [x] iri-to-uri
+- [ ] json-doc
+- [ ] json-to-xml (generates XML nodes)
+- [x] lang
+- [x] last
+- [ ] load-xquery-module (XQuery)
+- [x] local-name
+- [x] local-name-from-QName
+- [x] lower-case
+- [x] matches (regex)
+- [x] max
+- [x] min
+- [x] minutes-from-dateTime
+- [x] minutes-from-duration
+- [x] minutes-from-time
+- [x] month-from-date
+- [x] month-from-dateTime
+- [x] months-from-duration
+- [x] name
+- [x] namespace-uri
+- [x] namespace-uri-for-prefix
+- [x] namespace-uri-from-QName
+- [ ] nilled (schema)
+- [x] node-name
+- [x] normalize-space
+- [x] normalize-unicode
+- [x] not
+- [x] number
+- [x] one-or-more
+- [x] outermost
+- [x] parse-ietf-date (partial)
+- [x] parse-json
+- [x] parse-xml
+- [x] parse-xml-fragment
+- [x] path
+- [x] position
+- [x] prefix-from-QName
+- [x] QName
+- [ ] random-number-generator
+- [x] remove
+- [x] replace
+- [x] resolve-QName
+- [x] resolve-uri
+- [x] reverse
+- [x] root
+- [x] round
+- [x] round-half-to-even
+- [x] seconds-from-dateTime
+- [x] seconds-from-duration
+- [x] seconds-from-time
+- [x] serialize
+- [x] sort (hof)
+- [x] starts-with
+- [x] static-base-uri
+- [x] string
+- [x] string-join
+- [x] string-length
+- [x] string-to-codepoints
+- [x] subsequence
+- [x] substring
+- [x] substring-after
+- [x] substring-before
+- [x] sum
+- [x] tail
+- [x] timezone-from-date
+- [x] timezone-from-dateTime
+- [x] timezone-from-time
+- [x] tokenize (regex)
+- [ ] trace
+- [ ] transform (XSLT)
+- [x] translate
+- [x] true
+- [x] unordered
+- [ ] unparsed-text
+- [ ] unparsed-text-available
+- [ ] unparsed-text-lines
+- [x] upper-case
+- [ ] uri-collection
+- [ ] xml-to-json
+- [x] year-from-date
+- [x] year-from-dateTime
+- [x] years-from-duration
+- [x] zero-or-one

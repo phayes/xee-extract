@@ -1,0 +1,36 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"(1, 2) ! (., 0)\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    Integer(
+                        Integer,
+                        1,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        0,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        2,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        0,
+                    ),
+                ),
+            ],
+        },
+    ),
+)

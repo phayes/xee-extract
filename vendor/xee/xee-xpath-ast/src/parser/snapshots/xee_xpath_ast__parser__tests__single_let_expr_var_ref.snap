@@ -1,0 +1,27 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"let $x := 1 return $x\")"
+---
+Ok(Let(LetExpr(
+  var_name: OwnedName(
+    local_name_str: "x",
+    namespace_str: "",
+    prefix_str: "",
+  ),
+  var_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Literal(Integer((Positive, [
+        1,
+      ])))),
+    ],
+  )),
+  return_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(VarRef(OwnedName(
+        local_name_str: "x",
+        namespace_str: "",
+        prefix_str: "",
+      ))),
+    ],
+  )),
+)))

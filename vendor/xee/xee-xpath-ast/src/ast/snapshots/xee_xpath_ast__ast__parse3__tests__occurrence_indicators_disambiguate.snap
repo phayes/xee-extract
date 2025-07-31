@@ -1,0 +1,58 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"(4 treat as item()) + - 5\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Binary(BinaryExpr(
+          operator: Add,
+          left: PathExpr(
+            steps: [
+              PrimaryExpr(Expr(Some(Expr([
+                Path(PathExpr(
+                  steps: [
+                    PrimaryExpr(Expr(Some(Expr([
+                      Apply(ApplyExpr(
+                        path_expr: PathExpr(
+                          steps: [
+                            PrimaryExpr(Literal(Integer((Positive, [
+                              4,
+                            ])))),
+                          ],
+                        ),
+                        operator: Treat(Item(Item(
+                          item_type: Item,
+                          occurrence: One,
+                        ))),
+                      )),
+                    ])))),
+                  ],
+                )),
+              ])))),
+            ],
+          ),
+          right: PathExpr(
+            steps: [
+              PrimaryExpr(Expr(Some(Expr([
+                Apply(ApplyExpr(
+                  path_expr: PathExpr(
+                    steps: [
+                      PrimaryExpr(Literal(Integer((Positive, [
+                        5,
+                      ])))),
+                    ],
+                  ),
+                  operator: Unary([
+                    Minus,
+                  ]),
+                )),
+              ])))),
+            ],
+          ),
+        )),
+      ])))),
+    ],
+  )),
+])))

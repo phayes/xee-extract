@@ -1,0 +1,9 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_name(\"foo\")"
+---
+Ok(Name(
+  name: "foo",
+  prefix: None,
+  namespace: None,
+))

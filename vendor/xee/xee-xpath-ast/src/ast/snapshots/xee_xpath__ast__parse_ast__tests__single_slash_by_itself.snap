@@ -1,0 +1,89 @@
+---
+source: xee-xpath/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"/\")"
+---
+Spanned {
+    value: Path(
+        PathExpr {
+            steps: [
+                Spanned {
+                    value: PrimaryExpr(
+                        Spanned {
+                            value: FunctionCall(
+                                FunctionCall {
+                                    name: Name {
+                                        name: "root",
+                                        namespace: Some(
+                                            "http://www.w3.org/2005/xpath-functions",
+                                        ),
+                                    },
+                                    arguments: [
+                                        Spanned {
+                                            value: Path(
+                                                PathExpr {
+                                                    steps: [
+                                                        Spanned {
+                                                            value: AxisStep(
+                                                                AxisStep {
+                                                                    axis: Self_,
+                                                                    node_test: KindTest(
+                                                                        Any,
+                                                                    ),
+                                                                    predicates: [],
+                                                                },
+                                                            ),
+                                                            span: SourceSpan {
+                                                                offset: SourceOffset(
+                                                                    0,
+                                                                ),
+                                                                length: SourceOffset(
+                                                                    0,
+                                                                ),
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    0,
+                                                ),
+                                                length: SourceOffset(
+                                                    0,
+                                                ),
+                                            },
+                                        },
+                                    ],
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    0,
+                                ),
+                                length: SourceOffset(
+                                    0,
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            0,
+                        ),
+                        length: SourceOffset(
+                            1,
+                        ),
+                    },
+                },
+            ],
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            1,
+        ),
+    },
+}

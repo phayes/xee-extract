@@ -1,0 +1,11 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse_with_span(s, span, &parser_context)"
+---
+Err(XPath(ExpectedFound(
+  span: SimpleSpan(
+    start: 11,
+    end: 11,
+    context: (),
+  ),
+)))

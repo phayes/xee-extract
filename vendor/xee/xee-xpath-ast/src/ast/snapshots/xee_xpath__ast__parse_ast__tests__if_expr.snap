@@ -1,0 +1,159 @@
+---
+source: xee-xpath/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"if (1) then 2 else 3\")"
+---
+Spanned {
+    value: If(
+        IfExpr {
+            condition: Spanned {
+                value: [
+                    Spanned {
+                        value: Path(
+                            PathExpr {
+                                steps: [
+                                    Spanned {
+                                        value: PrimaryExpr(
+                                            Spanned {
+                                                value: Literal(
+                                                    Integer(
+                                                        "1",
+                                                    ),
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        4,
+                                                    ),
+                                                    length: SourceOffset(
+                                                        1,
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                4,
+                                            ),
+                                            length: SourceOffset(
+                                                1,
+                                            ),
+                                        },
+                                    },
+                                ],
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                4,
+                            ),
+                            length: SourceOffset(
+                                1,
+                            ),
+                        },
+                    },
+                ],
+                span: SourceSpan {
+                    offset: SourceOffset(
+                        4,
+                    ),
+                    length: SourceOffset(
+                        1,
+                    ),
+                },
+            },
+            then: Spanned {
+                value: Path(
+                    PathExpr {
+                        steps: [
+                            Spanned {
+                                value: PrimaryExpr(
+                                    Spanned {
+                                        value: Literal(
+                                            Integer(
+                                                "2",
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                12,
+                                            ),
+                                            length: SourceOffset(
+                                                1,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        12,
+                                    ),
+                                    length: SourceOffset(
+                                        1,
+                                    ),
+                                },
+                            },
+                        ],
+                    },
+                ),
+                span: SourceSpan {
+                    offset: SourceOffset(
+                        12,
+                    ),
+                    length: SourceOffset(
+                        2,
+                    ),
+                },
+            },
+            else_: Spanned {
+                value: Path(
+                    PathExpr {
+                        steps: [
+                            Spanned {
+                                value: PrimaryExpr(
+                                    Spanned {
+                                        value: Literal(
+                                            Integer(
+                                                "3",
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                19,
+                                            ),
+                                            length: SourceOffset(
+                                                1,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        19,
+                                    ),
+                                    length: SourceOffset(
+                                        1,
+                                    ),
+                                },
+                            },
+                        ],
+                    },
+                ),
+                span: SourceSpan {
+                    offset: SourceOffset(
+                        19,
+                    ),
+                    length: SourceOffset(
+                        1,
+                    ),
+                },
+            },
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            20,
+        ),
+    },
+}

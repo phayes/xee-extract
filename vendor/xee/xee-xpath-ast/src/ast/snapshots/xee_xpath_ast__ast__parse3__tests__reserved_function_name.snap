@@ -1,0 +1,5 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"switch()\")"
+---
+Err("[multiple errors found at 7..8]")

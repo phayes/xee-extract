@@ -1,0 +1,13 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"self::attribute()\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    AxisStep(AxisStep(
+      axis: Self_,
+      node_test: KindTest(Attribute(None)),
+      predicates: [],
+    )),
+  ],
+)))

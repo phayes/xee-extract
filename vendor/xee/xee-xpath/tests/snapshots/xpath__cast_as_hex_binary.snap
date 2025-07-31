@@ -1,0 +1,18 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'ff' cast as xs:hexBinary\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Binary(
+                    Hex,
+                    [
+                        255,
+                    ],
+                ),
+            ),
+        },
+    ),
+)

@@ -1,0 +1,31 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_step_expr(\"1\")"
+---
+Spanned {
+    value: PrimaryExpr(
+        Spanned {
+            value: Literal(
+                Integer(
+                    "1",
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: SourceOffset(
+                    1,
+                ),
+            },
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            1,
+        ),
+    },
+}

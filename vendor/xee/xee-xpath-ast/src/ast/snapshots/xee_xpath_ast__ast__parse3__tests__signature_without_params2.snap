@@ -1,0 +1,20 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_signature(\"fn:foo() as xs:integer*\", &namespaces)"
+---
+Ok(Signature(
+  name: Name(
+    name: "foo",
+    prefix: Some("fn"),
+    namespace: Some("http://www.w3.org/2005/xpath-functions"),
+  ),
+  params: [],
+  return_type: Item(Item(
+    item_type: AtomicOrUnionType(Name(
+      name: "integer",
+      prefix: Some("xs"),
+      namespace: Some("http://www.w3.org/2001/XMLSchema"),
+    )),
+    occurrence: Many,
+  )),
+))

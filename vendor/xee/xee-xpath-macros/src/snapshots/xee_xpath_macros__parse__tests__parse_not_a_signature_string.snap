@@ -1,0 +1,9 @@
+---
+source: xee-xpath-macros/src/parse.rs
+expression: "syn::parse_str::<XPathFnOptions>(r#\"wrong\"#)"
+---
+Err(
+    Error(
+        "Expected a string literal or a context keyword",
+    ),
+)

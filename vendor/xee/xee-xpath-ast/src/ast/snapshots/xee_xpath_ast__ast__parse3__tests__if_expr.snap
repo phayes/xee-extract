@@ -1,0 +1,29 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"if (1) then 2 else 3\")"
+---
+Ok(If(IfExpr(
+  condition: Expr([
+    Path(PathExpr(
+      steps: [
+        PrimaryExpr(Literal(Integer((Positive, [
+          1,
+        ])))),
+      ],
+    )),
+  ]),
+  then: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Literal(Integer((Positive, [
+        2,
+      ])))),
+    ],
+  )),
+  else_: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Literal(Integer((Positive, [
+        3,
+      ])))),
+    ],
+  )),
+)))

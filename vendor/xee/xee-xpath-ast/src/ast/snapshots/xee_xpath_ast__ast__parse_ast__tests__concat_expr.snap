@@ -1,0 +1,81 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"'a' || 'b'\")"
+---
+Spanned {
+    value: Binary(
+        BinaryExpr {
+            operator: Concat,
+            left: PathExpr {
+                steps: [
+                    Spanned {
+                        value: PrimaryExpr(
+                            Spanned {
+                                value: Literal(
+                                    String(
+                                        "a",
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        0,
+                                    ),
+                                    length: SourceOffset(
+                                        3,
+                                    ),
+                                },
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                0,
+                            ),
+                            length: SourceOffset(
+                                3,
+                            ),
+                        },
+                    },
+                ],
+            },
+            right: PathExpr {
+                steps: [
+                    Spanned {
+                        value: PrimaryExpr(
+                            Spanned {
+                                value: Literal(
+                                    String(
+                                        "b",
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        7,
+                                    ),
+                                    length: SourceOffset(
+                                        3,
+                                    ),
+                                },
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                7,
+                            ),
+                            length: SourceOffset(
+                                3,
+                            ),
+                        },
+                    },
+                ],
+            },
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            10,
+        ),
+    },
+}

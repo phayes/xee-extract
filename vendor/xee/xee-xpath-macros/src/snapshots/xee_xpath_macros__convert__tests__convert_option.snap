@@ -1,0 +1,5 @@
+---
+source: xee-xpath-macros/src/convert.rs
+expression: "convert(\"xs:integer?\")"
+---
+"# [allow (non_snake_case)] let a = crate :: occurrence :: option (& mut arguments [0] . unboxed_atomized (interpreter . xot () , | atomic | std :: convert :: TryInto :: < ibig :: IBig > :: try_into (atomic))) ? ;"

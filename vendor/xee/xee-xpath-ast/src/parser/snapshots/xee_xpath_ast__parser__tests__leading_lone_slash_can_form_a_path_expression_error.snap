@@ -1,0 +1,11 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"/ * 5\")"
+---
+Err(ExpectedFound(
+  span: SimpleSpan(
+    start: 4,
+    end: 5,
+    context: (),
+  ),
+))

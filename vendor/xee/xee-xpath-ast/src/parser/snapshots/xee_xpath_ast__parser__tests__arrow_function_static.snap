@@ -1,0 +1,29 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"'foo' => fn:concat('bar')\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(FunctionCall(FunctionCall(
+        name: OwnedName(
+          local_name_str: "concat",
+          namespace_str: "http://www.w3.org/2005/xpath-functions",
+          prefix_str: "fn",
+        ),
+        arguments: [
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(String("foo"))),
+            ],
+          )),
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(String("bar"))),
+            ],
+          )),
+        ],
+      ))),
+    ],
+  )),
+])))

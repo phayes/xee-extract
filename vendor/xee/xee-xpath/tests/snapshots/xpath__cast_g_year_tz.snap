@@ -1,0 +1,20 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'2019Z' cast as xs:gYear\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                GYear(
+                    GYear {
+                        year: 2019,
+                        offset: Some(
+                            +00:00,
+                        ),
+                    },
+                ),
+            ),
+        },
+    ),
+)

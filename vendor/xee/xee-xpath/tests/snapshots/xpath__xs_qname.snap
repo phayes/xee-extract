@@ -1,0 +1,19 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"xs:QName('xs:bar')\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                QName(
+                    OwnedName {
+                        local_name_str: "bar",
+                        namespace_str: "http://www.w3.org/2001/XMLSchema",
+                        prefix_str: "xs",
+                    },
+                ),
+            ),
+        },
+    ),
+)

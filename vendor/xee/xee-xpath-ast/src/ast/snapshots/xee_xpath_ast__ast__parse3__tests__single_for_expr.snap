@@ -1,0 +1,25 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"for $x in 1 return 5\")"
+---
+Ok(For(ForExpr(
+  var_name: Name(
+    name: "x",
+    prefix: None,
+    namespace: None,
+  ),
+  var_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Literal(Integer((Positive, [
+        1,
+      ])))),
+    ],
+  )),
+  return_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Literal(Integer((Positive, [
+        5,
+      ])))),
+    ],
+  )),
+)))

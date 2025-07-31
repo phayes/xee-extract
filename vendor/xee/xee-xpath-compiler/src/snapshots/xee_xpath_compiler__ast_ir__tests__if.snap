@@ -1,0 +1,103 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"if (1 gt 2) then 1 + 2 else 3 + 4\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v2",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 4..5,
+                            },
+                            op: ValueGt,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 9..10,
+                            },
+                        },
+                    ),
+                    span: 4..10,
+                },
+                return_expr: Spanned {
+                    value: If(
+                        If {
+                            condition: Spanned {
+                                value: Variable(
+                                    Name(
+                                        "v2",
+                                    ),
+                                ),
+                                span: 4..10,
+                            },
+                            then: Spanned {
+                                value: Binary(
+                                    Binary {
+                                        left: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    1,
+                                                ),
+                                            ),
+                                            span: 17..18,
+                                        },
+                                        op: Add,
+                                        right: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    2,
+                                                ),
+                                            ),
+                                            span: 21..22,
+                                        },
+                                    },
+                                ),
+                                span: 17..22,
+                            },
+                            else_: Spanned {
+                                value: Binary(
+                                    Binary {
+                                        left: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    3,
+                                                ),
+                                            ),
+                                            span: 28..29,
+                                        },
+                                        op: Add,
+                                        right: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    4,
+                                                ),
+                                            ),
+                                            span: 32..33,
+                                        },
+                                    },
+                                ),
+                                span: 28..33,
+                            },
+                        },
+                    ),
+                    span: 0..33,
+                },
+            },
+        ),
+        span: 0..33,
+    },
+)

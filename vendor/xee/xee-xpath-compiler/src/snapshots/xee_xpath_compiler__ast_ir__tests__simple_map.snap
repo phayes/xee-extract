@@ -1,0 +1,79 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"(1, 2) ! 1\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v2",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 1..2,
+                            },
+                            op: Comma,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 4..5,
+                            },
+                        },
+                    ),
+                    span: 0..5,
+                },
+                return_expr: Spanned {
+                    value: Map(
+                        Map {
+                            context_names: ContextNames {
+                                item: Name(
+                                    "v3",
+                                ),
+                                position: Name(
+                                    "v4",
+                                ),
+                                last: Name(
+                                    "v5",
+                                ),
+                            },
+                            var_atom: Spanned {
+                                value: Variable(
+                                    Name(
+                                        "v2",
+                                    ),
+                                ),
+                                span: 0..5,
+                            },
+                            return_expr: Spanned {
+                                value: Atom(
+                                    Spanned {
+                                        value: Const(
+                                            Integer(
+                                                1,
+                                            ),
+                                        ),
+                                        span: 9..10,
+                                    },
+                                ),
+                                span: 9..10,
+                            },
+                        },
+                    ),
+                    span: 0..10,
+                },
+            },
+        ),
+        span: 0..10,
+    },
+)

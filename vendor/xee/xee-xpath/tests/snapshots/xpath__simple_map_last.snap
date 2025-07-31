@@ -1,0 +1,30 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"(4, 5, 6) ! (fn:last())\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    Integer(
+                        Integer,
+                        3,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        3,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        3,
+                    ),
+                ),
+            ],
+        },
+    ),
+)

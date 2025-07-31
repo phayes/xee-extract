@@ -1,0 +1,22 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"my_function#2\")"
+---
+Ok(
+    Spanned {
+        value: Atom(
+            Spanned {
+                value: Const(
+                    StaticFunctionReference(
+                        StaticFunctionId(
+                            0,
+                        ),
+                        None,
+                    ),
+                ),
+                span: 0..13,
+            },
+        ),
+        span: 0..13,
+    },
+)

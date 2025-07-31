@@ -1,0 +1,19 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: xpath
+---
+XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      AxisStep(AxisStep(
+        axis: Child,
+        node_test: NameTest(Name(OwnedName(
+          local_name_str: "a",
+          namespace_str: "",
+          prefix_str: "",
+        ))),
+        predicates: [],
+      )),
+    ],
+  )),
+]))

@@ -1,0 +1,21 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'2019-01Z' cast as xs:gYearMonth\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                GYearMonth(
+                    GYearMonth {
+                        year: 2019,
+                        month: 1,
+                        offset: Some(
+                            +00:00,
+                        ),
+                    },
+                ),
+            ),
+        },
+    ),
+)

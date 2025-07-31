@@ -1,0 +1,11 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse(\"hello}world\")"
+---
+Err(UnescapedCurly(
+  c: '}',
+  span: Span(
+    start: 6,
+    end: 7,
+  ),
+))

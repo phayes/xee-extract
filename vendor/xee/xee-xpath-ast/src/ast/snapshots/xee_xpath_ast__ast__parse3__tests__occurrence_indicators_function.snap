@@ -1,0 +1,22 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"function () as xs:string * {}\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(InlineFunction(InlineFunction(
+        params: [],
+        return_type: Some(Item(Item(
+          item_type: AtomicOrUnionType(Name(
+            name: "string",
+            prefix: Some("xs"),
+            namespace: Some("http://www.w3.org/2001/XMLSchema"),
+          )),
+          occurrence: Many,
+        ))),
+        body: None,
+      ))),
+    ],
+  )),
+])))

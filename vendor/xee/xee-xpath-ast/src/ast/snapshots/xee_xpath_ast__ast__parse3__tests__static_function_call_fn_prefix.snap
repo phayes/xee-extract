@@ -1,0 +1,16 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"fn:root()\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(FunctionCall(FunctionCall(
+      name: Name(
+        name: "root",
+        prefix: Some("fn"),
+        namespace: Some("http://www.w3.org/2005/xpath-functions"),
+      ),
+      arguments: [],
+    ))),
+  ],
+)))

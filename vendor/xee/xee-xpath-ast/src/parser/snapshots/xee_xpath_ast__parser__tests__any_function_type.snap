@@ -1,0 +1,8 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::SequenceType::parse(\"function(*)\", &namespaces)"
+---
+Ok(Item(Item(
+  item_type: FunctionTest(AnyFunctionTest),
+  occurrence: One,
+)))

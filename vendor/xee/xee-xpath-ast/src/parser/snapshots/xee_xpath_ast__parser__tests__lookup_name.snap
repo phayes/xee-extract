@@ -1,0 +1,18 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"1?name\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PostfixExpr(
+        primary: Literal(Integer((Positive, [
+          1,
+        ]))),
+        postfixes: [
+          Lookup(NcName("name")),
+        ],
+      ),
+    ],
+  )),
+])))

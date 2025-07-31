@@ -1,0 +1,69 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse(\"hello {a} and {b}!\", &parser_context)"
+---
+Ok([
+  String(
+    text: "hello ",
+    span: Span(
+      start: 0,
+      end: 6,
+    ),
+  ),
+  Value(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          AxisStep(AxisStep(
+            axis: Child,
+            node_test: NameTest(Name(OwnedName(
+              local_name_str: "a",
+              namespace_str: "",
+              prefix_str: "",
+            ))),
+            predicates: [],
+          )),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 7,
+      end: 8,
+    ),
+  ),
+  String(
+    text: " and ",
+    span: Span(
+      start: 9,
+      end: 14,
+    ),
+  ),
+  Value(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          AxisStep(AxisStep(
+            axis: Child,
+            node_test: NameTest(Name(OwnedName(
+              local_name_str: "b",
+              namespace_str: "",
+              prefix_str: "",
+            ))),
+            predicates: [],
+          )),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 15,
+      end: 16,
+    ),
+  ),
+  String(
+    text: "!",
+    span: Span(
+      start: 17,
+      end: 18,
+    ),
+  ),
+])

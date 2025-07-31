@@ -1,0 +1,54 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"$foo(1, ?)\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(InlineFunction(InlineFunction(
+      params: [
+        Param(
+          name: Name(
+            name: "placeholder0",
+            prefix: None,
+            namespace: None,
+          ),
+          type_: None,
+        ),
+      ],
+      return_type: None,
+      body: Some(Expr([
+        Path(PathExpr(
+          steps: [
+            PostfixExpr(
+              primary: VarRef(Name(
+                name: "foo",
+                prefix: None,
+                namespace: None,
+              )),
+              postfixes: [
+                ArgumentList([
+                  Path(PathExpr(
+                    steps: [
+                      PrimaryExpr(Literal(Integer((Positive, [
+                        1,
+                      ])))),
+                    ],
+                  )),
+                  Path(PathExpr(
+                    steps: [
+                      PrimaryExpr(VarRef(Name(
+                        name: "placeholder0",
+                        prefix: None,
+                        namespace: None,
+                      ))),
+                    ],
+                  )),
+                ]),
+              ],
+            ),
+          ],
+        )),
+      ])),
+    ))),
+  ],
+)))

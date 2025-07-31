@@ -1,0 +1,36 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"function($x as xs:integer) { $x }\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(InlineFunction(InlineFunction(
+      params: [
+        Param(
+          name: OwnedName(
+            local_name_str: "x",
+            namespace_str: "",
+            prefix_str: "",
+          ),
+          type_: Some(Item(Item(
+            item_type: AtomicOrUnionType(Integer),
+            occurrence: One,
+          ))),
+        ),
+      ],
+      return_type: None,
+      body: Some(Expr([
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(VarRef(OwnedName(
+              local_name_str: "x",
+              namespace_str: "",
+              prefix_str: "",
+            ))),
+          ],
+        )),
+      ])),
+      wrapper: false,
+    ))),
+  ],
+)))

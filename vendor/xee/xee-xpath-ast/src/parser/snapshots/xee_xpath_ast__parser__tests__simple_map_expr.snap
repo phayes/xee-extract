@@ -1,0 +1,28 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"1 ! 2\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Apply(ApplyExpr(
+        path_expr: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        ),
+        operator: SimpleMap([
+          PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                2,
+              ])))),
+            ],
+          ),
+        ]),
+      )),
+    ])))),
+  ],
+)))

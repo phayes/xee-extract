@@ -1,0 +1,20 @@
+[package]
+name = "xee-name"
+version = "0.1.4"
+edition = "2021"
+authors = ["The Xee Project Developers"]
+keywords = ["xml", "xpath"]
+license = "MIT"
+description = "Xee XML namespace support"
+repository = "https://github.com/Paligo/xee"
+readme = "README.md"
+documentation = "https://docs.rs/xee-ast-base"
+homepage = "https://github.com/Paligo/xee"
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+ahash = { workspace = true }
+xot = { workspace = true }
+serde = { workspace = true, features = ["derive"], optional = true }

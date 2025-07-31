@@ -1,0 +1,7 @@
+---
+source: xee-xpath/src/ast/parse_ast.rs
+expression: "parse_literal(\"1.\")"
+---
+Decimal(
+    1,
+)

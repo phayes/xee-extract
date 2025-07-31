@@ -1,0 +1,17 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'P1Y2M' cast as xs:yearMonthDuration\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                YearMonthDuration(
+                    YearMonthDuration {
+                        months: 14,
+                    },
+                ),
+            ),
+        },
+    ),
+)

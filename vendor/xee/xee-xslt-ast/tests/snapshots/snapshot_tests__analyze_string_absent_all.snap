@@ -1,0 +1,46 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:analyze-string xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\" regex=\"foo\"></xsl:analyze-string>\"#)"
+---
+Ok(Instruction(AnalyzeString(AnalyzeString(
+  select: Expression(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          PrimaryExpr(FunctionCall(FunctionCall(
+            name: OwnedName(
+              local_name_str: "true",
+              namespace_str: "http://www.w3.org/2005/xpath-functions",
+              prefix_str: "",
+            ),
+            arguments: [],
+          ))),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 77,
+      end: 83,
+    ),
+  ),
+  regex: ValueTemplate(
+    template: [
+      String(
+        text: "foo",
+        span: Span(
+          start: 92,
+          end: 95,
+        ),
+      ),
+    ],
+    phantom: PhantomData,
+  ),
+  flags: None,
+  matching_substring: None,
+  non_matching_substring: None,
+  fallbacks: [],
+  span: Span(
+    start: 1,
+    end: 19,
+  ),
+))))

@@ -1,0 +1,5 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"/ * 5\")"
+---
+Err("[found \'IntegerLiteral(5)\' at 4..5 expected \'LeftBracket\', \'Slash\', \'DoubleSlash\', \'ExclamationMark\', \'Cast\', \'Castable\', \'Treat\', \'Instance\', \'Intersect\', \'Except\', \'Pipe\', \'Union\', \'Asterisk\', \'Div\', \'Idiv\', \'Mod\', \'Plus\', \'Minus\', \'To\', \'DoublePipe\', \'Equal\', \'NotEqual\', \'LessThan\', \'LessThanEqual\', \'GreaterThan\', \'GreaterThanEqual\', \'Eq\', \'Ne\', \'Lt\', \'Le\', \'Gt\', \'Ge\', \'Is\', \'Precedes\', \'Follows\', \'And\', \'Or\', or \'Comma\']")

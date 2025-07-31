@@ -1,0 +1,54 @@
+---
+source: xee-xpath/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"-1\")"
+---
+Spanned {
+    value: Apply(
+        ApplyExpr {
+            path_expr: PathExpr {
+                steps: [
+                    Spanned {
+                        value: PrimaryExpr(
+                            Spanned {
+                                value: Literal(
+                                    Integer(
+                                        "1",
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        1,
+                                    ),
+                                    length: SourceOffset(
+                                        1,
+                                    ),
+                                },
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                1,
+                            ),
+                            length: SourceOffset(
+                                1,
+                            ),
+                        },
+                    },
+                ],
+            },
+            operator: Unary(
+                [
+                    Minus,
+                ],
+            ),
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            2,
+        ),
+    },
+}

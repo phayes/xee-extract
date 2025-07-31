@@ -1,0 +1,5 @@
+---
+source: xee-xpath-macros/src/convert.rs
+expression: "convert(\"xs:anyAtomicType\")"
+---
+"# [allow (non_snake_case)] let a = crate :: occurrence :: one (& mut arguments [0] . atomized (interpreter . xot ())) ? ;"

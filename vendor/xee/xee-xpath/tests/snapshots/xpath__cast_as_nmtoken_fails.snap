@@ -1,0 +1,15 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'foo bar' cast as xs:NMTOKEN\")"
+---
+Err(
+    SpannedError {
+        error: FORG0001,
+        span: Some(
+            SourceSpan(
+                0,
+                28,
+            ),
+        ),
+    },
+)

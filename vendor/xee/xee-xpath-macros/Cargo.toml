@@ -1,0 +1,28 @@
+[package]
+name = "xee-xpath-macros"
+version = "0.1.3"
+description = "Proc macros for xee-interpreter function library"
+authors = ["The Xee Project Developers"]
+edition = "2021"
+keywords = ["xml", "xpath"]
+license = "MIT"
+repository = "https://github.com/Paligo/xee"
+readme = "README.md"
+documentation = "https://docs.rs/xee-xpath-macros"
+homepage = "https://github.com/Paligo/xee"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+xee-xpath-ast = { path = "../xee-xpath-ast", version = "0.1.3" }
+xee-schema-type = { path = "../xee-schema-type", version = "0.1.3" }
+proc-macro2 = { version = "1", default-features = false }
+quote = "1"
+syn = { version = "2", features = ["full", "extra-traits"] }
+xot = { workspace = true }
+
+[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }
+insta = { workspace = true, features = ["yaml", "glob"] }
+xot = { workspace = true, features = ["serde"] }

@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"'  foo\\n\\nbar ' cast as xs:token\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    Token,
+                    "foo bar",
+                ),
+            ),
+        },
+    ),
+)

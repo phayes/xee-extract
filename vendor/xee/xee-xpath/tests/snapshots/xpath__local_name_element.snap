@@ -1,0 +1,36 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(r#\"<doc><a/><b><c/></b></doc>\"#, \"descendant::* / fn:local-name()\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    String(
+                        String,
+                        "doc",
+                    ),
+                ),
+                Atomic(
+                    String(
+                        String,
+                        "a",
+                    ),
+                ),
+                Atomic(
+                    String(
+                        String,
+                        "b",
+                    ),
+                ),
+                Atomic(
+                    String(
+                        String,
+                        "c",
+                    ),
+                ),
+            ],
+        },
+    ),
+)

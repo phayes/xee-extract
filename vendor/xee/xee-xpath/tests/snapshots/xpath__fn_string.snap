@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(r#\"<doc><p>Hello world!</p></doc>\"#, \"/doc/p/string()\",)"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "Hello world!",
+                ),
+            ),
+        },
+    ),
+)

@@ -1,0 +1,11 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"?name\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(UnaryLookup(NcName("name"))),
+    ],
+  )),
+])))

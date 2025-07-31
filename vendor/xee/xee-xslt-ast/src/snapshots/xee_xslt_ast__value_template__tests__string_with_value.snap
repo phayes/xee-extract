@@ -1,0 +1,41 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse(\"hello {world}!\", &parser_context)"
+---
+Ok([
+  String(
+    text: "hello ",
+    span: Span(
+      start: 0,
+      end: 6,
+    ),
+  ),
+  Value(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          AxisStep(AxisStep(
+            axis: Child,
+            node_test: NameTest(Name(OwnedName(
+              local_name_str: "world",
+              namespace_str: "",
+              prefix_str: "",
+            ))),
+            predicates: [],
+          )),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 7,
+      end: 12,
+    ),
+  ),
+  String(
+    text: "!",
+    span: Span(
+      start: 13,
+      end: 14,
+    ),
+  ),
+])

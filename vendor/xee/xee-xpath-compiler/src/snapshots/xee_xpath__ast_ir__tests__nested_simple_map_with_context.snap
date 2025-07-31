@@ -1,0 +1,150 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_expr_single(\"(1, 2) ! (. + 1) ! (. + 2)\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v2",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 1..2,
+                            },
+                            op: Comma,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 4..5,
+                            },
+                        },
+                    ),
+                    span: 0..5,
+                },
+                return_expr: Spanned {
+                    value: Let(
+                        Let {
+                            name: Name(
+                                "v8",
+                            ),
+                            var_expr: Spanned {
+                                value: Map(
+                                    Map {
+                                        context_names: ContextNames {
+                                            item: Name(
+                                                "v3",
+                                            ),
+                                            position: Name(
+                                                "v4",
+                                            ),
+                                            last: Name(
+                                                "v5",
+                                            ),
+                                        },
+                                        var_atom: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v2",
+                                                ),
+                                            ),
+                                            span: 0..5,
+                                        },
+                                        return_expr: Spanned {
+                                            value: Binary(
+                                                Binary {
+                                                    left: Spanned {
+                                                        value: Variable(
+                                                            Name(
+                                                                "v3",
+                                                            ),
+                                                        ),
+                                                        span: 0..0,
+                                                    },
+                                                    op: Add,
+                                                    right: Spanned {
+                                                        value: Const(
+                                                            Integer(
+                                                                1,
+                                                            ),
+                                                        ),
+                                                        span: 14..15,
+                                                    },
+                                                },
+                                            ),
+                                            span: 10..15,
+                                        },
+                                    },
+                                ),
+                                span: 0..26,
+                            },
+                            return_expr: Spanned {
+                                value: Map(
+                                    Map {
+                                        context_names: ContextNames {
+                                            item: Name(
+                                                "v9",
+                                            ),
+                                            position: Name(
+                                                "v10",
+                                            ),
+                                            last: Name(
+                                                "v11",
+                                            ),
+                                        },
+                                        var_atom: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v8",
+                                                ),
+                                            ),
+                                            span: 0..26,
+                                        },
+                                        return_expr: Spanned {
+                                            value: Binary(
+                                                Binary {
+                                                    left: Spanned {
+                                                        value: Variable(
+                                                            Name(
+                                                                "v9",
+                                                            ),
+                                                        ),
+                                                        span: 0..0,
+                                                    },
+                                                    op: Add,
+                                                    right: Spanned {
+                                                        value: Const(
+                                                            Integer(
+                                                                2,
+                                                            ),
+                                                        ),
+                                                        span: 24..25,
+                                                    },
+                                                },
+                                            ),
+                                            span: 20..25,
+                                        },
+                                    },
+                                ),
+                                span: 0..26,
+                            },
+                        },
+                    ),
+                    span: 0..26,
+                },
+            },
+        ),
+        span: 0..26,
+    },
+)

@@ -1,0 +1,42 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"my_function(5, 2)\")"
+---
+Ok(
+    Spanned {
+        value: FunctionCall(
+            FunctionCall {
+                atom: Spanned {
+                    value: Const(
+                        StaticFunctionReference(
+                            StaticFunctionId(
+                                0,
+                            ),
+                            None,
+                        ),
+                    ),
+                    span: 0..0,
+                },
+                args: [
+                    Spanned {
+                        value: Const(
+                            Integer(
+                                5,
+                            ),
+                        ),
+                        span: 12..13,
+                    },
+                    Spanned {
+                        value: Const(
+                            Integer(
+                                2,
+                            ),
+                        ),
+                        span: 15..16,
+                    },
+                ],
+            },
+        ),
+        span: 0..17,
+    },
+)

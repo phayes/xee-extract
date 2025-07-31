@@ -1,0 +1,41 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse_with_span(s, span, &parser_context)"
+---
+Ok([
+  String(
+    text: "hello ",
+    span: Span(
+      start: 10,
+      end: 16,
+    ),
+  ),
+  Value(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          AxisStep(AxisStep(
+            axis: Child,
+            node_test: NameTest(Name(OwnedName(
+              local_name_str: "world",
+              namespace_str: "",
+              prefix_str: "",
+            ))),
+            predicates: [],
+          )),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 17,
+      end: 22,
+    ),
+  ),
+  String(
+    text: "!",
+    span: Span(
+      start: 23,
+      end: 24,
+    ),
+  ),
+])

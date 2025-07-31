@@ -1,0 +1,19 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_xpath_simple(\"fn:if\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      AxisStep(AxisStep(
+        axis: Child,
+        node_test: NameTest(Name(Name(
+          name: "if",
+          prefix: Some("fn"),
+          namespace: Some("http://www.w3.org/2005/xpath-functions"),
+        ))),
+        predicates: [],
+      )),
+    ],
+  )),
+])))

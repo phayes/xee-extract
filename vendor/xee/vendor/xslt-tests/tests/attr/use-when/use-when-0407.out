@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><out>
+<fa>function-available('current')= true</fa>
+<fa>function-available('generate-id')= true</fa>
+<fa>function-available('key')= true</fa>
+<fa>function-available('unparsed-entity-uri')= true</fa>
+<fa>function-available('unparsed-entity-public-id')= true</fa>
+<fa>function-available('system-property')= true</fa>
+
+
+
+
+
+<in>system-property: use-when evaluates to true!!!</in>
+</out>

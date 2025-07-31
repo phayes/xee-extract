@@ -1,0 +1,13 @@
+---
+source: xee-xslt-ast/src/value_template.rs
+expression: "parse(\"hello world\")"
+---
+Ok([
+  String(
+    text: "hello world",
+    span: Span(
+      start: 0,
+      end: 11,
+    ),
+  ),
+])

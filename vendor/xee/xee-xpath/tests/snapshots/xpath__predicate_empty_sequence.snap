@@ -1,0 +1,9 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"() [. ge 1]\")"
+---
+Ok(
+    Empty(
+        Empty,
+    ),
+)

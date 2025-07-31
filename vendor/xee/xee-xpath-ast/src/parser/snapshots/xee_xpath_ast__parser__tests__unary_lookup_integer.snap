@@ -1,0 +1,13 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"?1\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(UnaryLookup(Integer((Positive, [
+        1,
+      ])))),
+    ],
+  )),
+])))

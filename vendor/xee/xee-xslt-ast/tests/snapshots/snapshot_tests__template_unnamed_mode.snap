@@ -1,0 +1,49 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_transform(r#\"<xsl:transform xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"3\"><xsl:template match=\"*\">a</xsl:template></xsl:transform>\"#)"
+---
+Ok(Transform(
+  id: None,
+  input_type_annotations: None,
+  extension_element_prefixes: None,
+  declarations: [
+    Template(Template(
+      match_: Some(Pattern(
+        pattern: Expr(Path(PathExpr(
+          root: Relative,
+          steps: [
+            AxisStep(AxisStep(
+              forward: Child,
+              node_test: NameTest(Star),
+              predicates: [],
+            )),
+          ],
+        ))),
+        span: Span(
+          start: 97,
+          end: 98,
+        ),
+      )),
+      name: None,
+      priority: None,
+      mode: [
+        Unnamed,
+      ],
+      as_: None,
+      visibility: None,
+      context_item: None,
+      params: [],
+      sequence_constructor: [
+        Content(Text("a")),
+      ],
+      span: Span(
+        start: 77,
+        end: 89,
+      ),
+    )),
+  ],
+  span: Span(
+    start: 1,
+    end: 14,
+  ),
+))

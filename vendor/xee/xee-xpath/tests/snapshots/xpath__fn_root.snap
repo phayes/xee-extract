@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run_xml(r#\"<doc><a/><b><c/></b></doc>\"#,\n\"doc/a / fn:root() / doc / fn:local-name()\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                String(
+                    String,
+                    "doc",
+                ),
+            ),
+        },
+    ),
+)

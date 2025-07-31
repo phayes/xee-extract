@@ -1,0 +1,9 @@
+---
+source: xee-xpath-macros/src/parse.rs
+expression: "syn::parse_str::<XPathFnOptions>(r#\"\"wrong wrong\"\"#)"
+---
+Err(
+    Error(
+        "unexpected end of input, ExpectedFound { span: 6..11 }",
+    ),
+)

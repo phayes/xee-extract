@@ -1,0 +1,29 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: xpath
+---
+XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Binary(BinaryExpr(
+          operator: Add,
+          left: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                1,
+              ])))),
+            ],
+          ),
+          right: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                2,
+              ])))),
+            ],
+          ),
+        )),
+      ])))),
+    ],
+  )),
+]))

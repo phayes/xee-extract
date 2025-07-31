@@ -1,0 +1,5 @@
+# because Cargo doesn't support this itself yet:
+# https://github.com/rust-lang/cargo/issues/3946
+# Once this issue is resolved, this file can be removed.
+[env]
+CARGO_WORKSPACE_DIR = { value = "", relative = true }

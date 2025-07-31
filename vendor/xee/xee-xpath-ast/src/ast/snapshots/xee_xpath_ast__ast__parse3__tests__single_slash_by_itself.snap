@@ -1,0 +1,26 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"/\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(FunctionCall(FunctionCall(
+      name: Name(
+        name: "root",
+        prefix: None,
+        namespace: Some("http://www.w3.org/2005/xpath-functions"),
+      ),
+      arguments: [
+        Path(PathExpr(
+          steps: [
+            AxisStep(AxisStep(
+              axis: Self_,
+              node_test: KindTest(Any),
+              predicates: [],
+            )),
+          ],
+        )),
+      ],
+    ))),
+  ],
+)))

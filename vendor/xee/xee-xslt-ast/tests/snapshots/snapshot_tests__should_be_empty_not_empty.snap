@@ -1,0 +1,10 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:copy-of xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\">Illegal content</xsl:copy-of>\"#)"
+---
+Err(Unexpected(
+  span: Span(
+    start: 78,
+    end: 93,
+  ),
+))

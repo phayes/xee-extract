@@ -1,0 +1,13 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"child::fn:*\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    AxisStep(AxisStep(
+      axis: Child,
+      node_test: NameTest(Namespace("http://www.w3.org/2005/xpath-functions")),
+      predicates: [],
+    )),
+  ],
+)))

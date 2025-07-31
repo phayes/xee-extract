@@ -1,0 +1,64 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_expr_single(\"1 treat as xs:integer*\")"
+---
+Spanned {
+    value: Apply(
+        ApplyExpr {
+            path_expr: PathExpr {
+                steps: [
+                    Spanned {
+                        value: PrimaryExpr(
+                            Spanned {
+                                value: Literal(
+                                    Integer(
+                                        "1",
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        0,
+                                    ),
+                                    length: SourceOffset(
+                                        1,
+                                    ),
+                                },
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                0,
+                            ),
+                            length: SourceOffset(
+                                1,
+                            ),
+                        },
+                    },
+                ],
+            },
+            operator: Treat(
+                Item(
+                    Item {
+                        item_type: AtomicOrUnionType(
+                            Name {
+                                name: "integer",
+                                namespace: Some(
+                                    "http://www.w3.org/2001/XMLSchema",
+                                ),
+                            },
+                        ),
+                        occurrence: Many,
+                    },
+                ),
+            ),
+        },
+    ),
+    span: SourceSpan {
+        offset: SourceOffset(
+            0,
+        ),
+        length: SourceOffset(
+            22,
+        ),
+    },
+}

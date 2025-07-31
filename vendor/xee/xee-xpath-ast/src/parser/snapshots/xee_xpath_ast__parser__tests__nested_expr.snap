@@ -1,0 +1,49 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"1 + (2 * 3)\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Binary(BinaryExpr(
+        operator: Add,
+        left: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        ),
+        right: PathExpr(
+          steps: [
+            PrimaryExpr(Expr(Some(Expr([
+              Path(PathExpr(
+                steps: [
+                  PrimaryExpr(Expr(Some(Expr([
+                    Binary(BinaryExpr(
+                      operator: Mul,
+                      left: PathExpr(
+                        steps: [
+                          PrimaryExpr(Literal(Integer((Positive, [
+                            2,
+                          ])))),
+                        ],
+                      ),
+                      right: PathExpr(
+                        steps: [
+                          PrimaryExpr(Literal(Integer((Positive, [
+                            3,
+                          ])))),
+                        ],
+                      ),
+                    )),
+                  ])))),
+                ],
+              )),
+            ])))),
+          ],
+        ),
+      )),
+    ])))),
+  ],
+)))

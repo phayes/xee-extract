@@ -1,0 +1,66 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"(1 to 5, 7 to 10)\")"
+---
+Ok(
+    Many(
+        Many {
+            items: [
+                Atomic(
+                    Integer(
+                        Integer,
+                        1,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        2,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        3,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        4,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        5,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        7,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        8,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        9,
+                    ),
+                ),
+                Atomic(
+                    Integer(
+                        Integer,
+                        10,
+                    ),
+                ),
+            ],
+        },
+    ),
+)

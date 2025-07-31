@@ -1,0 +1,16 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"let $apply := function($x as xs:integer, $f as function(xs:integer) as xs:integer) as xs:integer {\n            $f($x)\n         } return $apply(3, function($x) { $x + 1 })\")"
+---
+Ok(
+    One(
+        One {
+            item: Atomic(
+                Integer(
+                    Integer,
+                    4,
+                ),
+            ),
+        },
+    ),
+)

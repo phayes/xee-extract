@@ -1,0 +1,27 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"child::foo[1]\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    AxisStep(AxisStep(
+      axis: Child,
+      node_test: NameTest(Name(Name(
+        name: "foo",
+        prefix: None,
+        namespace: None,
+      ))),
+      predicates: [
+        Expr([
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                1,
+              ])))),
+            ],
+          )),
+        ]),
+      ],
+    )),
+  ],
+)))

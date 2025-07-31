@@ -1,0 +1,49 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "ast::ExprSingle::parse(\"$foo(1 + 1, 3)\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PostfixExpr(
+      primary: VarRef(OwnedName(
+        local_name_str: "foo",
+        namespace_str: "",
+        prefix_str: "",
+      )),
+      postfixes: [
+        ArgumentList([
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Expr(Some(Expr([
+                Binary(BinaryExpr(
+                  operator: Add,
+                  left: PathExpr(
+                    steps: [
+                      PrimaryExpr(Literal(Integer((Positive, [
+                        1,
+                      ])))),
+                    ],
+                  ),
+                  right: PathExpr(
+                    steps: [
+                      PrimaryExpr(Literal(Integer((Positive, [
+                        1,
+                      ])))),
+                    ],
+                  ),
+                )),
+              ])))),
+            ],
+          )),
+          Path(PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                3,
+              ])))),
+            ],
+          )),
+        ]),
+      ],
+    ),
+  ],
+)))

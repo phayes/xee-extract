@@ -1,0 +1,64 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_expr_single(\"1 + 2 + 3\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v2",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    Integer(
+                                        1,
+                                    ),
+                                ),
+                                span: 0..1,
+                            },
+                            op: Add,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        2,
+                                    ),
+                                ),
+                                span: 4..5,
+                            },
+                        },
+                    ),
+                    span: 0..5,
+                },
+                return_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Variable(
+                                    Name(
+                                        "v2",
+                                    ),
+                                ),
+                                span: 0..5,
+                            },
+                            op: Add,
+                            right: Spanned {
+                                value: Const(
+                                    Integer(
+                                        3,
+                                    ),
+                                ),
+                                span: 8..9,
+                            },
+                        },
+                    ),
+                    span: 0..9,
+                },
+            },
+        ),
+        span: 0..9,
+    },
+)

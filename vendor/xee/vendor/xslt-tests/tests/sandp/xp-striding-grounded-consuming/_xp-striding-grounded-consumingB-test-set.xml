@@ -1,0 +1,1872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2012/10/xslt-test-catalog" name="xp-striding-grounded-consumingB">
+   <description>
+                    CP: Striding, RP: Grounded, RS: Consuming
+                    Self axis selecting other node-type on child, descendant(-or-self) etc axis is grounded (selects nothing) and remains consuming
+                </description>
+   <dependencies>
+      <sweep_and_posture satisfied="true" value="supports-sweep-and-posture-assessments"/>
+   </dependencies>
+   <test-case name="xp-striding-grounded-consumingB001">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">foo/self::document-node()</xpath>
+            <xpath part="2">foo/self::attribute()</xpath>
+            <xpath part="3">foo/self::attribute(*)</xpath>
+            <xpath part="4">foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">foo/self::comment()</xpath>
+            <xpath part="7">foo/self::processing-instruction()</xpath>
+            <xpath part="8">foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">foo/self::text()</xpath>
+            <xpath part="11">foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB002">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ex:foo/self::document-node()</xpath>
+            <xpath part="2">ex:foo/self::attribute()</xpath>
+            <xpath part="3">ex:foo/self::attribute(*)</xpath>
+            <xpath part="4">ex:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">ex:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">ex:foo/self::comment()</xpath>
+            <xpath part="7">ex:foo/self::processing-instruction()</xpath>
+            <xpath part="8">ex:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">ex:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">ex:foo/self::text()</xpath>
+            <xpath part="11">ex:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB003">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">Q{http://example.com}foo/self::document-node()</xpath>
+            <xpath part="2">Q{http://example.com}foo/self::attribute()</xpath>
+            <xpath part="3">Q{http://example.com}foo/self::attribute(*)</xpath>
+            <xpath part="4">Q{http://example.com}foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">Q{http://example.com}foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">Q{http://example.com}foo/self::comment()</xpath>
+            <xpath part="7">Q{http://example.com}foo/self::processing-instruction()</xpath>
+            <xpath part="8">Q{http://example.com}foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">Q{http://example.com}foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">Q{http://example.com}foo/self::text()</xpath>
+            <xpath part="11">Q{http://example.com}foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB004">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">Q{http://example.com}*/self::document-node()</xpath>
+            <xpath part="2">Q{http://example.com}*/self::attribute()</xpath>
+            <xpath part="3">Q{http://example.com}*/self::attribute(*)</xpath>
+            <xpath part="4">Q{http://example.com}*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">Q{http://example.com}*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">Q{http://example.com}*/self::comment()</xpath>
+            <xpath part="7">Q{http://example.com}*/self::processing-instruction()</xpath>
+            <xpath part="8">Q{http://example.com}*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">Q{http://example.com}*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">Q{http://example.com}*/self::text()</xpath>
+            <xpath part="11">Q{http://example.com}*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB005">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::foo/self::document-node()</xpath>
+            <xpath part="2">child::foo/self::attribute()</xpath>
+            <xpath part="3">child::foo/self::attribute(*)</xpath>
+            <xpath part="4">child::foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::foo/self::comment()</xpath>
+            <xpath part="7">child::foo/self::processing-instruction()</xpath>
+            <xpath part="8">child::foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::foo/self::text()</xpath>
+            <xpath part="11">child::foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB006">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::ex:foo/self::document-node()</xpath>
+            <xpath part="2">child::ex:foo/self::attribute()</xpath>
+            <xpath part="3">child::ex:foo/self::attribute(*)</xpath>
+            <xpath part="4">child::ex:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::ex:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::ex:foo/self::comment()</xpath>
+            <xpath part="7">child::ex:foo/self::processing-instruction()</xpath>
+            <xpath part="8">child::ex:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::ex:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::ex:foo/self::text()</xpath>
+            <xpath part="11">child::ex:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB007">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::Q{http://example.com}foo/self::document-node()</xpath>
+            <xpath part="2">child::Q{http://example.com}foo/self::attribute()</xpath>
+            <xpath part="3">child::Q{http://example.com}foo/self::attribute(*)</xpath>
+            <xpath part="4">child::Q{http://example.com}foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::Q{http://example.com}foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::Q{http://example.com}foo/self::comment()</xpath>
+            <xpath part="7">child::Q{http://example.com}foo/self::processing-instruction()</xpath>
+            <xpath part="8">child::Q{http://example.com}foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::Q{http://example.com}foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::Q{http://example.com}foo/self::text()</xpath>
+            <xpath part="11">child::Q{http://example.com}foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB008">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::Q{http://example.com}*/self::document-node()</xpath>
+            <xpath part="2">child::Q{http://example.com}*/self::attribute()</xpath>
+            <xpath part="3">child::Q{http://example.com}*/self::attribute(*)</xpath>
+            <xpath part="4">child::Q{http://example.com}*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::Q{http://example.com}*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::Q{http://example.com}*/self::comment()</xpath>
+            <xpath part="7">child::Q{http://example.com}*/self::processing-instruction()</xpath>
+            <xpath part="8">child::Q{http://example.com}*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::Q{http://example.com}*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::Q{http://example.com}*/self::text()</xpath>
+            <xpath part="11">child::Q{http://example.com}*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB009">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: *
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">*/self::document-node()</xpath>
+            <xpath part="2">*/self::attribute()</xpath>
+            <xpath part="3">*/self::attribute(*)</xpath>
+            <xpath part="4">*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">*/self::comment()</xpath>
+            <xpath part="7">*/self::processing-instruction()</xpath>
+            <xpath part="8">*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">*/self::text()</xpath>
+            <xpath part="11">*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB010">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: *:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">*:foo/self::document-node()</xpath>
+            <xpath part="2">*:foo/self::attribute()</xpath>
+            <xpath part="3">*:foo/self::attribute(*)</xpath>
+            <xpath part="4">*:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">*:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">*:foo/self::comment()</xpath>
+            <xpath part="7">*:foo/self::processing-instruction()</xpath>
+            <xpath part="8">*:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">*:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">*:foo/self::text()</xpath>
+            <xpath part="11">*:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB011">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">ex:*/self::document-node()</xpath>
+            <xpath part="2">ex:*/self::attribute()</xpath>
+            <xpath part="3">ex:*/self::attribute(*)</xpath>
+            <xpath part="4">ex:*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">ex:*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">ex:*/self::comment()</xpath>
+            <xpath part="7">ex:*/self::processing-instruction()</xpath>
+            <xpath part="8">ex:*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">ex:*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">ex:*/self::text()</xpath>
+            <xpath part="11">ex:*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB012">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::*/self::document-node()</xpath>
+            <xpath part="2">child::*/self::attribute()</xpath>
+            <xpath part="3">child::*/self::attribute(*)</xpath>
+            <xpath part="4">child::*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::*/self::comment()</xpath>
+            <xpath part="7">child::*/self::processing-instruction()</xpath>
+            <xpath part="8">child::*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::*/self::text()</xpath>
+            <xpath part="11">child::*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB013">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::*:foo/self::document-node()</xpath>
+            <xpath part="2">child::*:foo/self::attribute()</xpath>
+            <xpath part="3">child::*:foo/self::attribute(*)</xpath>
+            <xpath part="4">child::*:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::*:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::*:foo/self::comment()</xpath>
+            <xpath part="7">child::*:foo/self::processing-instruction()</xpath>
+            <xpath part="8">child::*:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::*:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::*:foo/self::text()</xpath>
+            <xpath part="11">child::*:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB014">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::ex:*/self::document-node()</xpath>
+            <xpath part="2">child::ex:*/self::attribute()</xpath>
+            <xpath part="3">child::ex:*/self::attribute(*)</xpath>
+            <xpath part="4">child::ex:*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::ex:*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::ex:*/self::comment()</xpath>
+            <xpath part="7">child::ex:*/self::processing-instruction()</xpath>
+            <xpath part="8">child::ex:*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::ex:*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::ex:*/self::text()</xpath>
+            <xpath part="11">child::ex:*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB015">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: element()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">element()/self::document-node()</xpath>
+            <xpath part="2">element()/self::attribute()</xpath>
+            <xpath part="3">element()/self::attribute(*)</xpath>
+            <xpath part="4">element()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">element()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">element()/self::comment()</xpath>
+            <xpath part="7">element()/self::processing-instruction()</xpath>
+            <xpath part="8">element()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">element()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">element()/self::text()</xpath>
+            <xpath part="11">element()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB016">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::element()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::element()/self::document-node()</xpath>
+            <xpath part="2">child::element()/self::attribute()</xpath>
+            <xpath part="3">child::element()/self::attribute(*)</xpath>
+            <xpath part="4">child::element()/self::attribute(ex:foo)</xpath>
+            <xpath part="5">child::element()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">child::element()/self::comment()</xpath>
+            <xpath part="7">child::element()/self::processing-instruction()</xpath>
+            <xpath part="8">child::element()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">child::element()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">child::element()/self::text()</xpath>
+            <xpath part="11">child::element()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB017">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: node()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding"/>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB018">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::node()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding"/>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB019">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: comment()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">comment()/self::foo</xpath>
+            <xpath part="2">comment()/self::ex:foo</xpath>
+            <xpath part="3">comment()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">comment()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">comment()/self::*:foo</xpath>
+            <xpath part="6">comment()/self::ex:*</xpath>
+            <xpath part="7">comment()/self::*</xpath>
+            <xpath part="8">comment()/self::document-node()</xpath>
+            <xpath part="9">comment()/self::attribute()</xpath>
+            <xpath part="10">comment()/self::attribute(*)</xpath>
+            <xpath part="11">comment()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">comment()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">comment()/self::processing-instruction()</xpath>
+            <xpath part="14">comment()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="15">comment()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="16">comment()/self::text()</xpath>
+            <xpath part="17">comment()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB020">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::comment()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::comment()/self::foo</xpath>
+            <xpath part="2">child::comment()/self::ex:foo</xpath>
+            <xpath part="3">child::comment()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">child::comment()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">child::comment()/self::*:foo</xpath>
+            <xpath part="6">child::comment()/self::ex:*</xpath>
+            <xpath part="7">child::comment()/self::*</xpath>
+            <xpath part="8">child::comment()/self::document-node()</xpath>
+            <xpath part="9">child::comment()/self::attribute()</xpath>
+            <xpath part="10">child::comment()/self::attribute(*)</xpath>
+            <xpath part="11">child::comment()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">child::comment()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">child::comment()/self::processing-instruction()</xpath>
+            <xpath part="14">child::comment()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="15">child::comment()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="16">child::comment()/self::text()</xpath>
+            <xpath part="17">child::comment()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB021">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: processing-instruction()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">processing-instruction()/self::foo</xpath>
+            <xpath part="2">processing-instruction()/self::ex:foo</xpath>
+            <xpath part="3">processing-instruction()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">processing-instruction()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">processing-instruction()/self::*:foo</xpath>
+            <xpath part="6">processing-instruction()/self::ex:*</xpath>
+            <xpath part="7">processing-instruction()/self::*</xpath>
+            <xpath part="8">processing-instruction()/self::document-node()</xpath>
+            <xpath part="9">processing-instruction()/self::attribute()</xpath>
+            <xpath part="10">processing-instruction()/self::attribute(*)</xpath>
+            <xpath part="11">processing-instruction()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">processing-instruction()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">processing-instruction()/self::comment()</xpath>
+            <xpath part="14">processing-instruction()/self::text()</xpath>
+            <xpath part="15">processing-instruction()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB022">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::processing-instruction()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::processing-instruction()/self::foo</xpath>
+            <xpath part="2">child::processing-instruction()/self::ex:foo</xpath>
+            <xpath part="3">child::processing-instruction()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">child::processing-instruction()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">child::processing-instruction()/self::*:foo</xpath>
+            <xpath part="6">child::processing-instruction()/self::ex:*</xpath>
+            <xpath part="7">child::processing-instruction()/self::*</xpath>
+            <xpath part="8">child::processing-instruction()/self::document-node()</xpath>
+            <xpath part="9">child::processing-instruction()/self::attribute()</xpath>
+            <xpath part="10">child::processing-instruction()/self::attribute(*)</xpath>
+            <xpath part="11">child::processing-instruction()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">child::processing-instruction()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">child::processing-instruction()/self::comment()</xpath>
+            <xpath part="14">child::processing-instruction()/self::text()</xpath>
+            <xpath part="15">child::processing-instruction()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB023">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::processing-instruction(xml-stylesheet)
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::processing-instruction(xml-stylesheet)/self::foo</xpath>
+            <xpath part="2">child::processing-instruction(xml-stylesheet)/self::ex:foo</xpath>
+            <xpath part="3">child::processing-instruction(xml-stylesheet)/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">child::processing-instruction(xml-stylesheet)/self::Q{http://example.com}*</xpath>
+            <xpath part="5">child::processing-instruction(xml-stylesheet)/self::*:foo</xpath>
+            <xpath part="6">child::processing-instruction(xml-stylesheet)/self::ex:*</xpath>
+            <xpath part="7">child::processing-instruction(xml-stylesheet)/self::*</xpath>
+            <xpath part="8">child::processing-instruction(xml-stylesheet)/self::document-node()</xpath>
+            <xpath part="9">child::processing-instruction(xml-stylesheet)/self::attribute()</xpath>
+            <xpath part="10">child::processing-instruction(xml-stylesheet)/self::attribute(*)</xpath>
+            <xpath part="11">child::processing-instruction(xml-stylesheet)/self::attribute(ex:foo)</xpath>
+            <xpath part="12">child::processing-instruction(xml-stylesheet)/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">child::processing-instruction(xml-stylesheet)/self::comment()</xpath>
+            <xpath part="14">child::processing-instruction(xml-stylesheet)/self::text()</xpath>
+            <xpath part="15">child::processing-instruction(xml-stylesheet)/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB024">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::processing-instruction('xml-stylesheet')
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::processing-instruction('xml-stylesheet')/self::foo</xpath>
+            <xpath part="2">child::processing-instruction('xml-stylesheet')/self::ex:foo</xpath>
+            <xpath part="3">child::processing-instruction('xml-stylesheet')/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">child::processing-instruction('xml-stylesheet')/self::Q{http://example.com}*</xpath>
+            <xpath part="5">child::processing-instruction('xml-stylesheet')/self::*:foo</xpath>
+            <xpath part="6">child::processing-instruction('xml-stylesheet')/self::ex:*</xpath>
+            <xpath part="7">child::processing-instruction('xml-stylesheet')/self::*</xpath>
+            <xpath part="8">child::processing-instruction('xml-stylesheet')/self::document-node()</xpath>
+            <xpath part="9">child::processing-instruction('xml-stylesheet')/self::attribute()</xpath>
+            <xpath part="10">child::processing-instruction('xml-stylesheet')/self::attribute(*)</xpath>
+            <xpath part="11">child::processing-instruction('xml-stylesheet')/self::attribute(ex:foo)</xpath>
+            <xpath part="12">child::processing-instruction('xml-stylesheet')/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">child::processing-instruction('xml-stylesheet')/self::comment()</xpath>
+            <xpath part="14">child::processing-instruction('xml-stylesheet')/self::text()</xpath>
+            <xpath part="15">child::processing-instruction('xml-stylesheet')/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB025">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: text()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">text()/self::foo</xpath>
+            <xpath part="2">text()/self::ex:foo</xpath>
+            <xpath part="3">text()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">text()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">text()/self::*:foo</xpath>
+            <xpath part="6">text()/self::ex:*</xpath>
+            <xpath part="7">text()/self::*</xpath>
+            <xpath part="8">text()/self::document-node()</xpath>
+            <xpath part="9">text()/self::attribute()</xpath>
+            <xpath part="10">text()/self::attribute(*)</xpath>
+            <xpath part="11">text()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">text()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">text()/self::comment()</xpath>
+            <xpath part="14">text()/self::processing-instruction()</xpath>
+            <xpath part="15">text()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="16">text()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="17">text()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB026">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: child::text()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">child::text()/self::foo</xpath>
+            <xpath part="2">child::text()/self::ex:foo</xpath>
+            <xpath part="3">child::text()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">child::text()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">child::text()/self::*:foo</xpath>
+            <xpath part="6">child::text()/self::ex:*</xpath>
+            <xpath part="7">child::text()/self::*</xpath>
+            <xpath part="8">child::text()/self::document-node()</xpath>
+            <xpath part="9">child::text()/self::attribute()</xpath>
+            <xpath part="10">child::text()/self::attribute(*)</xpath>
+            <xpath part="11">child::text()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">child::text()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">child::text()/self::comment()</xpath>
+            <xpath part="14">child::text()/self::processing-instruction()</xpath>
+            <xpath part="15">child::text()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="16">child::text()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="17">child::text()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB027">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::foo/self::document-node()</xpath>
+            <xpath part="2">descendant::foo/self::attribute()</xpath>
+            <xpath part="3">descendant::foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant::foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::foo/self::comment()</xpath>
+            <xpath part="7">descendant::foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::foo/self::text()</xpath>
+            <xpath part="11">descendant::foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB028">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::ex:foo/self::document-node()</xpath>
+            <xpath part="2">descendant::ex:foo/self::attribute()</xpath>
+            <xpath part="3">descendant::ex:foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant::ex:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::ex:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::ex:foo/self::comment()</xpath>
+            <xpath part="7">descendant::ex:foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::ex:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::ex:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::ex:foo/self::text()</xpath>
+            <xpath part="11">descendant::ex:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB029">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::Q{http://example.com}foo/self::document-node()</xpath>
+            <xpath part="2">descendant::Q{http://example.com}foo/self::attribute()</xpath>
+            <xpath part="3">descendant::Q{http://example.com}foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant::Q{http://example.com}foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::Q{http://example.com}foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::Q{http://example.com}foo/self::comment()</xpath>
+            <xpath part="7">descendant::Q{http://example.com}foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::Q{http://example.com}foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::Q{http://example.com}foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::Q{http://example.com}foo/self::text()</xpath>
+            <xpath part="11">descendant::Q{http://example.com}foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB030">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::Q{http://example.com}*/self::document-node()</xpath>
+            <xpath part="2">descendant::Q{http://example.com}*/self::attribute()</xpath>
+            <xpath part="3">descendant::Q{http://example.com}*/self::attribute(*)</xpath>
+            <xpath part="4">descendant::Q{http://example.com}*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::Q{http://example.com}*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::Q{http://example.com}*/self::comment()</xpath>
+            <xpath part="7">descendant::Q{http://example.com}*/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::Q{http://example.com}*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::Q{http://example.com}*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::Q{http://example.com}*/self::text()</xpath>
+            <xpath part="11">descendant::Q{http://example.com}*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB031">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::*:foo/self::document-node()</xpath>
+            <xpath part="2">descendant::*:foo/self::attribute()</xpath>
+            <xpath part="3">descendant::*:foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant::*:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::*:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::*:foo/self::comment()</xpath>
+            <xpath part="7">descendant::*:foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::*:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::*:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::*:foo/self::text()</xpath>
+            <xpath part="11">descendant::*:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB032">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::ex:*/self::document-node()</xpath>
+            <xpath part="2">descendant::ex:*/self::attribute()</xpath>
+            <xpath part="3">descendant::ex:*/self::attribute(*)</xpath>
+            <xpath part="4">descendant::ex:*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::ex:*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::ex:*/self::comment()</xpath>
+            <xpath part="7">descendant::ex:*/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::ex:*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::ex:*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::ex:*/self::text()</xpath>
+            <xpath part="11">descendant::ex:*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB033">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::*/self::document-node()</xpath>
+            <xpath part="2">descendant::*/self::attribute()</xpath>
+            <xpath part="3">descendant::*/self::attribute(*)</xpath>
+            <xpath part="4">descendant::*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant::*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant::*/self::comment()</xpath>
+            <xpath part="7">descendant::*/self::processing-instruction()</xpath>
+            <xpath part="8">descendant::*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant::*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant::*/self::text()</xpath>
+            <xpath part="11">descendant::*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB034">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::node()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding"/>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB035">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::comment()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::comment()/self::foo</xpath>
+            <xpath part="2">descendant::comment()/self::ex:foo</xpath>
+            <xpath part="3">descendant::comment()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant::comment()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant::comment()/self::*:foo</xpath>
+            <xpath part="6">descendant::comment()/self::ex:*</xpath>
+            <xpath part="7">descendant::comment()/self::*</xpath>
+            <xpath part="8">descendant::comment()/self::document-node()</xpath>
+            <xpath part="9">descendant::comment()/self::attribute()</xpath>
+            <xpath part="10">descendant::comment()/self::attribute(*)</xpath>
+            <xpath part="11">descendant::comment()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant::comment()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant::comment()/self::processing-instruction()</xpath>
+            <xpath part="14">descendant::comment()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="15">descendant::comment()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="16">descendant::comment()/self::text()</xpath>
+            <xpath part="17">descendant::comment()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB036">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::processing-instruction()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::processing-instruction()/self::foo</xpath>
+            <xpath part="2">descendant::processing-instruction()/self::ex:foo</xpath>
+            <xpath part="3">descendant::processing-instruction()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant::processing-instruction()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant::processing-instruction()/self::*:foo</xpath>
+            <xpath part="6">descendant::processing-instruction()/self::ex:*</xpath>
+            <xpath part="7">descendant::processing-instruction()/self::*</xpath>
+            <xpath part="8">descendant::processing-instruction()/self::document-node()</xpath>
+            <xpath part="9">descendant::processing-instruction()/self::attribute()</xpath>
+            <xpath part="10">descendant::processing-instruction()/self::attribute(*)</xpath>
+            <xpath part="11">descendant::processing-instruction()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant::processing-instruction()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant::processing-instruction()/self::comment()</xpath>
+            <xpath part="14">descendant::processing-instruction()/self::text()</xpath>
+            <xpath part="15">descendant::processing-instruction()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB037">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::processing-instruction(xsl-stylesheet)
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::processing-instruction(xsl-stylesheet)/self::foo</xpath>
+            <xpath part="2">descendant::processing-instruction(xsl-stylesheet)/self::ex:foo</xpath>
+            <xpath part="3">descendant::processing-instruction(xsl-stylesheet)/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant::processing-instruction(xsl-stylesheet)/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant::processing-instruction(xsl-stylesheet)/self::*:foo</xpath>
+            <xpath part="6">descendant::processing-instruction(xsl-stylesheet)/self::ex:*</xpath>
+            <xpath part="7">descendant::processing-instruction(xsl-stylesheet)/self::*</xpath>
+            <xpath part="8">descendant::processing-instruction(xsl-stylesheet)/self::document-node()</xpath>
+            <xpath part="9">descendant::processing-instruction(xsl-stylesheet)/self::attribute()</xpath>
+            <xpath part="10">descendant::processing-instruction(xsl-stylesheet)/self::attribute(*)</xpath>
+            <xpath part="11">descendant::processing-instruction(xsl-stylesheet)/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant::processing-instruction(xsl-stylesheet)/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant::processing-instruction(xsl-stylesheet)/self::comment()</xpath>
+            <xpath part="14">descendant::processing-instruction(xsl-stylesheet)/self::text()</xpath>
+            <xpath part="15">descendant::processing-instruction(xsl-stylesheet)/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB038">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::processing-instruction('xsl-stylesheet')
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::processing-instruction('xsl-stylesheet')/self::foo</xpath>
+            <xpath part="2">descendant::processing-instruction('xsl-stylesheet')/self::ex:foo</xpath>
+            <xpath part="3">descendant::processing-instruction('xsl-stylesheet')/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant::processing-instruction('xsl-stylesheet')/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant::processing-instruction('xsl-stylesheet')/self::*:foo</xpath>
+            <xpath part="6">descendant::processing-instruction('xsl-stylesheet')/self::ex:*</xpath>
+            <xpath part="7">descendant::processing-instruction('xsl-stylesheet')/self::*</xpath>
+            <xpath part="8">descendant::processing-instruction('xsl-stylesheet')/self::document-node()</xpath>
+            <xpath part="9">descendant::processing-instruction('xsl-stylesheet')/self::attribute()</xpath>
+            <xpath part="10">descendant::processing-instruction('xsl-stylesheet')/self::attribute(*)</xpath>
+            <xpath part="11">descendant::processing-instruction('xsl-stylesheet')/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant::processing-instruction('xsl-stylesheet')/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant::processing-instruction('xsl-stylesheet')/self::comment()</xpath>
+            <xpath part="14">descendant::processing-instruction('xsl-stylesheet')/self::text()</xpath>
+            <xpath part="15">descendant::processing-instruction('xsl-stylesheet')/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB039">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant::text()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant::text()/self::foo</xpath>
+            <xpath part="2">descendant::text()/self::ex:foo</xpath>
+            <xpath part="3">descendant::text()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant::text()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant::text()/self::*:foo</xpath>
+            <xpath part="6">descendant::text()/self::ex:*</xpath>
+            <xpath part="7">descendant::text()/self::*</xpath>
+            <xpath part="8">descendant::text()/self::document-node()</xpath>
+            <xpath part="9">descendant::text()/self::attribute()</xpath>
+            <xpath part="10">descendant::text()/self::attribute(*)</xpath>
+            <xpath part="11">descendant::text()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant::text()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant::text()/self::comment()</xpath>
+            <xpath part="14">descendant::text()/self::processing-instruction()</xpath>
+            <xpath part="15">descendant::text()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="16">descendant::text()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="17">descendant::text()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB040">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::foo/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::foo/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::foo/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::foo/self::text()</xpath>
+            <xpath part="11">descendant-or-self::foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB041">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::ex:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::ex:foo/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::ex:foo/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::ex:foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::ex:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::ex:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::ex:foo/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::ex:foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::ex:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::ex:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::ex:foo/self::text()</xpath>
+            <xpath part="11">descendant-or-self::ex:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB042">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::Q{http://example.com}foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::Q{http://example.com}foo/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::Q{http://example.com}foo/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::Q{http://example.com}foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::Q{http://example.com}foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::Q{http://example.com}foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::Q{http://example.com}foo/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::Q{http://example.com}foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::Q{http://example.com}foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::Q{http://example.com}foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::Q{http://example.com}foo/self::text()</xpath>
+            <xpath part="11">descendant-or-self::Q{http://example.com}foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB043">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::Q{http://example.com}*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::Q{http://example.com}*/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::Q{http://example.com}*/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::Q{http://example.com}*/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::Q{http://example.com}*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::Q{http://example.com}*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::Q{http://example.com}*/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::Q{http://example.com}*/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::Q{http://example.com}*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::Q{http://example.com}*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::Q{http://example.com}*/self::text()</xpath>
+            <xpath part="11">descendant-or-self::Q{http://example.com}*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB044">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::*:foo
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::*:foo/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::*:foo/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::*:foo/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::*:foo/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::*:foo/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::*:foo/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::*:foo/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::*:foo/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::*:foo/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::*:foo/self::text()</xpath>
+            <xpath part="11">descendant-or-self::*:foo/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB045">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::ex:*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::ex:*/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::ex:*/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::ex:*/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::ex:*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::ex:*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::ex:*/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::ex:*/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::ex:*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::ex:*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::ex:*/self::text()</xpath>
+            <xpath part="11">descendant-or-self::ex:*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB046">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::*
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::*/self::document-node()</xpath>
+            <xpath part="2">descendant-or-self::*/self::attribute()</xpath>
+            <xpath part="3">descendant-or-self::*/self::attribute(*)</xpath>
+            <xpath part="4">descendant-or-self::*/self::attribute(ex:foo)</xpath>
+            <xpath part="5">descendant-or-self::*/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="6">descendant-or-self::*/self::comment()</xpath>
+            <xpath part="7">descendant-or-self::*/self::processing-instruction()</xpath>
+            <xpath part="8">descendant-or-self::*/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="9">descendant-or-self::*/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="10">descendant-or-self::*/self::text()</xpath>
+            <xpath part="11">descendant-or-self::*/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB047">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::node()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding"/>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB048">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::document-node()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::document-node()/self::foo</xpath>
+            <xpath part="2">descendant-or-self::document-node()/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::document-node()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::document-node()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::document-node()/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::document-node()/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::document-node()/self::*</xpath>
+            <xpath part="8">descendant-or-self::document-node()/self::attribute()</xpath>
+            <xpath part="9">descendant-or-self::document-node()/self::attribute(*)</xpath>
+            <xpath part="10">descendant-or-self::document-node()/self::attribute(ex:foo)</xpath>
+            <xpath part="11">descendant-or-self::document-node()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="12">descendant-or-self::document-node()/self::comment()</xpath>
+            <xpath part="13">descendant-or-self::document-node()/self::processing-instruction()</xpath>
+            <xpath part="14">descendant-or-self::document-node()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="15">descendant-or-self::document-node()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="16">descendant-or-self::document-node()/self::text()</xpath>
+            <xpath part="17">descendant-or-self::document-node()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB049">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::attribute()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::attribute()/self::foo</xpath>
+            <xpath part="2">descendant-or-self::attribute()/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::attribute()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::attribute()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::attribute()/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::attribute()/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::attribute()/self::*</xpath>
+            <xpath part="8">descendant-or-self::attribute()/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::attribute()/self::comment()</xpath>
+            <xpath part="10">descendant-or-self::attribute()/self::processing-instruction()</xpath>
+            <xpath part="11">descendant-or-self::attribute()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="12">descendant-or-self::attribute()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="13">descendant-or-self::attribute()/self::text()</xpath>
+            <xpath part="14">descendant-or-self::attribute()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB050">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::attribute(*)
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::attribute(*)/self::foo</xpath>
+            <xpath part="2">descendant-or-self::attribute(*)/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::attribute(*)/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::attribute(*)/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::attribute(*)/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::attribute(*)/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::attribute(*)/self::*</xpath>
+            <xpath part="8">descendant-or-self::attribute(*)/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::attribute(*)/self::comment()</xpath>
+            <xpath part="10">descendant-or-self::attribute(*)/self::processing-instruction()</xpath>
+            <xpath part="11">descendant-or-self::attribute(*)/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="12">descendant-or-self::attribute(*)/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="13">descendant-or-self::attribute(*)/self::text()</xpath>
+            <xpath part="14">descendant-or-self::attribute(*)/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB051">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::attribute(ex:foo)
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::attribute(ex:foo)/self::foo</xpath>
+            <xpath part="2">descendant-or-self::attribute(ex:foo)/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::attribute(ex:foo)/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::attribute(ex:foo)/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::attribute(ex:foo)/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::attribute(ex:foo)/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::attribute(ex:foo)/self::*</xpath>
+            <xpath part="8">descendant-or-self::attribute(ex:foo)/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::attribute(ex:foo)/self::comment()</xpath>
+            <xpath part="10">descendant-or-self::attribute(ex:foo)/self::processing-instruction()</xpath>
+            <xpath part="11">descendant-or-self::attribute(ex:foo)/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="12">descendant-or-self::attribute(ex:foo)/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="13">descendant-or-self::attribute(ex:foo)/self::text()</xpath>
+            <xpath part="14">descendant-or-self::attribute(ex:foo)/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB052">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::attribute(Q{http://example.com}foo)
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::attribute(Q{http://example.com}foo)/self::foo</xpath>
+            <xpath part="2">descendant-or-self::attribute(Q{http://example.com}foo)/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::attribute(Q{http://example.com}foo)/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::attribute(Q{http://example.com}foo)/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::attribute(Q{http://example.com}foo)/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::attribute(Q{http://example.com}foo)/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::attribute(Q{http://example.com}foo)/self::*</xpath>
+            <xpath part="8">descendant-or-self::attribute(Q{http://example.com}foo)/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::attribute(Q{http://example.com}foo)/self::comment()</xpath>
+            <xpath part="10">descendant-or-self::attribute(Q{http://example.com}foo)/self::processing-instruction()</xpath>
+            <xpath part="11">descendant-or-self::attribute(Q{http://example.com}foo)/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="12">descendant-or-self::attribute(Q{http://example.com}foo)/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="13">descendant-or-self::attribute(Q{http://example.com}foo)/self::text()</xpath>
+            <xpath part="14">descendant-or-self::attribute(Q{http://example.com}foo)/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB053">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::comment()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::comment()/self::foo</xpath>
+            <xpath part="2">descendant-or-self::comment()/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::comment()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::comment()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::comment()/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::comment()/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::comment()/self::*</xpath>
+            <xpath part="8">descendant-or-self::comment()/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::comment()/self::attribute()</xpath>
+            <xpath part="10">descendant-or-self::comment()/self::attribute(*)</xpath>
+            <xpath part="11">descendant-or-self::comment()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant-or-self::comment()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant-or-self::comment()/self::processing-instruction()</xpath>
+            <xpath part="14">descendant-or-self::comment()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="15">descendant-or-self::comment()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="16">descendant-or-self::comment()/self::text()</xpath>
+            <xpath part="17">descendant-or-self::comment()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB054">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::processing-instruction()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::processing-instruction()/self::foo</xpath>
+            <xpath part="2">descendant-or-self::processing-instruction()/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::processing-instruction()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::processing-instruction()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::processing-instruction()/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::processing-instruction()/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::processing-instruction()/self::*</xpath>
+            <xpath part="8">descendant-or-self::processing-instruction()/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::processing-instruction()/self::attribute()</xpath>
+            <xpath part="10">descendant-or-self::processing-instruction()/self::attribute(*)</xpath>
+            <xpath part="11">descendant-or-self::processing-instruction()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant-or-self::processing-instruction()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant-or-self::processing-instruction()/self::comment()</xpath>
+            <xpath part="14">descendant-or-self::processing-instruction()/self::text()</xpath>
+            <xpath part="15">descendant-or-self::processing-instruction()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB055">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::processing-instruction(xsl-stylesheet)
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::processing-instruction(xsl-stylesheet)/self::foo</xpath>
+            <xpath part="2">descendant-or-self::processing-instruction(xsl-stylesheet)/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::processing-instruction(xsl-stylesheet)/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::processing-instruction(xsl-stylesheet)/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::processing-instruction(xsl-stylesheet)/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::processing-instruction(xsl-stylesheet)/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::processing-instruction(xsl-stylesheet)/self::*</xpath>
+            <xpath part="8">descendant-or-self::processing-instruction(xsl-stylesheet)/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::processing-instruction(xsl-stylesheet)/self::attribute()</xpath>
+            <xpath part="10">descendant-or-self::processing-instruction(xsl-stylesheet)/self::attribute(*)</xpath>
+            <xpath part="11">descendant-or-self::processing-instruction(xsl-stylesheet)/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant-or-self::processing-instruction(xsl-stylesheet)/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant-or-self::processing-instruction(xsl-stylesheet)/self::comment()</xpath>
+            <xpath part="14">descendant-or-self::processing-instruction(xsl-stylesheet)/self::text()</xpath>
+            <xpath part="15">descendant-or-self::processing-instruction(xsl-stylesheet)/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB056">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::processing-instruction('xsl-stylesheet')
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::processing-instruction('xsl-stylesheet')/self::foo</xpath>
+            <xpath part="2">descendant-or-self::processing-instruction('xsl-stylesheet')/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::processing-instruction('xsl-stylesheet')/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::processing-instruction('xsl-stylesheet')/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::processing-instruction('xsl-stylesheet')/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::processing-instruction('xsl-stylesheet')/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::processing-instruction('xsl-stylesheet')/self::*</xpath>
+            <xpath part="8">descendant-or-self::processing-instruction('xsl-stylesheet')/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::processing-instruction('xsl-stylesheet')/self::attribute()</xpath>
+            <xpath part="10">descendant-or-self::processing-instruction('xsl-stylesheet')/self::attribute(*)</xpath>
+            <xpath part="11">descendant-or-self::processing-instruction('xsl-stylesheet')/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant-or-self::processing-instruction('xsl-stylesheet')/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant-or-self::processing-instruction('xsl-stylesheet')/self::comment()</xpath>
+            <xpath part="14">descendant-or-self::processing-instruction('xsl-stylesheet')/self::text()</xpath>
+            <xpath part="15">descendant-or-self::processing-instruction('xsl-stylesheet')/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB057">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::text()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::text()/self::foo</xpath>
+            <xpath part="2">descendant-or-self::text()/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::text()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::text()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::text()/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::text()/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::text()/self::*</xpath>
+            <xpath part="8">descendant-or-self::text()/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::text()/self::attribute()</xpath>
+            <xpath part="10">descendant-or-self::text()/self::attribute(*)</xpath>
+            <xpath part="11">descendant-or-self::text()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant-or-self::text()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant-or-self::text()/self::comment()</xpath>
+            <xpath part="14">descendant-or-self::text()/self::processing-instruction()</xpath>
+            <xpath part="15">descendant-or-self::text()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="16">descendant-or-self::text()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="17">descendant-or-self::text()/self::namespace-node()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+   <test-case name="xp-striding-grounded-consumingB058">
+      <description>
+                CP: striding, RP: grounded, RS: consuming
+                Base expression: descendant-or-self::namespace-node()
+                Separators:      / 
+                With axes:       self
+                With node types: any
+                Invariant:       node-type-unequal
+            </description>
+      <created by="Abel Braaksma" on="2014-10-16"/>
+      <modified by="Abel Braaksma" on="2014-10-21" change="Added dependency for sweep and posture tests, added @part attribute for subtests"/>
+      <modified by="Abel Braaksma" on="2014-10-28" change="Changed node-type for namespace-node() tests w/o axis specifier from error to namespace, see bug#26788 (only applies to relevant tests)"/>
+      <test>
+         <posture-and-sweep context-posture="striding">
+            <xpath part="1">descendant-or-self::namespace-node()/self::foo</xpath>
+            <xpath part="2">descendant-or-self::namespace-node()/self::ex:foo</xpath>
+            <xpath part="3">descendant-or-self::namespace-node()/self::Q{http://example.com}foo</xpath>
+            <xpath part="4">descendant-or-self::namespace-node()/self::Q{http://example.com}*</xpath>
+            <xpath part="5">descendant-or-self::namespace-node()/self::*:foo</xpath>
+            <xpath part="6">descendant-or-self::namespace-node()/self::ex:*</xpath>
+            <xpath part="7">descendant-or-self::namespace-node()/self::*</xpath>
+            <xpath part="8">descendant-or-self::namespace-node()/self::document-node()</xpath>
+            <xpath part="9">descendant-or-self::namespace-node()/self::attribute()</xpath>
+            <xpath part="10">descendant-or-self::namespace-node()/self::attribute(*)</xpath>
+            <xpath part="11">descendant-or-self::namespace-node()/self::attribute(ex:foo)</xpath>
+            <xpath part="12">descendant-or-self::namespace-node()/self::attribute(Q{http://example.com}foo)</xpath>
+            <xpath part="13">descendant-or-self::namespace-node()/self::comment()</xpath>
+            <xpath part="14">descendant-or-self::namespace-node()/self::processing-instruction()</xpath>
+            <xpath part="15">descendant-or-self::namespace-node()/self::processing-instruction(xml-stylesheet)</xpath>
+            <xpath part="16">descendant-or-self::namespace-node()/self::processing-instruction('xml-stylesheet')</xpath>
+            <xpath part="17">descendant-or-self::namespace-node()/self::text()</xpath>
+         </posture-and-sweep>
+      </test>
+      <result>
+         <assert-posture-and-sweep result-posture="grounded" result-sweep="consuming"/>
+      </result>
+   </test-case>
+</test-set>

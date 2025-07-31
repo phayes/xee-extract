@@ -1,0 +1,12 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"switch()\")"
+---
+Err(Reserved(
+  span: SimpleSpan(
+    start: 0,
+    end: 8,
+    context: (),
+  ),
+  name: "switch",
+))

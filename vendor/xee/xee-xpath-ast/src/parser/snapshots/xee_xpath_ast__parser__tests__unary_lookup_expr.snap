@@ -1,0 +1,35 @@
+---
+source: xee-xpath-ast/src/parser/mod.rs
+expression: "parse_xpath_simple(\"?(1 + 1)\")"
+---
+Ok(XPath(Expr([
+  Path(PathExpr(
+    steps: [
+      PrimaryExpr(UnaryLookup(Expr(Some(Expr([
+        Path(PathExpr(
+          steps: [
+            PrimaryExpr(Expr(Some(Expr([
+              Binary(BinaryExpr(
+                operator: Add,
+                left: PathExpr(
+                  steps: [
+                    PrimaryExpr(Literal(Integer((Positive, [
+                      1,
+                    ])))),
+                  ],
+                ),
+                right: PathExpr(
+                  steps: [
+                    PrimaryExpr(Literal(Integer((Positive, [
+                      1,
+                    ])))),
+                  ],
+                ),
+              )),
+            ])))),
+          ],
+        )),
+      ]))))),
+    ],
+  )),
+])))

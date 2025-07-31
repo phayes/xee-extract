@@ -1,0 +1,27 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"1 instance of xs:integer\")"
+---
+Ok(Path(PathExpr(
+  steps: [
+    PrimaryExpr(Expr(Some(Expr([
+      Apply(ApplyExpr(
+        path_expr: PathExpr(
+          steps: [
+            PrimaryExpr(Literal(Integer((Positive, [
+              1,
+            ])))),
+          ],
+        ),
+        operator: InstanceOf(Item(Item(
+          item_type: AtomicOrUnionType(Name(
+            name: "integer",
+            prefix: Some("xs"),
+            namespace: Some("http://www.w3.org/2001/XMLSchema"),
+          )),
+          occurrence: One,
+        ))),
+      )),
+    ])))),
+  ],
+)))

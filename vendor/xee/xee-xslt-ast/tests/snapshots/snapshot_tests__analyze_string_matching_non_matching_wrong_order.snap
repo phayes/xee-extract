@@ -1,0 +1,10 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:analyze-string xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" select=\"true()\" regex=\"foo\"><xsl:non-matching-substring>Nonmatching</xsl:non-matching-substring><xsl:matching-substring>Matching</xsl:matching-substring></xsl:analyze-string>\"#)"
+---
+Err(Unexpected(
+  span: Span(
+    start: 166,
+    end: 188,
+  ),
+))

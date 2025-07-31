@@ -1,0 +1,8 @@
+---
+source: xee-xpath-ast/src/parser/pattern.rs
+expression: "pattern::Pattern::parse(\"(/)\", &namespaces, &variable_names)"
+---
+Ok(Expr(Path(PathExpr(
+  root: AbsoluteSlash,
+  steps: [],
+))))

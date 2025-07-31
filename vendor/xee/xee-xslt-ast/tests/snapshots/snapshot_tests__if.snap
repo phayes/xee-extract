@@ -1,0 +1,33 @@
+---
+source: xee-xslt-ast/src/instruction.rs
+expression: "parse_sequence_constructor_item(r#\"<xsl:if xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" test=\"true()\">Hello</xsl:if>\"#)"
+---
+Ok(Instruction(If(If(
+  test: Expression(
+    xpath: XPath(Expr([
+      Path(PathExpr(
+        steps: [
+          PrimaryExpr(FunctionCall(FunctionCall(
+            name: OwnedName(
+              local_name_str: "true",
+              namespace_str: "http://www.w3.org/2005/xpath-functions",
+              prefix_str: "",
+            ),
+            arguments: [],
+          ))),
+        ],
+      )),
+    ])),
+    span: Span(
+      start: 63,
+      end: 69,
+    ),
+  ),
+  sequence_constructor: [
+    Content(Text("Hello")),
+  ],
+  span: Span(
+    start: 1,
+    end: 7,
+  ),
+))))

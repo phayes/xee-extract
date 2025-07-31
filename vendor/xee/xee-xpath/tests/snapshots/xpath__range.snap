@@ -1,0 +1,12 @@
+---
+source: xee-xpath-compiler/tests/xpath.rs
+expression: "run(\"1 to 5\")"
+---
+Ok(
+    Range(
+        Range {
+            start: 1,
+            end: 6,
+        },
+    ),
+)

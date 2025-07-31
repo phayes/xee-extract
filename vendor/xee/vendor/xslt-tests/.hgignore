@@ -1,0 +1,31 @@
+.DS_Store
+syntax: regexp
+.*_assessments.*
+syntax: glob
+*.orig
+admin/*output*.html
+admin/*output*.xml
+my tests/*
+*.~backup
+**/my_tests
+_DISABLE_HG.bat
+_ENABLE_HG.bat
+.project
+results/*
+XSLT30Tests.iml
+.com.apple.timemachine.supported
+exselt/*
+xgespräch.xml
+xgespraÌˆch.xml
+tests/sandp/tempresult.xml
+tests/insn/sort/sort-0001.xsl
+tests/misc/aspiring/report-overview.html
+report/exselt*
+tests/misc/unicode-90/_unicode-90-test-set.xsl
+tests/misc/unicode-90/report-overview.html
+tests/misc/unicode-90/unicode90-001.html
+tests/misc/regex-classes/_regex-classes-test-set.xslt
+tests/fn/json-to-xml/_json-to-xml-test-set.xslt
+tests/fn/xml-to-json/_xml-to-json-test-set.xslt
+tests/type/type/report-overview.html
+tests/decl/accumulator/_accumulator-test-set.xslt

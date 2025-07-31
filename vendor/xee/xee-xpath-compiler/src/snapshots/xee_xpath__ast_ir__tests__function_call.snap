@@ -1,0 +1,81 @@
+---
+source: xee-xpath/src/ast_ir.rs
+expression: "convert_expr_single(\"function($x) { $x + 1 }(3)\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v3",
+                ),
+                var_expr: Spanned {
+                    value: FunctionDefinition(
+                        FunctionDefinition {
+                            params: [
+                                Param {
+                                    name: Name(
+                                        "v0",
+                                    ),
+                                    type_: None,
+                                },
+                            ],
+                            return_type: None,
+                            body: Spanned {
+                                value: Binary(
+                                    Binary {
+                                        left: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v0",
+                                                ),
+                                            ),
+                                            span: 15..17,
+                                        },
+                                        op: Add,
+                                        right: Spanned {
+                                            value: Const(
+                                                Integer(
+                                                    1,
+                                                ),
+                                            ),
+                                            span: 20..21,
+                                        },
+                                    },
+                                ),
+                                span: 15..21,
+                            },
+                        },
+                    ),
+                    span: 0..23,
+                },
+                return_expr: Spanned {
+                    value: FunctionCall(
+                        FunctionCall {
+                            atom: Spanned {
+                                value: Variable(
+                                    Name(
+                                        "v3",
+                                    ),
+                                ),
+                                span: 0..23,
+                            },
+                            args: [
+                                Spanned {
+                                    value: Const(
+                                        Integer(
+                                            3,
+                                        ),
+                                    ),
+                                    span: 24..25,
+                                },
+                            ],
+                        },
+                    ),
+                    span: 0..0,
+                },
+            },
+        ),
+        span: 0..0,
+    },
+)

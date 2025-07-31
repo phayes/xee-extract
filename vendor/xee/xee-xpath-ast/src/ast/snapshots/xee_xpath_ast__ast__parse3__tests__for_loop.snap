@@ -1,0 +1,43 @@
+---
+source: xee-xpath-ast/src/ast/parse3.rs
+expression: "parse_expr_single(\"for $x in 1 to 2 return $x\")"
+---
+Ok(For(ForExpr(
+  var_name: Name(
+    name: "x",
+    prefix: None,
+    namespace: None,
+  ),
+  var_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(Expr(Some(Expr([
+        Binary(BinaryExpr(
+          operator: Range,
+          left: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                1,
+              ])))),
+            ],
+          ),
+          right: PathExpr(
+            steps: [
+              PrimaryExpr(Literal(Integer((Positive, [
+                2,
+              ])))),
+            ],
+          ),
+        )),
+      ])))),
+    ],
+  )),
+  return_expr: Path(PathExpr(
+    steps: [
+      PrimaryExpr(VarRef(Name(
+        name: "x",
+        prefix: None,
+        namespace: None,
+      ))),
+    ],
+  )),
+)))

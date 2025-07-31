@@ -1,0 +1,114 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"compare('a', 'b', ((), 'http://www.w3.org/2005/xpath-functions/collation/codepoint', ()))\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v5",
+                ),
+                var_expr: Spanned {
+                    value: Binary(
+                        Binary {
+                            left: Spanned {
+                                value: Const(
+                                    EmptySequence,
+                                ),
+                                span: 19..21,
+                            },
+                            op: Comma,
+                            right: Spanned {
+                                value: Const(
+                                    String(
+                                        "http://www.w3.org/2005/xpath-functions/collation/codepoint",
+                                    ),
+                                ),
+                                span: 23..83,
+                            },
+                        },
+                    ),
+                    span: 18..83,
+                },
+                return_expr: Spanned {
+                    value: Let(
+                        Let {
+                            name: Name(
+                                "v7",
+                            ),
+                            var_expr: Spanned {
+                                value: Binary(
+                                    Binary {
+                                        left: Spanned {
+                                            value: Variable(
+                                                Name(
+                                                    "v5",
+                                                ),
+                                            ),
+                                            span: 18..83,
+                                        },
+                                        op: Comma,
+                                        right: Spanned {
+                                            value: Const(
+                                                EmptySequence,
+                                            ),
+                                            span: 85..87,
+                                        },
+                                    },
+                                ),
+                                span: 18..87,
+                            },
+                            return_expr: Spanned {
+                                value: FunctionCall(
+                                    FunctionCall {
+                                        atom: Spanned {
+                                            value: Const(
+                                                StaticFunctionReference(
+                                                    StaticFunctionId(
+                                                        10,
+                                                    ),
+                                                    None,
+                                                ),
+                                            ),
+                                            span: 0..0,
+                                        },
+                                        args: [
+                                            Spanned {
+                                                value: Const(
+                                                    String(
+                                                        "a",
+                                                    ),
+                                                ),
+                                                span: 8..11,
+                                            },
+                                            Spanned {
+                                                value: Const(
+                                                    String(
+                                                        "b",
+                                                    ),
+                                                ),
+                                                span: 13..16,
+                                            },
+                                            Spanned {
+                                                value: Variable(
+                                                    Name(
+                                                        "v7",
+                                                    ),
+                                                ),
+                                                span: 18..87,
+                                            },
+                                        ],
+                                    },
+                                ),
+                                span: 0..89,
+                            },
+                        },
+                    ),
+                    span: 0..89,
+                },
+            },
+        ),
+        span: 0..89,
+    },
+)

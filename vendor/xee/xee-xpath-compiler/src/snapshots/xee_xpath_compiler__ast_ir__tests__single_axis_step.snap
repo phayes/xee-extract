@@ -1,0 +1,64 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_xpath(\"child::a\")"
+---
+Ok(
+    Spanned {
+        value: FunctionDefinition(
+            FunctionDefinition {
+                params: [
+                    Param {
+                        name: Name(
+                            "v0",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v1",
+                        ),
+                        type_: None,
+                    },
+                    Param {
+                        name: Name(
+                            "v2",
+                        ),
+                        type_: None,
+                    },
+                ],
+                return_type: None,
+                body: Spanned {
+                    value: Step(
+                        Step {
+                            step: Step {
+                                axis: Child,
+                                node_test: NameTest(
+                                    Name(
+                                        Spanned {
+                                            value: OwnedName {
+                                                local_name_str: "a",
+                                                namespace_str: "",
+                                                prefix_str: "",
+                                            },
+                                            span: 7..8,
+                                        },
+                                    ),
+                                ),
+                            },
+                            context: Spanned {
+                                value: Variable(
+                                    Name(
+                                        "v0",
+                                    ),
+                                ),
+                                span: 0..0,
+                            },
+                        },
+                    ),
+                    span: 0..8,
+                },
+            },
+        ),
+        span: 0..8,
+    },
+)

@@ -1,0 +1,14 @@
+- [x] acos
+- [x] asin
+- [x] atan
+- [x] atan2
+- [x] cos
+- [x] exp
+- [x] exp10
+- [x] log
+- [x] log10
+- [x] pi
+- [x] pow
+- [x] sin
+- [x] sqrt
+- [x] tan

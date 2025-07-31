@@ -1,0 +1,42 @@
+---
+source: xee-xpath-compiler/src/ast_ir.rs
+expression: "convert_expr_single(\"let $x := 1 return $x\")"
+---
+Ok(
+    Spanned {
+        value: Let(
+            Let {
+                name: Name(
+                    "v0",
+                ),
+                var_expr: Spanned {
+                    value: Atom(
+                        Spanned {
+                            value: Const(
+                                Integer(
+                                    1,
+                                ),
+                            ),
+                            span: 10..11,
+                        },
+                    ),
+                    span: 10..11,
+                },
+                return_expr: Spanned {
+                    value: Atom(
+                        Spanned {
+                            value: Variable(
+                                Name(
+                                    "v0",
+                                ),
+                            ),
+                            span: 19..21,
+                        },
+                    ),
+                    span: 19..21,
+                },
+            },
+        ),
+        span: 0..21,
+    },
+)

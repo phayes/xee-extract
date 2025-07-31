@@ -1,0 +1,17 @@
+---
+source: xee-xpath-ast/src/ast/parse_ast.rs
+expression: "parse_xpath_no_default_ns(\"1 + 2 +\")"
+---
+Err(
+    ParseError {
+        src: "1 + 2 +",
+        span: SourceSpan {
+            offset: SourceOffset(
+                7,
+            ),
+            length: SourceOffset(
+                0,
+            ),
+        },
+    },
+)
