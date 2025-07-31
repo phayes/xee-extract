@@ -1,6 +1,38 @@
 [package]
 name = "xee-extract"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+xee-xpath = { path = "vendor/xee/xee-xpath" }
+xee-interpreter = { path = "vendor/xee/xee-interpreter" }
+xot = "0.31.2"
+xee-extract-macros = { path = "xee-extract-macros" }
+
+[workspace]
+members = ["xee-extract-macros"]
+resolver = "2"
+
+[workspace.dependencies]
+anyhow = "1.0.97"
+xot = "0.31.2"
+ahash = "0.8.11"
+strum = { version = "0.27", features = ["derive"] }
+clap = "4.5.32"
+ibig = "0.3.6"
+ordered-float = "5.0.0"
+rust_decimal = "1.36.0"
+rust_decimal_macros = "1.36.0"
+chumsky = "=1.0.0-alpha.8"
+icu = "1.5.0"
+icu_provider_adapters = "1.5.0"
+serde = "1"
+chrono = "0.4.40"
+blanket = "0.4.0"
+thiserror = "2.0.12"
+regexml = "0.2.1"
+regex = "1.11.1"
+iri-string = "0.7.7"
+json = "0.12.4"
+insta = "1.42.2"
+ron = "0.8.1"

@@ -4,7 +4,7 @@
 //! deserialize XML documents into Rust structs using XPath expressions.
 
 use std::str::FromStr;
-use xee_xpath::{Documents, Item, Queries, Itemable};
+use xee_xpath::{Documents, Item, Itemable};
 
 /// Trait for deserializing a type from an XPath item
 pub trait XeeExtractDeserialize: Sized {
@@ -36,6 +36,7 @@ pub struct Extractor {
     variables: std::collections::HashMap<String, String>,
 }
 
+#[derive(Debug)]
 pub enum Error {
     InvalidXPath(String),
     DeserializationError(String),
@@ -54,6 +55,8 @@ impl From<xee_interpreter::error::Error> for Error {
         Error::XeeInterpreterError(err)
     }
 }
+
+impl std::error::Error for Error {}
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -117,7 +120,7 @@ mod tests {
         
         // This is a simple test to verify the basic structure works
         // The actual XPath extraction will be implemented in the macro
-        let result: Result<String> = extractor.extract_one(xml);
+        let result: Result<String, Error> = extractor.extract_one(xml);
 
         match result {
             Ok(value) => assert_eq!(value, "42"),
