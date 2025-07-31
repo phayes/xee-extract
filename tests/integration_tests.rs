@@ -12,27 +12,6 @@ struct Book {
     author: String,
 
     #[xpath("//book/price/text()")]
-    price: String,
-
-    #[xpath("//book/@genre")]
-    genre: Option<String>,
-
-    #[xpath("//book/tags/tag/text()")]
-    tags: Vec<String>,
-}
-
-#[derive(XeeExtract, Debug, PartialEq)]
-struct BookWithNumericPrice {
-    #[xpath("//book/@id")]
-    id: String,
-
-    #[xpath("//book/title/text()")]
-    title: String,
-
-    #[xpath("//book/author/text()")]
-    author: String,
-
-    #[xpath("//book/price/text()")]
     price: f64,
 
     #[xpath("//book/@genre")]
@@ -105,7 +84,7 @@ fn test_book_extraction() {
     assert_eq!(book.id, "B001");
     assert_eq!(book.title, "The Rust Programming Language");
     assert_eq!(book.author, "Steve Klabnik");
-    assert_eq!(book.price, "39.99");
+    assert_eq!(book.price, 39.99);
     assert_eq!(book.genre, Some("fiction".to_string()));
     assert_eq!(book.tags, vec!["programming", "rust", "systems"]);
 }
@@ -126,7 +105,7 @@ fn test_book_without_optional_fields() {
     assert_eq!(book.id, "B002");
     assert_eq!(book.title, "Programming Rust");
     assert_eq!(book.author, "Jim Blandy");
-    assert_eq!(book.price, "45.50");
+    assert_eq!(book.price, 45.50);
     assert_eq!(book.genre, None);
     assert_eq!(book.tags, Vec::<String>::new());
 }
