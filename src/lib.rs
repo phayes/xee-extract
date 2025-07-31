@@ -112,6 +112,7 @@ pub use xee_extract_macros::XeeExtract;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate as xee_extract;
 
     #[derive(XeeExtract, Debug, PartialEq)]
     struct SimpleStruct {
