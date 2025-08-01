@@ -56,11 +56,6 @@ where
     }
 }
 
-/// Extractor for XML documents using XPath expressions
-pub struct Extractor {
-    pub variables: std::collections::HashMap<String, String>,
-}
-
 #[derive(Debug)]
 pub enum Error {
     InvalidXPath(String),
@@ -109,10 +104,17 @@ impl std::fmt::Display for Error {
     }
 }
 
+/// Extractor for XML documents using XPath expressions
+pub struct Extractor {
+    context: Option<String>,
+    variables: std::collections::HashMap<String, String>,
+}
+
 impl Extractor {
     /// Create a new extractor
     pub fn new() -> Self {
         Self {
+            context: None,
             variables: std::collections::HashMap::new(),
         }
     }
