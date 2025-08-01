@@ -39,31 +39,6 @@ pub trait XeeExtract: Sized {
     }
 }
 
-pub trait XeeExtractMarker: Any {
-    fn as_any(&self) -> &dyn Any;
-}
-
-/// Helper function to check if a value is of a specific type
-pub fn is_xee_extract<T: XeeExtractMarker + 'static>(x: &dyn XeeExtractMarker) -> bool {
-    x.as_any().is::<T>()
-}
-
-/// Helper function to downcast a XeeExtractMarker to a specific type
-pub fn downcast_xee_extract<T: XeeExtractMarker + 'static>(x: &dyn XeeExtractMarker) -> Option<&T> {
-    x.as_any().downcast_ref::<T>()
-}
-
-/// Helper function to downcast a boxed XeeExtractMarker to a specific type
-pub fn downcast_boxed_xee_extract<T: XeeExtractMarker + 'static>(x: Box<dyn XeeExtractMarker>) -> Result<Box<T>, Box<dyn XeeExtractMarker>> {
-    if x.as_any().is::<T>() {
-        // SAFETY: We just checked that x is of type T
-        let raw = Box::into_raw(x);
-        Ok(unsafe { Box::from_raw(raw as *mut T) })
-    } else {
-        Err(x)
-    }
-}
-
 /// Trait for deserializing a type from an XPath item
 pub trait XeeExtractDeserialize: Sized {
     /// Deserialize a value from an XPath item
@@ -71,10 +46,6 @@ pub trait XeeExtractDeserialize: Sized {
         documents: &mut Documents,
         item: &Item,
     ) -> Result<Self, Error>;
-
-    fn as_xee_extract(&self) -> Option<&dyn XeeExtractMarker> {
-        None
-    }
 }
 
 /// Default XeeExtractDeserialize impl that punts to FromStr
