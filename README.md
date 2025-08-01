@@ -103,6 +103,20 @@ struct Foo {
 
 ## Struct attributes
 
+### `#[context(expression)]`
+
+Provide a custom context for the xpath expressions in this struct. By default top-level struct expressions are evaluated using the default root node, and child-structs are evaluated using the their extraction node as context. 
+
+This can be useful when you have a struct that might be extracted as a child-node that is part of a larger structure, but also might be extracted on it's own.
+
+```rust
+#[context("(if self::entry then self else /entry)")]
+struct Entry {
+    #[xpath("id/text()")]
+    id: String,
+}
+```
+
 ### `#[ns(name = "url")]`
 
 Add namespaces for all xpath expressions. This has no effect if placed on a child struct (child structs inherit their parents namespaces when extracting via the parent). 
@@ -118,16 +132,14 @@ struct Foo {
 }
 ```
 
-### `#[context(expression)]`
+### `#[default_ns(name = "url")]`
 
-Provide a custom context for the xpath expressions in this struct. By default top-level struct expressions are evaluated using the default root node, and child-structs are evaluated using the their extraction node as context. 
-
-This can be useful when you have a struct that might be extracted as a child-node that is part of a larger structure, but also might be extracted on it's own.
+Set the default namespace for xpath queries. 
 
 ```rust
-#[context("(if self::entry then self else /entry)")]
-struct Entry {
-    #[xpath("id/text()")]
-    id: String,
+#[default_ns(atom = "http://www.w3.org/2005/Atom"]
+struct Foo {
+    #[xpath("name/text()")]
+    name: String,
 }
 ```
