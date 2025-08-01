@@ -1,44 +1,33 @@
 # xee-extract
 
-A powerful Rust crate for XPath-driven XML data extraction using the Xee engine. This crate provides a procedural macro `Extract` that allows you to deserialize XML documents into Rust structs using XPath expressions.
-
-## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-xee-extract = "0.1.0"
-```
+Declarative data extraction from large XML documents using Xpath. 
 
 ## Quick Start
-
-Here's a simple example to get you started:
 
 ```rust
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleEntry {
-    #[xpath("//id/text()")]
+    #[xee(xpath = "//id/text()")]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath = "//title/text()")]
     title: String,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath = "//category/@term")]
     category: Option<String>,
 
-    #[extract("//author")]
+    #[xee(extract = "//author")]
     author: Author,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Author {
-    #[xpath("name/text()")]
+    #[xee(xpath = "name/text()")]
     name: String,
 
-    #[xpath("email/text()")]
+    #[xee(xpath = "email/text()")]
     email: Option<String>,
 }
 
@@ -67,120 +56,66 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## Attributes
+## Field Attributes
 
-### `#[xpath(expression)]`
+### `#[xee(xpath = "expression")]`
 
-Extract a single value using an XPath expression:
+Extract a single value using an XPath expression.
 
 ```rust
-#[xpath("//title/text()")]
+#[xee(xpath = "//title/text()")]
 title: String,
-
-#[xpath("//category/@term")]
-category: Option<String>,
 ```
 
-### `#[extract(expression)]`
+### `#[xee(extract = "expression")]`
 
-Extract a nested struct or vector of structs:
+Extract a nested struct or vector of structs.
 
 ```rust
-#[extract("//author")]
+#[xee(extract = "//author")]
 author: Author,
 
-#[extract("//book")]
+#[xee(extract = "//book")]
 books: Vec<Book>,
 ```
 
-### `#[xml(expression)]`
+### `#[xee(xml = "expression")]`
 
-Extract raw XML content:
+Extract raw XML content.
 
 ```rust
-#[xml("//content")]
+#[xee(xml = "//content")]
 content: String,
 
-#[xml("//metadata")]
+#[xee(xml = "//metadata")]
 metadata: Option<String>,
 ```
 
-## Error Handling
+## Struct attributes
 
-The crate provides two levels of error handling:
+### `#[xee(ns(name = "url"))]`
 
-### Basic Error Handling
-
-For simple error handling, use the standard `extract_one` method:
+Add namespaces for all xpath expressions. This has no effect if placed on a child struct (child structs inherit their parents namespaces when extracting via the parent). 
 
 ```rust
-let result: Result<SimpleEntry, Error> = extractor.extract_one(xml);
-match result {
-    Ok(entry) => println!("Success: {:?}", entry),
-    Err(error) => eprintln!("Error: {}", error),
-}
-```
-
-### Pretty Error Handling
-
-For user-friendly error messages with XML context, use the `extract_one_pretty` method:
-
-```rust
-let result: Result<SimpleEntry, ExtractorError> = extractor.extract_one_pretty(xml);
-match result {
-    Ok(entry) => println!("Success: {:?}", entry),
-    Err(error) => {
-        println!("Pretty error: {}", error);
-        // The error includes:
-        // - Human-readable error messages
-        // - XML context around the error location
-        // - Line number information when available
-        // - Additional context if provided
-    }
-}
-```
-
-The `ExtractorError` provides rich error information including:
-- **XML Context**: Shows the relevant XML snippet around the error location
-- **Line Numbers**: Indicates approximately where the error occurred
-- **Error Types**: Distinguishes between XPath errors, XML parsing errors, and deserialization errors
-- **Additional Context**: Allows you to add custom context information
-
-### Error Types
-
-- `InvalidXPath`: Invalid XPath expressions
-- `DeserializationError`: Failed to convert XML values to Rust types
-- `SpannedError`: XPath errors with source location information
-- `XeeInterpreterError`: Low-level XPath interpreter errors
-- `DocumentsError`: XML document parsing errors
-
-## TODO - Showcase of what is not yet supported, but will be
-
- - namespace support
- - variable support
- - context support
-
-```rust
-use xee_extract::{Extractor, Extract};
-
-
-// Provides namespace registration
-#[xee_ns(
+#[ns(
    atom = "http://www.w3.org/2005/Atom",
    nlm = "https://id.nlm.nih.gov/datmm/",
    meta = "http://example.org/Meta"
 )]
+struct MyStruct{}
+```
 
-// Variables
-#[xee_var(
-   baseurl = "if ($env = 'production') then 'https://prod.api.org' else 'https://dev.api.org'",
-   short_id = "tokenize(atom:id, ':')[last()]"
-)]
+### `#[xee(context(expression))]`
 
-// Context for all xpaths
-#[xee_context("(if self::entry then self else /entry)")]
+Provide a custom context for the xpath expressions in this struct. By default top-level struct expressions are evaluated using the default root node, and child-structs are evaluated using the their extraction node as context. 
 
-#[derive(Extract, Debug)]
+This can be useful when you have a struct that might be extracted as a child-node that is part of a larger structure, but also might be extracted on it's own.
+
+```rust
+#[xee(context = "(if self::entry then self else /entry)")]
 struct Entry {
-    ...
+    #[xee(xpath = "id/text()")]
+    id: String,
 }
+```
