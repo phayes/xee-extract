@@ -51,97 +51,97 @@ impl std::fmt::Display for Error {
 
 /// A user-friendly error type that provides pretty error messages with XML context
 #[derive(Debug)]
-pub struct ExtractorError {
+pub struct ExtractError {
     /// The underlying core error
     pub error: Error,
-    /// The XML context around the error location
-    pub xml_context: Option<String>,
     /// Optional span information for highlighting the error location
-    pub span: Option<xee_interpreter::span::SourceSpan>,
+    pub span: Option<core::ops::Range<usize>>,
+    // The lines that the error occurred on
+    pub lines: Option<core::ops::Range<usize>>,
     /// Additional context about where the error occurred
     pub context: Option<String>,
 }
 
-impl ExtractorError {
+impl ExtractError {
     /// Create a new ExtractorError from a core Error
-    pub fn new(error: Error) -> Self {
+    pub fn new(error: Error, xml: &str) -> Self {
+
+        // Extract the span from the error
+        let span: Option<std::ops::Range<usize>> = match &error {
+            Error::SpannedError(ref e) => e.span.map(|s| s.range()),
+            Error::DocumentsError(ref e) => match e {
+                xee_xpath::error::DocumentsError::Parse(ref e) => Some(e.span().range()),
+                _ => None,
+            },
+            _ => None,
+        };
+
+        let mut lines = None;
+        if let Some(ref span) = span {
+            lines = Self::extract_lines(xml, span);
+        }
+
+        let mut context = None;
+        if let Some(ref span) = span {
+            context = Self::extract_xml_context(xml, span);
+        }
+
         Self {
             error,
-            xml_context: None,
-            span: None,
-            context: None,
+            span,
+            lines,
+            context,
         }
-    }
-
-    /// Create a new ExtractorError from a core Error with XML context
-    pub fn with_xml_context(error: Error, xml_context: String) -> Self {
-        Self {
-            error,
-            xml_context: Some(xml_context),
-            span: None,
-            context: None,
-        }
-    }
-
-    /// Create a new ExtractorError with span information
-    pub fn with_span(mut self, span: xee_interpreter::span::SourceSpan) -> Self {
-        self.span = Some(span);
-        self
-    }
-
-    /// Create a new ExtractorError with additional context
-    pub fn with_context(mut self, context: String) -> Self {
-        self.context = Some(context);
-        self
     }
 
     /// Extract the XML snippet around the error location if span is available
-    pub fn extract_xml_context(xml: &str, span: &xee_interpreter::span::SourceSpan) -> Option<String> {
-        let range = span.range();
-        
+    pub fn extract_xml_context(xml: &str, span: &core::ops::Range<usize>) -> Option<String> {
         // Find the start and end of the XML element containing the error
         let xml_bytes = xml.as_bytes();
-        let start = range.start.saturating_sub(200); // Look back 200 bytes
-        let end = (range.end + 200).min(xml_bytes.len()); // Look forward 200 bytes
-        
-        // Find the nearest complete XML element boundaries
-        let mut actual_start = start;
-        let mut actual_end = end;
-        
-        // Look for the start of an XML element before the error
-        for i in (start..range.start).rev() {
-            if i < xml_bytes.len() && xml_bytes[i] == b'<' {
-                actual_start = i;
-                break;
-            }
-        }
-        
-        // Look for the end of an XML element after the error
-        for i in range.end..end {
-            if i < xml_bytes.len() && xml_bytes[i] == b'>' {
-                actual_end = i + 1;
-                break;
-            }
-        }
+
+        // Go forward and backwards 100 characters from the span
+        let start = span.start.saturating_sub(100);
+        let end = span.end.saturating_add(100);
+
+        // Clamp the start and end to the length of the XML
+        let start = start.clamp(0, xml_bytes.len());
+        let end = end.clamp(0, xml_bytes.len());
         
         // Extract the XML snippet
-        if actual_start < actual_end && actual_end <= xml_bytes.len() {
-            let snippet = &xml_bytes[actual_start..actual_end];
+        if start < end && end <= xml_bytes.len() {
+            let snippet = &xml_bytes[start..end];
             let snippet_str = String::from_utf8_lossy(snippet).to_string();
-            
-            // If the snippet is too short, try to get more context
-            if snippet_str.len() < 50 {
-                let expanded_start = actual_start.saturating_sub(100);
-                let expanded_end = (actual_end + 100).min(xml_bytes.len());
-                if expanded_start < expanded_end && expanded_end <= xml_bytes.len() {
-                    let expanded_snippet = &xml_bytes[expanded_start..expanded_end];
-                    return String::from_utf8_lossy(expanded_snippet).to_string().into();
-                }
-            }
-            
             snippet_str.into()
         } else {
             None
+        }
+    }
+
+    /// Extract the lines that the error occurred on - zero-indexed
+    pub fn extract_lines(xml: &str, span: &core::ops::Range<usize>) -> Option<core::ops::Range<usize>> {
+        let mut byte_pos = 0;
+        let mut start_line = None;
+        let mut end_line = None;
+    
+        for (i, line) in xml.lines().enumerate() {
+            let line_len = line.len() + 1; // +1 for '\n'
+            let next_byte_pos = byte_pos + line_len;
+    
+            if start_line.is_none() && span.start < next_byte_pos {
+                start_line = Some(i);
+            }
+    
+            if span.end <= next_byte_pos {
+                end_line = Some(i + 1);
+                break;
+            }
+    
+            byte_pos = next_byte_pos;
+        }
+    
+        match (start_line, end_line) {
+            (Some(start), Some(end)) => Some(start..end),
+            _ => None,
         }
     }
 
@@ -175,42 +175,28 @@ impl ExtractorError {
                 message.push_str(&format!("XML document error: {}\n", err));
             }
         }
+
+        // Add lines if available
+        if let Some(lines) = &self.lines {
+            if lines.start == lines.end {
+                message.push_str(&format!("Line: {}\n", lines.start + 1));
+            } else {
+                message.push_str(&format!("Lines: {}-{}\n", lines.start + 1, lines.end + 1));
+            }
+        }
         
         // Add context if available
         if let Some(context) = &self.context {
             message.push_str(&format!("Context: {}\n", context));
         }
         
-        // Add XML context if available
-        if let Some(xml_snippet) = &self.xml_context {
-            message.push_str("\nRelevant XML context:\n");
-            message.push_str("```xml\n");
-            message.push_str(xml_snippet);
-            message.push_str("\n```\n");
-            
-            // Add pointer to the error location if we can determine it
-            if let Some(_span) = self.span {
-                // Calculate line number from the XML context
-                let line_count = xml_snippet.lines().count();
-                if line_count > 1 {
-                    message.push_str(&format!("Error occurred around line {}\n", line_count / 2));
-                }
-            } else {
-                // For errors without span info, still show some location info
-                let line_count = xml_snippet.lines().count();
-                if line_count > 1 {
-                    message.push_str(&format!("Error occurred in XML document ({} lines)\n", line_count));
-                }
-            }
-        }
-        
         message
     }
 }
 
-impl std::error::Error for ExtractorError {}
+impl std::error::Error for ExtractError {}
 
-impl std::fmt::Display for ExtractorError {
+impl std::fmt::Display for ExtractError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.pretty_message())
     }

@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract, ExtractorError};
+use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug)]
 struct SimpleBook {
@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
 
     let extractor = Extractor::new();
-    let result1: Result<SimpleBook, ExtractorError> = extractor.extract_one_pretty(xml1);
+    let result1: Result<SimpleBook, ExtractError> = extractor.extract_one(xml1);
     
     match result1 {
         Ok(book) => {
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </book>
     "#;
 
-    let result2: Result<SimpleBook, ExtractorError> = extractor.extract_one_pretty(xml2);
+    let result2: Result<SimpleBook, ExtractError> = extractor.extract_one(xml2);
     
     match result2 {
         Ok(_) => println!("Unexpected success!"),
@@ -68,7 +68,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </book>
     "#;
 
-    let result3: Result<SimpleBook, ExtractorError> = extractor.extract_one_pretty(xml3);
+    let result3: Result<SimpleBook, ExtractError> = extractor.extract_one(xml3);
     
     match result3 {
         Ok(_) => println!("Unexpected success!"),
@@ -81,7 +81,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n4. Error with empty XML:");
     let xml4 = "";
 
-    let result4: Result<SimpleBook, ExtractorError> = extractor.extract_one_pretty(xml4);
+    let result4: Result<SimpleBook, ExtractError> = extractor.extract_one(xml4);
     
     match result4 {
         Ok(_) => println!("Unexpected success!"),

@@ -1,4 +1,4 @@
-use xee_extract::{Error, Extractor, Extract};
+use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
@@ -58,7 +58,7 @@ fn test_missing_required_field_error() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -74,7 +74,7 @@ fn test_invalid_xml_error() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -89,7 +89,7 @@ fn test_missing_required_field_error_with_nested() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStructWithNested, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStructWithNested, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -105,7 +105,7 @@ fn test_missing_nested_struct_error() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStructWithNested, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStructWithNested, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -124,7 +124,7 @@ fn test_missing_required_field_in_nested_struct() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStructWithNested, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStructWithNested, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -140,7 +140,7 @@ fn test_invalid_xpath_expression() {
 
     let extractor = Extractor::new();
     // This would fail if we had an invalid XPath expression
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     // Should succeed with valid XML and XPath
     assert!(result.is_ok());
@@ -151,7 +151,7 @@ fn test_empty_xml_document() {
     let xml = "";
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -161,7 +161,7 @@ fn test_xml_with_only_whitespace() {
     let xml = "   \n   \t   ";
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -177,7 +177,7 @@ fn test_xml_with_malformed_tags() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     assert!(result.is_err());
 }
@@ -192,7 +192,7 @@ fn test_xml_with_invalid_characters() {
     "#;
 
     let extractor = Extractor::new();
-    let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
+    let result: Result<SimpleStruct, ExtractError> = extractor.extract_one(xml);
 
     // This should fail due to invalid XML characters
     assert!(result.is_err());

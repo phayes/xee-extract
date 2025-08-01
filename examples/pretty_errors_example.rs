@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract, ExtractorError};
+use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug)]
 struct Book {
@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
 
     let extractor = Extractor::new();
-    let result1: Result<Book, ExtractorError> = extractor.extract_one_pretty(xml1);
+    let result1: Result<Book, ExtractError> = extractor.extract_one(xml1);
     
     match result1 {
         Ok(_) => println!("Unexpected success!"),
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </book>
     "#;
 
-    let result2: Result<Book, ExtractorError> = extractor.extract_one_pretty(xml2);
+    let result2: Result<Book, ExtractError> = extractor.extract_one(xml2);
     
     match result2 {
         Ok(_) => println!("Unexpected success!"),
@@ -70,7 +70,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </book>
     "#;
 
-    let result3: Result<Book, ExtractorError> = extractor.extract_one_pretty(xml3);
+    let result3: Result<Book, ExtractError> = extractor.extract_one(xml3);
     
     match result3 {
         Ok(_) => println!("Unexpected success!"),
@@ -98,7 +98,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </book>
     "#;
 
-    let result4: Result<InvalidXPathBook, ExtractorError> = extractor.extract_one_pretty(xml4);
+    let result4: Result<InvalidXPathBook, ExtractError> = extractor.extract_one(xml4);
     
     match result4 {
         Ok(_) => println!("Unexpected success!"),
@@ -112,7 +112,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n5. Error with empty XML:");
     let xml5 = "";
 
-    let result5: Result<Book, ExtractorError> = extractor.extract_one_pretty(xml5);
+    let result5: Result<Book, ExtractError> = extractor.extract_one(xml5);
     
     match result5 {
         Ok(_) => println!("Unexpected success!"),
@@ -134,7 +134,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </book>
     "#;
 
-    let result6: Result<Book, ExtractorError> = extractor.extract_one_pretty(xml6);
+    let result6: Result<Book, ExtractError> = extractor.extract_one(xml6);
     
     match result6 {
         Ok(book) => {
