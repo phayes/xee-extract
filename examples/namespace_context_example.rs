@@ -6,7 +6,7 @@ use xee_extract::{Extractor, Extract};
     nlm = "https://id.nlm.nih.gov/datmm/",
     meta = "http://example.org/Meta"
 )]
-#[context("(if self::entry then self else /entry)")]
+#[context("(//entry)[1]")]
 struct Entry {
     #[xpath("atom:id/text()")]
     id: String,
@@ -22,6 +22,11 @@ struct Entry {
 }
 
 #[derive(Extract, Debug, PartialEq)]
+#[ns(
+    atom = "http://www.w3.org/2005/Atom",
+    nlm = "https://id.nlm.nih.gov/datmm/",
+    meta = "http://example.org/Meta"
+)]
 struct Author {
     #[xpath("atom:name/text()")]
     name: String,

@@ -1,29 +1,8 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
+#[context("if (self::book) then . else /book")]
 struct Book {
-    #[xpath("//book/@id")]
-    id: String,
-
-    #[xpath("//book/title/text()")]
-    title: String,
-
-    #[xpath("//book/author/text()")]
-    author: String,
-
-    #[xpath("//book/price/text()")]
-    price: f64,
-
-    #[xpath("//book/@genre")]
-    genre: Option<String>,
-
-    #[xpath("//book/tags/tag/text()")]
-    tags: Vec<String>,
-}
-
-// LibraryBook uses relative XPath expressions (for extraction from context)
-#[derive(Extract, Debug, PartialEq)]
-struct LibraryBook {
     #[xpath("@id")]
     id: String,
 
@@ -49,7 +28,7 @@ struct Library {
     name: String,
 
     #[extract("//library/books/book")]
-    books: Vec<LibraryBook>,
+    books: Vec<Book>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
