@@ -9,7 +9,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
 /// Derive macro for XPath-driven deserialization
-#[proc_macro_derive(XeeExtract, attributes(xpath, extract))]
+#[proc_macro_derive(XeeExtract, attributes(xpath, extract, xml))]
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -86,12 +86,12 @@ fn generate_field_extractions(
             .ok_or_else(|| syn::Error::new_spanned(field, "Expected named field"))?;
         
         // Find xpath or extract attribute
-        let (xpath_expr, is_extract) = find_xpath_or_extract_attribute(field)?;
+        let (xpath_expr, attr_type) = find_xpath_or_extract_attribute(field)?;
         
         field_names.push(quote! { #field_name });
         
         // Generate the extraction code based on the field type and attribute
-        let extraction = generate_field_extraction(field, &xpath_expr, is_extract)?;
+        let extraction = generate_field_extraction(field, &xpath_expr, attr_type)?;
         field_extractions.push(extraction);
         field_values.push(quote! { #field_name });
     }
@@ -111,12 +111,12 @@ fn generate_context_field_extractions(
             .ok_or_else(|| syn::Error::new_spanned(field, "Expected named field"))?;
         
         // Find xpath or extract attribute
-        let (xpath_expr, is_extract) = find_xpath_or_extract_attribute(field)?;
+        let (xpath_expr, attr_type) = find_xpath_or_extract_attribute(field)?;
         
         context_field_names.push(quote! { #field_name });
         
         // Generate the extraction code based on the field type and attribute
-        let extraction = generate_context_field_extraction(field, &xpath_expr, is_extract)?;
+        let extraction = generate_context_field_extraction(field, &xpath_expr, attr_type)?;
         context_field_extractions.push(extraction);
         context_field_values.push(quote! { #field_name });
     }
@@ -124,37 +124,50 @@ fn generate_context_field_extractions(
     Ok((quote! { #(#context_field_extractions)* }, context_field_names, context_field_values))
 }
 
-fn find_xpath_or_extract_attribute(field: &syn::Field) -> syn::Result<(String, bool)> {
+fn find_xpath_or_extract_attribute(field: &syn::Field) -> syn::Result<(String, AttributeType)> {
     // Check for xpath attribute first
     if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("xpath")) {
         let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
-        return Ok((xpath_expr, false));
+        return Ok((xpath_expr, AttributeType::XPath));
     }
     
     // Check for extract attribute
     if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("extract")) {
         let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
-        return Ok((xpath_expr, true));
+        return Ok((xpath_expr, AttributeType::Extract));
     }
     
-    Err(syn::Error::new_spanned(field, "Expected either xpath or extract attribute"))
+    // Check for xml attribute
+    if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("xml")) {
+        let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
+        return Ok((xpath_expr, AttributeType::Xml));
+    }
+    
+    Err(syn::Error::new_spanned(field, "Expected xpath, extract, or xml attribute"))
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum AttributeType {
+    XPath,
+    Extract,
+    Xml,
 }
 
 fn generate_context_field_extraction(
     field: &syn::Field,
     xpath_expr: &str,
-    is_extract: bool,
+    attr_type: AttributeType,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
     
     // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
-        generate_context_option_query(xpath_expr, field_type, is_extract)
+        generate_context_option_query(xpath_expr, field_type, attr_type)
     } else if is_vec_type(field_type) {
-        generate_context_vec_query(xpath_expr, field_type, is_extract)
+        generate_context_vec_query(xpath_expr, field_type, attr_type)
     } else {
-        generate_context_single_query(xpath_expr, field_type, is_extract)
+        generate_context_single_query(xpath_expr, field_type, attr_type)
     };
     
     Ok(quote! {
@@ -167,18 +180,18 @@ fn generate_context_field_extraction(
 fn generate_field_extraction(
     field: &syn::Field,
     xpath_expr: &str,
-    is_extract: bool,
+    attr_type: AttributeType,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
     
     // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
-        generate_option_query(xpath_expr, field_type, is_extract)
+        generate_option_query(xpath_expr, field_type, attr_type)
     } else if is_vec_type(field_type) {
-        generate_vec_query(xpath_expr, field_type, is_extract)
+        generate_vec_query(xpath_expr, field_type, attr_type)
     } else {
-        generate_single_query(xpath_expr, field_type, is_extract)
+        generate_single_query(xpath_expr, field_type, attr_type)
     };
     
     Ok(quote! {
@@ -236,262 +249,436 @@ fn extract_vec_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
     None
 }
 
-fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
-    if is_extract {
-        quote! {
-            let query = queries.one(#xpath_expr, |documents, item| {
-                // For extract attribute, use extract_from_context for efficiency
-                use xee_extract::XeeExtract;
-                <#field_type>::extract_from_context(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
+    match attr_type {
+        AttributeType::Extract => {
+            quote! {
+                let query = queries.one(#xpath_expr, |documents, item| {
+                    // For extract attribute, use extract_from_context for efficiency
+                    use xee_extract::XeeExtract;
+                    <#field_type>::extract_from_context(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
                             }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute(&mut documents, &item)?
+                        })
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
-    } else {
-        quote! {
-            let query = queries.one(#xpath_expr, |documents, item| {
-                use xee_extract::XeeExtractDeserialize;
-                <#field_type>::deserialize(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                            }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+        AttributeType::Xml => {
+            quote! {
+                let query = queries.one(#xpath_expr, |documents, item| {
+                    // For xml attribute, get the full XML serialization
+                    match item {
+                        xee_xpath::Item::Node(node) => {
+                            let xml_str = documents.xot().serialize_xml_string(
+                                xot::output::xml::Parameters {
+                                    indentation: Default::default(),
+                                    ..Default::default()
+                                },
+                                *node,
+                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            Ok(xml_str)
                         }
-                    })
-            })?;
-            query.execute(&mut documents, &item)?
+                        _ => {
+                            // For non-node items, fall back to string_value
+                            let xml_str = item.string_value(documents.xot())?;
+                            Ok(xml_str)
+                        }
+                    }
+                })?;
+                query.execute(&mut documents, &item)?
+            }
+        }
+        AttributeType::XPath => {
+            quote! {
+                let query = queries.one(#xpath_expr, |documents, item| {
+                    use xee_extract::XeeExtractDeserialize;
+                    <#field_type>::deserialize(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                            }
+                        })
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
     }
 }
 
-fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
+fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
     let inner_type = extract_option_inner_type(field_type)
         .expect("Option type should have inner type");
     
-    if is_extract {
-        quote! {
-            let query = queries.option(#xpath_expr, |documents, item| {
-                // For extract attribute, use extract_from_context for efficiency
-                use xee_extract::XeeExtract;
-                <#inner_type>::extract_from_context(documents, item)
-                    .map_err(|e| {
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+    match attr_type {
+        AttributeType::Extract => {
+            quote! {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    // For extract attribute, use extract_from_context for efficiency
+                    use xee_extract::XeeExtract;
+                    <#inner_type>::extract_from_context(documents, item)
+                        .map_err(|e| {
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
                             }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute(&mut documents, &item)?
+                        })
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
-    } else {
-        quote! {
-            let query = queries.option(#xpath_expr, |documents, item| {
-                use xee_extract::XeeExtractDeserialize;
-                <#inner_type>::deserialize(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                            }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+        AttributeType::Xml => {
+            quote! {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    // For xml attribute, get the full XML serialization
+                    match item {
+                        xee_xpath::Item::Node(node) => {
+                            let xml_str = documents.xot().serialize_xml_string(
+                                xot::output::xml::Parameters {
+                                    indentation: Default::default(),
+                                    ..Default::default()
+                                },
+                                *node,
+                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            Ok(xml_str)
                         }
-                    })
-            })?;
-            query.execute(&mut documents, &item)?
+                        _ => {
+                            // For non-node items, fall back to string_value
+                            let xml_str = item.string_value(documents.xot())?;
+                            Ok(xml_str)
+                        }
+                    }
+                })?;
+                query.execute(&mut documents, &item)?
+            }
+        }
+        AttributeType::XPath => {
+            quote! {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    use xee_extract::XeeExtractDeserialize;
+                    <#inner_type>::deserialize(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                            }
+                        })
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
     }
 }
 
-fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
+fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
     let inner_type = extract_vec_inner_type(field_type)
         .expect("Vec type should have inner type");
     
-    if is_extract {
-        quote! {
-            let query = queries.many(#xpath_expr, |documents, item| {
-                // For extract attribute, use extract_from_context for efficiency
-                use xee_extract::XeeExtract;
-                <#inner_type>::extract_from_context(documents, item)
-                    .map_err(|e| {
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+    match attr_type {
+        AttributeType::Extract => {
+            quote! {
+                let query = queries.many(#xpath_expr, |documents, item| {
+                    // For extract attribute, use extract_from_context for efficiency
+                    use xee_extract::XeeExtract;
+                    <#inner_type>::extract_from_context(documents, item)
+                        .map_err(|e| {
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
                             }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute(&mut documents, &item)?
+                        })
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
-    } else {
-        quote! {
-            let query = queries.many(#xpath_expr, |documents, item| {
-                use xee_extract::XeeExtractDeserialize;
-                <#inner_type>::deserialize(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                            }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+        AttributeType::Xml => {
+            quote! {
+                let query = queries.many(#xpath_expr, |documents, item| {
+                    // For xml attribute, get the full XML serialization
+                    match item {
+                        xee_xpath::Item::Node(node) => {
+                            let xml_str = documents.xot().serialize_xml_string(
+                                xot::output::xml::Parameters {
+                                    indentation: Default::default(),
+                                    ..Default::default()
+                                },
+                                *node,
+                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            Ok(xml_str)
                         }
-                    })
-            })?;
-            query.execute(&mut documents, &item)?
+                        _ => {
+                            // For non-node items, fall back to string_value
+                            let xml_str = item.string_value(documents.xot())?;
+                            Ok(xml_str)
+                        }
+                    }
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
-    }
-} 
-
-fn generate_context_single_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
-    if is_extract {
-        quote! {
-            let query = queries.one(#xpath_expr, |documents, item| {
-                // For extract attribute, use extract_from_context for efficiency
-                use xee_extract::XeeExtract;
-                <#field_type>::extract_from_context(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+        AttributeType::XPath => {
+            quote! {
+                let query = queries.many(#xpath_expr, |documents, item| {
+                    use xee_extract::XeeExtractDeserialize;
+                    <#inner_type>::deserialize(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
                             }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute_build_context(documents, |builder| {
-                builder.context_item(context_item.clone());
-            })?
-        }
-    } else {
-        quote! {
-            let query = queries.one(#xpath_expr, |documents, item| {
-                use xee_extract::XeeExtractDeserialize;
-                <#field_type>::deserialize(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                            }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute_build_context(documents, |builder| {
-                builder.context_item(context_item.clone());
-            })?
+                        })
+                })?;
+                query.execute(&mut documents, &item)?
+            }
         }
     }
 }
 
-fn generate_context_option_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
+fn generate_context_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
+    match attr_type {
+        AttributeType::Extract => {
+            quote! {
+                let query = queries.one(#xpath_expr, |documents, item| {
+                    // For extract attribute, use extract_from_context for efficiency
+                    use xee_extract::XeeExtract;
+                    <#field_type>::extract_from_context(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                            }
+                        })
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
+        }
+        AttributeType::Xml => {
+            quote! {
+                let query = queries.one(#xpath_expr, |documents, item| {
+                    // For xml attribute, get the full XML serialization
+                    match item {
+                        xee_xpath::Item::Node(node) => {
+                            let xml_str = documents.xot().serialize_xml_string(
+                                xot::output::xml::Parameters {
+                                    indentation: Default::default(),
+                                    ..Default::default()
+                                },
+                                *node,
+                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            Ok(xml_str)
+                        }
+                        _ => {
+                            // For non-node items, fall back to string_value
+                            let xml_str = item.string_value(documents.xot())?;
+                            Ok(xml_str)
+                        }
+                    }
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
+        }
+        AttributeType::XPath => {
+            quote! {
+                let query = queries.one(#xpath_expr, |documents, item| {
+                    use xee_extract::XeeExtractDeserialize;
+                    <#field_type>::deserialize(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                            }
+                        })
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
+        }
+    }
+}
+
+fn generate_context_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
     let inner_type = extract_option_inner_type(field_type)
         .expect("Option type should have inner type");
     
-    if is_extract {
-        quote! {
-            let query = queries.option(#xpath_expr, |documents, item| {
-                // For extract attribute, use extract_from_context for efficiency
-                use xee_extract::XeeExtract;
-                <#inner_type>::extract_from_context(documents, item)
-                    .map_err(|e| {
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+    match attr_type {
+        AttributeType::Extract => {
+            quote! {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    // For extract attribute, use extract_from_context for efficiency
+                    use xee_extract::XeeExtract;
+                    <#inner_type>::extract_from_context(documents, item)
+                        .map_err(|e| {
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
                             }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute_build_context(documents, |builder| {
-                builder.context_item(context_item.clone());
-            })?
+                        })
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
         }
-    } else {
-        quote! {
-            let query = queries.option(#xpath_expr, |documents, item| {
-                use xee_extract::XeeExtractDeserialize;
-                <#inner_type>::deserialize(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                            }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+        AttributeType::Xml => {
+            quote! {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    // For xml attribute, get the full XML serialization
+                    match item {
+                        xee_xpath::Item::Node(node) => {
+                            let xml_str = documents.xot().serialize_xml_string(
+                                xot::output::xml::Parameters {
+                                    indentation: Default::default(),
+                                    ..Default::default()
+                                },
+                                *node,
+                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            Ok(xml_str)
                         }
-                    })
-            })?;
-            query.execute_build_context(documents, |builder| {
-                builder.context_item(context_item.clone());
-            })?
+                        _ => {
+                            // For non-node items, fall back to string_value
+                            let xml_str = item.string_value(documents.xot())?;
+                            Ok(xml_str)
+                        }
+                    }
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
+        }
+        AttributeType::XPath => {
+            quote! {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    use xee_extract::XeeExtractDeserialize;
+                    <#inner_type>::deserialize(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                            }
+                        })
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
         }
     }
 }
 
-fn generate_context_vec_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
+fn generate_context_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
     let inner_type = extract_vec_inner_type(field_type)
         .expect("Vec type should have inner type");
     
-    if is_extract {
-        quote! {
-            let query = queries.many(#xpath_expr, |documents, item| {
-                // For extract attribute, use extract_from_context for efficiency
-                use xee_extract::XeeExtract;
-                <#inner_type>::extract_from_context(documents, item)
-                    .map_err(|e| {
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+    match attr_type {
+        AttributeType::Extract => {
+            quote! {
+                let query = queries.many(#xpath_expr, |documents, item| {
+                    // For extract attribute, use extract_from_context for efficiency
+                    use xee_extract::XeeExtract;
+                    <#inner_type>::extract_from_context(documents, item)
+                        .map_err(|e| {
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
                             }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                        }
-                    })
-            })?;
-            query.execute_build_context(documents, |builder| {
-                builder.context_item(context_item.clone());
-            })?
+                        })
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
         }
-    } else {
-        quote! {
-            let query = queries.many(#xpath_expr, |documents, item| {
-                use xee_extract::XeeExtractDeserialize;
-                <#inner_type>::deserialize(documents, item)
-                    .map_err(|e| {
-                        // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                        // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                        match e {
-                            xee_extract::Error::DeserializationError(msg) => {
-                                xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                            }
-                            _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+        AttributeType::Xml => {
+            quote! {
+                let query = queries.many(#xpath_expr, |documents, item| {
+                    // For xml attribute, get the full XML serialization
+                    match item {
+                        xee_xpath::Item::Node(node) => {
+                            let xml_str = documents.xot().serialize_xml_string(
+                                xot::output::xml::Parameters {
+                                    indentation: Default::default(),
+                                    ..Default::default()
+                                },
+                                *node,
+                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            Ok(xml_str)
                         }
-                    })
-            })?;
-            query.execute_build_context(documents, |builder| {
-                builder.context_item(context_item.clone());
-            })?
+                        _ => {
+                            // For non-node items, fall back to string_value
+                            let xml_str = item.string_value(documents.xot())?;
+                            Ok(xml_str)
+                        }
+                    }
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
+        }
+        AttributeType::XPath => {
+            quote! {
+                let query = queries.many(#xpath_expr, |documents, item| {
+                    use xee_extract::XeeExtractDeserialize;
+                    <#inner_type>::deserialize(documents, item)
+                        .map_err(|e| {
+                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
+                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
+                            match e {
+                                xee_extract::Error::DeserializationError(msg) => {
+                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
+                                }
+                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
+                            }
+                        })
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(context_item.clone());
+                })?
+            }
         }
     }
 } 
