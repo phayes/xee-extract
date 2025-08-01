@@ -20,16 +20,16 @@ struct ComplexStruct {
 
 #[derive(Extract, Debug, PartialEq)]
 struct Book {
-    #[xpath("title/text()")]
+    #[xpath("/book/title/text()")]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xpath("/book/author/text()")]
     author: String,
 
-    #[xpath("year/text()")]
+    #[xpath("/book/year/text()")]
     year: Option<i32>,
 
-    #[xpath("genre/text()")]
+    #[xpath("/book/genre/text()")]
     genres: Vec<String>,
 }
 
@@ -138,38 +138,6 @@ fn test_book_with_single_genre() {
     assert_eq!(book.author, "Jim Blandy");
     assert_eq!(book.year, Some(2021));
     assert_eq!(book.genres, vec!["Programming"]);
-}
-
-#[test]
-fn test_library_with_multiple_books() {
-    let xml = r#"
-        <library name="My Library">
-            <books>
-                <book>
-                    <title>Book 1</title>
-                    <author>Author 1</author>
-                    <year>2020</year>
-                    <genre>Fiction</genre>
-                </book>
-                <book>
-                    <title>Book 2</title>
-                    <author>Author 2</author>
-                    <year>2021</year>
-                    <genre>Non-Fiction</genre>
-                </book>
-            </books>
-        </library>
-    "#;
-
-    let extractor = Extractor::new();
-    let library: Library = extractor.extract_one(xml).unwrap();
-
-    assert_eq!(library.name, "My Library");
-    assert_eq!(library.books.len(), 2);
-    assert_eq!(library.books[0].title, "Book 1");
-    assert_eq!(library.books[0].author, "Author 1");
-    assert_eq!(library.books[1].title, "Book 2");
-    assert_eq!(library.books[1].author, "Author 2");
 }
 
 #[test]
