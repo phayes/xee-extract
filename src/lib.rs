@@ -5,7 +5,6 @@
 
 use std::str::FromStr;
 use xee_xpath::{Documents, Item};
-use std::any::Any;
 
 // Re-export the macro
 pub use xee_extract_macros::XeeExtract;
