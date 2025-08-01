@@ -20,14 +20,14 @@ struct Entry {
     #[xpath("if (exists(atom:subtitle)) then atom:subtitle else atom:title")]
     title: String,
 
-    //#[xpath("atom:author")]
-    //authors: Vec<Author>,
+    #[xpath("atom:author")]
+    authors: Vec<Author>,
 
     #[xpath("concat($baseurl, '/entry/', $short_id)")]
     url: Option<String>,
 
-    //#[xpath("//nlm:article-meta")]
-    //metadata: Metadata,
+    #[xpath("//nlm:article-meta")]
+    metadata: Metadata,
 
     #[xpath("atom:category/@term")]
     category: Option<String>,
@@ -71,14 +71,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("  Title: {}", entry.title);
     println!("  URL: {:?}", entry.url);
     println!("  Category: {:?}", entry.category);
-    //println!("  Authors:");
-    //for author in &entry.authors {
-    //    println!("    - {} ({:?})", author.name, author.homepage);
-    //}
-    //println!("  Metadata:");
-    //println!("    - First page: {:?}", entry.metadata.first_page);
-    //println!("    - Last page: {:?}", entry.metadata.last_page);
-    //println!("    - DOI: {:?}", entry.metadata.doi);
+    println!("  Authors:");
+    for author in &entry.authors {
+       println!("    - {} ({:?})", author.name, author.homepage);
+    }
+    println!("  Metadata:");
+    println!("    - First page: {:?}", entry.metadata.first_page);
+    println!("    - Last page: {:?}", entry.metadata.last_page);
+    println!("    - DOI: {:?}", entry.metadata.doi);
 
     Ok(())
 } 
