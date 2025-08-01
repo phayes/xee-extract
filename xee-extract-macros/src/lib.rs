@@ -175,7 +175,7 @@ fn generate_single_query(xpath_expr: &str, field_type: &syn::Type) -> proc_macro
                     }
                 })
         })?;
-        query.execute(documents, item)?
+        query.execute(&mut documents, &item)?
     }
 }
 
@@ -198,7 +198,7 @@ fn generate_option_query(xpath_expr: &str, field_type: &syn::Type) -> proc_macro
                     }
                 })
         })?;
-        query.execute(documents, item)?
+        query.execute(&mut documents, &item)?
     }
 }
 
@@ -221,6 +221,6 @@ fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type) -> proc_macro2::
                     }
                 })
         })?;
-        query.execute(documents, item)?
+        query.execute(&mut documents, &item)?
     }
 } 
