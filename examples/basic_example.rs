@@ -20,13 +20,13 @@ struct Entry {
     #[xpath("if (exists(atom:subtitle)) then atom:subtitle else atom:title")]
     title: String,
 
-    #[xpath("atom:author")]
+    #[extract("atom:author")]
     authors: Vec<Author>,
 
     #[xpath("concat($baseurl, '/entry/', $short_id)")]
     url: Option<String>,
 
-    #[xpath("//nlm:article-meta")]
+    #[extract("//nlm:article-meta")]
     metadata: Metadata,
 
     #[xpath("atom:category/@term")]

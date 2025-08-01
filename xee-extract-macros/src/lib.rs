@@ -9,7 +9,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
 /// Derive macro for XPath-driven deserialization
-#[proc_macro_derive(XeeExtract, attributes(xpath))]
+#[proc_macro_derive(XeeExtract, attributes(xpath, extract))]
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -69,10 +69,6 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 })
             }
         }
-
-        impl #impl_generics xee_extract::XeeExtractMarker for #name #ty_generics #where_clause {
-            fn as_any(&self) -> &dyn std::any::Any { self }
-        }
     };
     
     Ok(expanded)
@@ -89,20 +85,13 @@ fn generate_field_extractions(
         let field_name = field.ident.as_ref()
             .ok_or_else(|| syn::Error::new_spanned(field, "Expected named field"))?;
         
-        // Find xpath attribute
-        let xpath_expr = field.attrs.iter()
-            .find(|attr| attr.path().is_ident("xpath"))
-            .and_then(|attr| attr.parse_args::<syn::LitStr>().ok())
-            .map(|lit| lit.value())
-            .ok_or_else(|| syn::Error::new_spanned(field, "Expected xpath attribute"))?;
-        
-
-        // TODO: Validate xpath expression here
+        // Find xpath or extract attribute
+        let (xpath_expr, is_extract) = find_xpath_or_extract_attribute(field)?;
         
         field_names.push(quote! { #field_name });
         
-        // Generate the extraction code based on the field type
-        let extraction = generate_field_extraction(field, &xpath_expr)?;
+        // Generate the extraction code based on the field type and attribute
+        let extraction = generate_field_extraction(field, &xpath_expr, is_extract)?;
         field_extractions.push(extraction);
         field_values.push(quote! { #field_name });
     }
@@ -121,20 +110,13 @@ fn generate_context_field_extractions(
         let field_name = field.ident.as_ref()
             .ok_or_else(|| syn::Error::new_spanned(field, "Expected named field"))?;
         
-        // Find xpath attribute
-        let xpath_expr = field.attrs.iter()
-            .find(|attr| attr.path().is_ident("xpath"))
-            .and_then(|attr| attr.parse_args::<syn::LitStr>().ok())
-            .map(|lit| lit.value())
-            .ok_or_else(|| syn::Error::new_spanned(field, "Expected xpath attribute"))?;
-        
-
-        // TODO: Validate xpath expression here
+        // Find xpath or extract attribute
+        let (xpath_expr, is_extract) = find_xpath_or_extract_attribute(field)?;
         
         context_field_names.push(quote! { #field_name });
         
-        // Generate the extraction code based on the field type
-        let extraction = generate_context_field_extraction(field, &xpath_expr)?;
+        // Generate the extraction code based on the field type and attribute
+        let extraction = generate_context_field_extraction(field, &xpath_expr, is_extract)?;
         context_field_extractions.push(extraction);
         context_field_values.push(quote! { #field_name });
     }
@@ -142,27 +124,37 @@ fn generate_context_field_extractions(
     Ok((quote! { #(#context_field_extractions)* }, context_field_names, context_field_values))
 }
 
+fn find_xpath_or_extract_attribute(field: &syn::Field) -> syn::Result<(String, bool)> {
+    // Check for xpath attribute first
+    if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("xpath")) {
+        let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
+        return Ok((xpath_expr, false));
+    }
+    
+    // Check for extract attribute
+    if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("extract")) {
+        let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
+        return Ok((xpath_expr, true));
+    }
+    
+    Err(syn::Error::new_spanned(field, "Expected either xpath or extract attribute"))
+}
+
 fn generate_context_field_extraction(
     field: &syn::Field,
     xpath_expr: &str,
+    is_extract: bool,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
     
-    // Check if the field type implements XeeExtract
-    let implements_xee_extract = check_implements_xee_extract(field_type);
-    
-    // Generate the appropriate query based on the field type
+    // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
-        let inner_type = extract_option_inner_type(field_type).unwrap();
-        let inner_implements_xee_extract = check_implements_xee_extract(inner_type);
-        generate_context_option_query(xpath_expr, field_type, inner_implements_xee_extract)
+        generate_context_option_query(xpath_expr, field_type, is_extract)
     } else if is_vec_type(field_type) {
-        let inner_type = extract_vec_inner_type(field_type).unwrap();
-        let inner_implements_xee_extract = check_implements_xee_extract(inner_type);
-        generate_context_vec_query(xpath_expr, field_type, inner_implements_xee_extract)
+        generate_context_vec_query(xpath_expr, field_type, is_extract)
     } else {
-        generate_context_single_query(xpath_expr, field_type, implements_xee_extract)
+        generate_context_single_query(xpath_expr, field_type, is_extract)
     };
     
     Ok(quote! {
@@ -175,24 +167,18 @@ fn generate_context_field_extraction(
 fn generate_field_extraction(
     field: &syn::Field,
     xpath_expr: &str,
+    is_extract: bool,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
     
-    // Check if the field type implements XeeExtract
-    let implements_xee_extract = check_implements_xee_extract(field_type);
-    
-    // Generate the appropriate query based on the field type
+    // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
-        let inner_type = extract_option_inner_type(field_type).unwrap();
-        let inner_implements_xee_extract = check_implements_xee_extract(inner_type);
-        generate_option_query(xpath_expr, field_type, inner_implements_xee_extract)
+        generate_option_query(xpath_expr, field_type, is_extract)
     } else if is_vec_type(field_type) {
-        let inner_type = extract_vec_inner_type(field_type).unwrap();
-        let inner_implements_xee_extract = check_implements_xee_extract(inner_type);
-        generate_vec_query(xpath_expr, field_type, inner_implements_xee_extract)
+        generate_vec_query(xpath_expr, field_type, is_extract)
     } else {
-        generate_single_query(xpath_expr, field_type, implements_xee_extract)
+        generate_single_query(xpath_expr, field_type, is_extract)
     };
     
     Ok(quote! {
@@ -200,58 +186,6 @@ fn generate_field_extraction(
             #query_code
         };
     })
-}
-
-fn check_implements_xee_extract(ty: &syn::Type) -> bool {
-    // Extract the type name from the type
-    let type_name = extract_type_name(ty);
-    if type_name.is_none() {
-        return false;
-    }
-    let type_name = type_name.unwrap();
-    
-    // Use a more sophisticated heuristic that considers:
-    // 1. Standard library types that definitely don't implement XeeExtract
-    // 2. Common external crate types that don't implement XeeExtract
-    // 3. Custom types that likely do implement XeeExtract
-    
-    // Standard library types that don't implement XeeExtract
-    let std_types = [
-        // Primitives
-        "String", "i8", "i16", "i32", "i64", "i128", "isize", 
-        "u8", "u16", "u32", "u64", "u128", "usize", 
-        "f32", "f64", "bool", "char",
-        // Common std types
-        "Path", "PathBuf", "OsString", "OsStr", "CString", "CStr",
-        "Box", "Rc", "Arc", "Cell", "RefCell", "Mutex", "RwLock",
-        "Vec", "HashMap", "BTreeMap", "HashSet", "BTreeSet",
-        "Option", "Result", "Cow", "Pin", "PhantomData",
-    ];
-    
-    // External crate types that don't implement XeeExtract
-    let external_types = [
-        "Decimal", "BigInt", "BigUint", "I128", "U128",
-        "DateTime", "Duration", "NaiveDateTime", "Utc", "Local",
-        "Uuid", "Url", "Uri",
-    ];
-    
-    // If it's a standard library or external type, it doesn't implement XeeExtract
-    if std_types.contains(&type_name.as_str()) || external_types.contains(&type_name.as_str()) {
-        return false;
-    }
-    
-    // For custom types (not in std or external crates), assume they implement XeeExtract
-    // This is the most common case for user-defined structs
-    true
-}
-
-fn extract_type_name(ty: &syn::Type) -> Option<String> {
-    if let syn::Type::Path(type_path) = ty {
-        if let Some(segment) = type_path.path.segments.last() {
-            return Some(segment.ident.to_string());
-        }
-    }
-    None
 }
 
 fn is_option_type(ty: &syn::Type) -> bool {
@@ -302,11 +236,11 @@ fn extract_vec_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
     None
 }
 
-fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, implements_xee_extract: bool) -> proc_macro2::TokenStream {
-    if implements_xee_extract {
+fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
+    if is_extract {
         quote! {
             let query = queries.one(#xpath_expr, |documents, item| {
-                // For types that implement XeeExtract, use extract_from_context for efficiency
+                // For extract attribute, use extract_from_context for efficiency
                 use xee_extract::XeeExtract;
                 <#field_type>::extract_from_context(documents, item)
                     .map_err(|e| {
@@ -342,16 +276,16 @@ fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, implements_xe
     }
 }
 
-fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, inner_implements_xee_extract: bool) -> proc_macro2::TokenStream {
+fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
     let inner_type = extract_option_inner_type(field_type)
         .expect("Option type should have inner type");
     
-    if inner_implements_xee_extract {
+    if is_extract {
         quote! {
             let query = queries.option(#xpath_expr, |documents, item| {
-                // For types that implement XeeExtract, use extract_from_node
+                // For extract attribute, use extract_from_context for efficiency
                 use xee_extract::XeeExtract;
-                <#inner_type>::extract_from_node(documents, item)
+                <#inner_type>::extract_from_context(documents, item)
                     .map_err(|e| {
                         match e {
                             xee_extract::Error::DeserializationError(msg) => {
@@ -384,16 +318,16 @@ fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, inner_impleme
     }
 }
 
-fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, inner_implements_xee_extract: bool) -> proc_macro2::TokenStream {
+fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
     let inner_type = extract_vec_inner_type(field_type)
         .expect("Vec type should have inner type");
     
-    if inner_implements_xee_extract {
+    if is_extract {
         quote! {
             let query = queries.many(#xpath_expr, |documents, item| {
-                // For types that implement XeeExtract, use extract_from_node
+                // For extract attribute, use extract_from_context for efficiency
                 use xee_extract::XeeExtract;
-                <#inner_type>::extract_from_node(documents, item)
+                <#inner_type>::extract_from_context(documents, item)
                     .map_err(|e| {
                         match e {
                             xee_extract::Error::DeserializationError(msg) => {
@@ -426,11 +360,11 @@ fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, inner_implements
     }
 } 
 
-fn generate_context_single_query(xpath_expr: &str, field_type: &syn::Type, implements_xee_extract: bool) -> proc_macro2::TokenStream {
-    if implements_xee_extract {
+fn generate_context_single_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
+    if is_extract {
         quote! {
             let query = queries.one(#xpath_expr, |documents, item| {
-                // For types that implement XeeExtract, use extract_from_context for efficiency
+                // For extract attribute, use extract_from_context for efficiency
                 use xee_extract::XeeExtract;
                 <#field_type>::extract_from_context(documents, item)
                     .map_err(|e| {
@@ -470,14 +404,14 @@ fn generate_context_single_query(xpath_expr: &str, field_type: &syn::Type, imple
     }
 }
 
-fn generate_context_option_query(xpath_expr: &str, field_type: &syn::Type, inner_implements_xee_extract: bool) -> proc_macro2::TokenStream {
+fn generate_context_option_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
     let inner_type = extract_option_inner_type(field_type)
         .expect("Option type should have inner type");
     
-    if inner_implements_xee_extract {
+    if is_extract {
         quote! {
             let query = queries.option(#xpath_expr, |documents, item| {
-                // For types that implement XeeExtract, use extract_from_context for efficiency
+                // For extract attribute, use extract_from_context for efficiency
                 use xee_extract::XeeExtract;
                 <#inner_type>::extract_from_context(documents, item)
                     .map_err(|e| {
@@ -516,14 +450,14 @@ fn generate_context_option_query(xpath_expr: &str, field_type: &syn::Type, inner
     }
 }
 
-fn generate_context_vec_query(xpath_expr: &str, field_type: &syn::Type, inner_implements_xee_extract: bool) -> proc_macro2::TokenStream {
+fn generate_context_vec_query(xpath_expr: &str, field_type: &syn::Type, is_extract: bool) -> proc_macro2::TokenStream {
     let inner_type = extract_vec_inner_type(field_type)
         .expect("Vec type should have inner type");
     
-    if inner_implements_xee_extract {
+    if is_extract {
         quote! {
             let query = queries.many(#xpath_expr, |documents, item| {
-                // For types that implement XeeExtract, use extract_from_context for efficiency
+                // For extract attribute, use extract_from_context for efficiency
                 use xee_extract::XeeExtract;
                 <#inner_type>::extract_from_context(documents, item)
                     .map_err(|e| {

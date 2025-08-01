@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor, XeeExtractMarker, is_xee_extract, downcast_xee_extract, Error};
+use xee_extract::{XeeExtract, Extractor, Error};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct SimpleStruct {
@@ -238,37 +238,4 @@ fn test_extractor_with_multiple_variables() {
     assert_eq!(extractor.variables.get("var1"), Some(&"value1".to_string()));
     assert_eq!(extractor.variables.get("var2"), Some(&"value2".to_string()));
     assert_eq!(extractor.variables.get("var3"), Some(&"value3".to_string()));
-}
-
-#[test]
-fn test_marker_trait_functionality() {
-    let xml = r#"
-        <entry>
-            <id>123</id>
-            <title>Sample Title</title>
-            <category term="test"/>
-        </entry>
-    "#;
-    
-    let extractor = Extractor::new();
-    let result: SimpleStruct = extractor.extract_one(xml).unwrap();
-    
-    // Test that the marker trait works
-    let marker_ref: &dyn XeeExtractMarker = &result;
-    
-    // Test is_xee_extract function
-    assert!(is_xee_extract::<SimpleStruct>(marker_ref));
-    assert!(!is_xee_extract::<ComplexStruct>(marker_ref));
-    
-    // Test downcast_xee_extract function
-    let downcasted = downcast_xee_extract::<SimpleStruct>(marker_ref);
-    assert!(downcasted.is_some());
-    let downcasted = downcasted.unwrap();
-    assert_eq!(downcasted.id, "123");
-    assert_eq!(downcasted.title, "Sample Title");
-    assert_eq!(downcasted.category, Some("test".to_string()));
-    
-    // Test that downcasting to wrong type returns None
-    let wrong_downcast = downcast_xee_extract::<ComplexStruct>(marker_ref);
-    assert!(wrong_downcast.is_none());
 }

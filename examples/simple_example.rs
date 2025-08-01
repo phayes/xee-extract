@@ -1,6 +1,6 @@
 use xee_extract::{XeeExtract, Extractor};
 
-#[derive(XeeExtract, Debug)]
+#[derive(XeeExtract, Debug, PartialEq)]
 struct SimpleEntry {
     #[xpath("//id/text()")]
     id: String,
@@ -10,6 +10,18 @@ struct SimpleEntry {
 
     #[xpath("//category/@term")]
     category: Option<String>,
+
+    #[extract("//author")]
+    author: Author,
+}
+
+#[derive(XeeExtract, Debug, PartialEq)]
+struct Author {
+    #[xpath("name/text()")]
+    name: String,
+
+    #[xpath("email/text()")]
+    email: Option<String>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -18,6 +30,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             <id>123</id>
             <title>Sample Title</title>
             <category term="test"/>
+            <author>
+                <name>John Doe</name>
+                <email>john@example.com</email>
+            </author>
         </entry>
     "#;
     
@@ -30,6 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("  ID: {}", entry.id);
     println!("  Title: {}", entry.title);
     println!("  Category: {:?}", entry.category);
+    println!("  Author: {} ({:?})", entry.author.name, entry.author.email);
 
     Ok(())
 } 

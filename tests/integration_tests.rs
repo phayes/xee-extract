@@ -49,7 +49,7 @@ struct Library {
    #[xpath("//library/@name")]
    name: String,
 
-   #[xpath("//library/books/book")]
+   #[extract("//library/books/book")]
    books: Vec<LibraryBook>,
 }
 
