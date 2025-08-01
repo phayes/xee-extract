@@ -229,12 +229,12 @@ fn generate_field_extraction(
     // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
         let inner_type = extract_option_inner_type(field_type).expect("Option type should have inner type");
-        generate_unified_query(xpath_expr, inner_type, attr_type, context_var, quote! { option })
+        generate_unified_query(xpath_expr, inner_type, attr_type, context_var, quote! { option }, field_name)
     } else if is_vec_type(field_type) {
         let inner_type = extract_vec_inner_type(field_type).expect("Vec type should have inner type");
-        generate_unified_query(xpath_expr, inner_type, attr_type, context_var, quote! { many })
+        generate_unified_query(xpath_expr, inner_type, attr_type, context_var, quote! { many }, field_name)
     } else {
-        generate_unified_query(xpath_expr, field_type, attr_type, context_var, quote! { one })
+        generate_unified_query(xpath_expr, field_type, attr_type, context_var, quote! { one }, field_name)
     };
 
     let field_name_token = quote! { #field_name };
@@ -317,7 +317,9 @@ fn generate_unified_query(
     attr_type: AttributeType,
     context_var: &proc_macro2::TokenStream,
     query_method: proc_macro2::TokenStream,
+    field_name: &syn::Ident,
 ) -> proc_macro2::TokenStream {
+    let field_name_str = field_name.to_string();
     match attr_type {
         AttributeType::Extract => {
             quote! {
@@ -331,7 +333,7 @@ fn generate_unified_query(
                                     "http://github.com/Paligo/xee/errors".to_string(),
                                     "".to_string(),
                                 ),
-                                format!("Struct extraction failed for field #field_name: {}", e)
+                                format!("Struct extraction failed for field {}: {}", #field_name_str, e)
                             );
                             let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
                             xee_interpreter::error::SpannedError::from(error_value)
@@ -361,7 +363,7 @@ fn generate_unified_query(
                                         "http://github.com/Paligo/xee/errors".to_string(),
                                         "".to_string(),
                                     ),
-                                    format!("Failed to serialize XML for field #field_name: {}", e)
+                                    format!("Failed to serialize XML for field {}: {}", #field_name_str, e)
                                 );
                                 let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
                                 xee_interpreter::error::SpannedError::from(error_value)
@@ -394,7 +396,7 @@ fn generate_unified_query(
                                     "http://github.com/Paligo/xee/errors".to_string(),
                                     "".to_string(),
                                 ),
-                                format!("Error extracting value for field #field_name: {}", e)
+                                format!("Error extracting value for field {}: {}", #field_name_str, e)
                             );
                             let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
                             xee_interpreter::error::SpannedError::from(error_value)
