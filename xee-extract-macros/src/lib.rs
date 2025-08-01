@@ -322,22 +322,16 @@ fn generate_unified_query(
         AttributeType::Extract => {
             quote! {
                 let query = queries.#query_method(#xpath_expr, |documents, item| {
-                    // For extract attribute, use extract for efficiency
                     use xee_extract::Extract;
                     <#field_type>::extract(documents, item)
                         .map_err(|e| {
-                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                            // Use ApplicationError instead of FORG0001
                             let app_error = xee_interpreter::error::ApplicationError::new(
                                 xot::xmlname::OwnedName::new(
-                                    "extract-error".to_string(),
-                                    "http://xee-extract.org/errors".to_string(),
+                                    "extract-value-error".to_string(),
+                                    "http://github.com/Paligo/xee/errors".to_string(),
                                     "".to_string(),
                                 ),
-                                match e {
-                                    xee_extract::Error::DeserializationError(msg) => msg,
-                                    _ => "Extraction failed".to_string(),
-                                },
+                                format!("Struct extraction failed for field #field_name: {}", e)
                             );
                             let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
                             xee_interpreter::error::SpannedError::from(error_value)
@@ -360,14 +354,14 @@ fn generate_unified_query(
                                     ..Default::default()
                                 },
                                 *node,
-                            ).map_err(|_| {
+                            ).map_err(|e| {
                                 let app_error = xee_interpreter::error::ApplicationError::new(
                                     xot::xmlname::OwnedName::new(
-                                        "xml-serialization-error".to_string(),
-                                        "http://xee-extract.org/errors".to_string(),
+                                        "extract-value-error".to_string(),
+                                        "http://github.com/Paligo/xee/errors".to_string(),
                                         "".to_string(),
                                     ),
-                                    "Failed to serialize XML".to_string(),
+                                    format!("Failed to serialize XML for field #field_name: {}", e)
                                 );
                                 let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
                                 xee_interpreter::error::SpannedError::from(error_value)
@@ -397,13 +391,10 @@ fn generate_unified_query(
                             let app_error = xee_interpreter::error::ApplicationError::new(
                                 xot::xmlname::OwnedName::new(
                                     "extract-value-error".to_string(),
-                                    "http://xee-extract.org/errors".to_string(),
+                                    "http://github.com/Paligo/xee/errors".to_string(),
                                     "".to_string(),
                                 ),
-                                match e {
-                                    xee_extract::Error::DeserializationError(msg) => msg,
-                                    _ => "Value extraction failed".to_string(),
-                                },
+                                format!("Error extracting value for field #field_name: {}", e)
                             );
                             let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
                             xee_interpreter::error::SpannedError::from(error_value)
