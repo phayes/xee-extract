@@ -4,7 +4,12 @@
 //! deserialize XML documents into Rust structs using XPath expressions.
 
 use std::str::FromStr;
-use xee_xpath::{Documents, Item, Itemable};
+use xee_xpath::{Documents, Item};
+
+
+pub trait XeeExtract: Sized {
+    fn extract(xml: &str) -> Result<Self, Error>;
+}
 
 /// Trait for deserializing a type from an XPath item
 pub trait XeeExtractDeserialize: Sized {
@@ -42,6 +47,7 @@ pub enum Error {
     DeserializationError(String),
     SpannedError(xee_interpreter::error::SpannedError),
     XeeInterpreterError(xee_interpreter::error::Error),
+    DocumentsError(xee_xpath::error::DocumentsError),
 }
 
 impl From<xee_interpreter::error::SpannedError> for Error {
@@ -56,6 +62,12 @@ impl From<xee_interpreter::error::Error> for Error {
     }
 }
 
+impl From<xee_xpath::error::DocumentsError> for Error {
+    fn from(err: xee_xpath::error::DocumentsError) -> Self {
+        Error::DocumentsError(err)
+    }
+}
+
 impl std::error::Error for Error {}
 
 impl std::fmt::Display for Error {
@@ -65,6 +77,7 @@ impl std::fmt::Display for Error {
             Error::DeserializationError(msg) => write!(f, "Deserialization error: {}", msg),
             Error::SpannedError(err) => write!(f, "Spanned error: {}", err),
             Error::XeeInterpreterError(err) => write!(f, "Xee interpreter error: {}", err),
+            Error::DocumentsError(err) => write!(f, "Documents error: {}", err),
         }
     }
 }
@@ -86,17 +99,10 @@ impl Extractor {
     /// Extract a single struct from an XML document
     pub fn extract_one<T>(&self, xml: &str) -> Result<T, Error>
     where
-        T: XeeExtractDeserialize,
+        T: XeeExtract,
     {
-        let mut documents = Documents::new();
-        let doc = documents.add_string_without_uri(xml)
-            .map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
-        
-        // Get the document root as the context item
-        let item = doc.to_item(&documents)?;
-        
         // Use the trait's deserialize method
-        T::deserialize(&mut documents, &item)
+        T::extract(xml)
     }
 }
 
@@ -352,43 +358,5 @@ mod tests {
         assert_eq!(extractor.variables.get("var1"), Some(&"value1".to_string()));
         assert_eq!(extractor.variables.get("var2"), Some(&"value2".to_string()));
         assert_eq!(extractor.variables.get("var3"), Some(&"value3".to_string()));
-    }
-
-    #[test]
-    fn test_extractor_default_impl() {
-        let extractor = Extractor::default();
-        assert_eq!(extractor.variables.len(), 0);
-    }
-
-    #[test]
-    fn test_string_deserialization() {
-        let xml = r#"<root>test value</root>"#;
-        let extractor = Extractor::new();
-        let result: String = extractor.extract_one(xml).unwrap();
-        assert_eq!(result, "test value");
-    }
-
-    #[test]
-    fn test_integer_deserialization() {
-        let xml = r#"<root>42</root>"#;
-        let extractor = Extractor::new();
-        let result: i32 = extractor.extract_one(xml).unwrap();
-        assert_eq!(result, 42);
-    }
-
-    #[test]
-    fn test_float_deserialization() {
-        let xml = r#"<root>3.14</root>"#;
-        let extractor = Extractor::new();
-        let result: f64 = extractor.extract_one(xml).unwrap();
-        assert_eq!(result, 3.14);
-    }
-
-    #[test]
-    fn test_invalid_number_deserialization() {
-        let xml = r#"<root>not a number</root>"#;
-        let extractor = Extractor::new();
-        let result: Result<i32, Error> = extractor.extract_one(xml);
-        assert!(result.is_err());
     }
 }

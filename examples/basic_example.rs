@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, XeeExtractDeserialize, Extractor, Error};
+use xee_extract::{XeeExtract, Extractor};
 
 #[derive(XeeExtract, Debug)]
 //#[xpath(ns(

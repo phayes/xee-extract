@@ -32,12 +32,18 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let (field_extractions, field_names, field_values) = generate_field_extractions(fields)?;
     
     let expanded = quote! {
-        impl #impl_generics crate::XeeExtractDeserialize for #name #ty_generics #where_clause {
-            fn deserialize(
-                documents: &mut xee_xpath::Documents,
-                item: &xee_xpath::Item,
+        impl #impl_generics xee_extract::XeeExtract for #name #ty_generics #where_clause {
+            fn extract(
+                xml: &str,
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
+                let queries = Queries::default();
+                let mut documents = xee_xpath::Documents::new();
+                let doc = documents.add_string_without_uri(xml)?;
+
+                use xee_xpath::Itemable;
+                let item = doc.to_item(&mut documents)?;
+
                 #field_extractions
                 
                 Ok(Self {
@@ -100,7 +106,6 @@ fn generate_field_extraction(
     
     Ok(quote! {
         let #field_name = {
-            let queries = Queries::default();
             #query_code
         };
     })
