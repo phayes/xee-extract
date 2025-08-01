@@ -110,7 +110,7 @@ Provide a custom context for the xpath expressions in this struct. By default to
 This can be useful when you have a struct that might be extracted as a child-node that is part of a larger structure, but also might be extracted on it's own.
 
 ```rust
-#[context("(if self::entry then self else /entry)")]
+#[context("(if self::entry then . else /entry)")]
 struct Entry {
     #[xpath("id/text()")]
     id: String,
