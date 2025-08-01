@@ -2,29 +2,7 @@
 //!
 //! This module provides the `XeeExtract` derive macro that allows you to
 //! deserialize XML documents into Rust structs using XPath expressions.
-//!
-//! ## Improvements to Type Detection
-//!
-//! The `check_implements_xee_extract` function has been improved to use a more
-//! sophisticated heuristic approach that:
-//!
-//! 1. **Better Type Classification**: Separates standard library types, external
-//!    crate types, and custom types for more accurate detection
-//! 2. **Extensible Design**: Easy to add new type categories as needed
-//! 3. **Future-Ready**: Includes advanced functions for module-level analysis
-//!    when more context is available
-//!
-//! ## Advanced Module Analysis
-//!
-//! The module includes several advanced functions for analyzing trait implementations:
-//!
-//! - `find_impls_for_trait`: Finds trait implementations in a module structure
-//! - `check_implements_xee_extract_advanced`: Advanced analysis with module items
-//! - `check_implements_xee_extract_with_scope`: Recursive module analysis
-//!
-//! These functions demonstrate the approach suggested by the user for robust
-//! trait implementation detection.
-
+//! 
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use quote::quote;
@@ -275,92 +253,6 @@ fn extract_type_name(ty: &syn::Type) -> Option<String> {
     }
     None
 }
-
-// Note: The following functions were part of an advanced trait detection system
-// but are currently unused. They can be re-enabled if needed for future enhancements.
-//
-// /// Find implementations of a trait for a specific type in a module
-// /// This is a more robust approach that actually parses the code structure
-// /// as suggested by the user
-// fn find_impls_for_trait(module: &ItemMod, trait_name: &str, type_name: &str) -> bool {
-//     if let Some((_, items)) = &module.content {
-//         for item in items {
-//             if let Item::Impl(ItemImpl { trait_: Some((_, path, _)), self_ty, .. }) = item {
-//                 if path.segments.last().unwrap().ident == trait_name {
-//                     if let syn::Type::Path(type_path) = &**self_ty {
-//                         if type_path.path.segments.last().unwrap().ident == type_name {
-//                             return true;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     false
-// }
-//
-// /// Check if a type implements XeeExtract by analyzing the module structure
-// /// This is a more sophisticated approach that could be used in the future
-// /// when we have access to the full module tree
-// fn check_implements_xee_extract_advanced(ty: &syn::Type, module_items: &[Item]) -> bool {
-//     let type_name = extract_type_name(ty);
-//     if type_name.is_none() {
-//         return false;
-//     }
-//     let type_name = type_name.unwrap();
-//     
-//     // Look for impl XeeExtract for TypeName in the module items
-//     for item in module_items {
-//         if let Item::Impl(ItemImpl { trait_: Some((_, path, _)), self_ty, .. }) = item {
-//             if path.segments.last().unwrap().ident == "XeeExtract" {
-//                 if let syn::Type::Path(type_path) = &**self_ty {
-//                     if type_path.path.segments.last().unwrap().ident == type_name {
-//                         return true;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     
-//     false
-// }
-//
-// /// Enhanced version that can analyze a broader scope of items
-// /// This function can be used when we have access to more module information
-// fn check_implements_xee_extract_with_scope(ty: &syn::Type, items: &[Item]) -> bool {
-//     let type_name = extract_type_name(ty);
-//     if type_name.is_none() {
-//         return false;
-//         return false;
-//     }
-//     let type_name = type_name.unwrap();
-//     
-//     // First, check if this type has a direct impl of XeeExtract
-//     for item in items {
-//         match item {
-//             Item::Impl(ItemImpl { trait_: Some((_, path, _)), self_ty, .. }) => {
-//                 if path.segments.last().unwrap().ident == "XeeExtract" {
-//                     if let syn::Type::Path(type_path) = &**self_ty {
-//                         if type_path.path.segments.last().unwrap().ident == type_name {
-//                             return true;
-//                         }
-//                     }
-//                 }
-//             }
-//             Item::Mod(module) => {
-//                 // Recursively check submodules
-//                 if let Some((_, sub_items)) = &module.content {
-//                     if check_implements_xee_extract_with_scope(ty, sub_items) {
-//                         return true;
-//                     }
-//                 }
-//             }
-//             _ => {}
-//         }
-//     }
-//     
-//     false
-// }
 
 fn is_option_type(ty: &syn::Type) -> bool {
     if let syn::Type::Path(type_path) = ty {
