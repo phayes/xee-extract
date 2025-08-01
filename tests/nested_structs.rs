@@ -64,6 +64,27 @@ struct Company {
     employee_first_names: Vec<String>,
 }
 
+#[derive(Extract, Debug, PartialEq)]
+struct SimpleStruct {
+    #[xpath("//id/text()")]
+    id: String,
+
+    #[xpath("//title/text()")]
+    title: String,
+
+    #[extract("//nested")]
+    nested: NestedStruct,
+}
+
+#[derive(Extract, Debug, PartialEq)]
+struct NestedStruct {
+    #[xpath("value/text()")]
+    value: String,
+
+    #[xpath("optional/text()")]
+    optional: Option<String>,
+}
+
 #[test]
 fn test_book_extraction() {
     let xml = r#"
@@ -200,38 +221,6 @@ fn test_complex_nested_extraction() {
 }
 
 #[test]
-fn test_xpath_with_variables() {
-    let xml = r#"
-        <config>
-            <api>
-                <base_url>https://api.example.com</base_url>
-                <version>v1</version>
-            </api>
-            <user>
-                <id>U123</id>
-                <name>Test User</name>
-            </user>
-        </config>
-    "#;
-
-    let extractor = Extractor::new()
-        .with_variable("env", "production")
-        .with_variable("api_version", "v2");
-
-    // Test that variables can be set and accessed
-    // Note: The current implementation doesn't use variables in XPath expressions yet
-    // This test verifies the variable setting functionality
-    assert_eq!(
-        extractor.variables.get("env"),
-        Some(&"production".to_string())
-    );
-    assert_eq!(
-        extractor.variables.get("api_version"),
-        Some(&"v2".to_string())
-    );
-}
-
-#[test]
 fn test_standalone_book_extraction() {
     let xml = r#"
         <book id="B001" genre="fiction">
@@ -286,3 +275,46 @@ fn test_child_book_in_library_context() {
     assert_eq!(library.books[1].id, "B002");
     assert_eq!(library.books[1].title, "Book 2");
 }
+
+#[test]
+fn test_nested_extraction_with_new_attributes() {
+    let xml = r#"
+        <root>
+            <id>123</id>
+            <title>Test Title</title>
+            <nested>
+                <value>Nested Value</value>
+                <optional>Optional Value</optional>
+            </nested>
+        </root>
+    "#;
+
+    let extractor = Extractor::new();
+    let result: SimpleStruct = extractor.extract_one(xml).unwrap();
+
+    assert_eq!(result.id, "123");
+    assert_eq!(result.title, "Test Title");
+    assert_eq!(result.nested.value, "Nested Value");
+    assert_eq!(result.nested.optional, Some("Optional Value".to_string()));
+}
+
+#[test]
+fn test_nested_extraction_with_missing_optional() {
+    let xml = r#"
+        <root>
+            <id>123</id>
+            <title>Test Title</title>
+            <nested>
+                <value>Nested Value</value>
+            </nested>
+        </root>
+    "#;
+
+    let extractor = Extractor::new();
+    let result: SimpleStruct = extractor.extract_one(xml).unwrap();
+
+    assert_eq!(result.id, "123");
+    assert_eq!(result.title, "Test Title");
+    assert_eq!(result.nested.value, "Nested Value");
+    assert_eq!(result.nested.optional, None);
+} 

@@ -153,30 +153,6 @@ fn test_xml_attribute_empty_vector() {
 }
 
 #[test]
-fn test_xml_attribute_debug() {
-    let xml = r#"
-        <document>
-            <id>123</id>
-            <title>Test Document</title>
-            <content>
-                <p>This is some content</p>
-            </content>
-        </document>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-
-    println!("Content extracted: '{}'", result.content);
-    println!("Content length: {}", result.content.len());
-    println!("Content contains '<p>': {}", result.content.contains("<p>"));
-    println!(
-        "Content contains 'This is some content': {}",
-        result.content.contains("This is some content")
-    );
-}
-
-#[test]
 fn test_xml_attribute_simple() {
     let xml = r#"
         <document>
@@ -191,46 +167,9 @@ fn test_xml_attribute_simple() {
     let extractor = Extractor::new();
     let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
 
-    println!("ID: {}", result.id);
-    println!("Content: '{}'", result.content);
-}
-
-#[test]
-fn test_xml_attribute_debug_simple() {
-    let xml = r#"
-        <document>
-            <id>123</id>
-            <title>Test Document</title>
-            <content>
-                <p>This is some content</p>
-            </content>
-        </document>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-
-    println!("ID: {}", result.id);
-    println!("Content: '{}'", result.content);
-}
-
-#[test]
-fn test_xml_attribute_working_xpath() {
-    let xml = r#"
-        <document>
-            <id>123</id>
-            <title>Test Document</title>
-            <content>
-                <p>This is some content</p>
-            </content>
-        </document>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-
-    println!("ID: {}", result.id);
-    println!("Content: '{}'", result.content);
+    assert_eq!(result.id, "123");
+    assert_eq!(result.title, "Test Document");
+    assert!(result.content.contains("<p>This is some content</p>"));
 }
 
 #[test]
@@ -247,6 +186,6 @@ fn test_xml_attribute_simple_xpath() {
     let extractor = Extractor::new();
     let result: SimpleXmlTest = extractor.extract_one(xml).unwrap();
 
-    println!("ID: {}", result.id);
-    println!("Content: '{}'", result.content);
-}
+    assert_eq!(result.id, "123");
+    assert!(result.content.contains("<p>This is some content</p>"));
+} 

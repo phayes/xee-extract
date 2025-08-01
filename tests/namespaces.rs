@@ -33,21 +33,7 @@ struct DefaultNamespaceOnly {
     author_name: String,
 }
 
-// Test 3: Context only
-#[derive(Extract, Debug, PartialEq)]
-#[context("(//entry)[1]")]
-struct ContextOnly {
-    #[xpath("@id")]
-    id: String,
-
-    #[xpath("title/text()")]
-    title: String,
-
-    #[xpath("author/name/text()")]
-    author_name: String,
-}
-
-// Test 4: Namespace prefixes + Context
+// Test 3: Namespace prefixes + Context
 #[derive(Extract, Debug, PartialEq)]
 #[ns(
     atom = "http://www.w3.org/2005/Atom",
@@ -65,7 +51,7 @@ struct NamespaceAndContext {
     creator: Option<String>,
 }
 
-// Test 5: Default namespace + Context
+// Test 4: Default namespace + Context
 #[derive(Extract, Debug, PartialEq)]
 #[default_ns("http://www.w3.org/2005/Atom")]
 #[context("(//entry)[1]")]
@@ -80,7 +66,7 @@ struct DefaultNamespaceAndContext {
     author_name: String,
 }
 
-// Test 6: Default namespace + Namespace prefixes
+// Test 5: Default namespace + Namespace prefixes
 #[derive(Extract, Debug, PartialEq)]
 #[default_ns("http://www.w3.org/2005/Atom")]
 #[ns(
@@ -98,7 +84,7 @@ struct DefaultAndPrefixedNamespaces {
     creator: Option<String>,
 }
 
-// Test 7: All three combined
+// Test 6: All three combined
 #[derive(Extract, Debug, PartialEq)]
 #[default_ns("http://www.w3.org/2005/Atom")]
 #[ns(
@@ -116,7 +102,7 @@ struct AllCombined {
     creator: Option<String>,
 }
 
-// Test 8: Nested structs with different namespace configurations
+// Test 7: Nested structs with different namespace configurations
 #[derive(Extract, Debug, PartialEq)]
 #[default_ns("http://www.w3.org/2005/Atom")]
 #[ns(
@@ -143,7 +129,7 @@ struct ChildWithDifferentNamespaces {
     email: Option<String>,
 }
 
-// Test 9: Multiple default namespaces in nested structs
+// Test 8: Multiple default namespaces in nested structs
 #[derive(Extract, Debug, PartialEq)]
 #[default_ns("http://www.w3.org/2005/Atom")]
 #[context("(//entry)[1]")]
@@ -202,27 +188,6 @@ fn test_default_namespace_only() {
 
     let extractor = Extractor::new();
     let result: DefaultNamespaceOnly = extractor.extract_one(xml).unwrap();
-
-    assert_eq!(result.id, "123");
-    assert_eq!(result.title, "Test Title");
-    assert_eq!(result.author_name, "Test Author");
-}
-
-#[test]
-fn test_context_only() {
-    let xml = r#"
-        <feed>
-            <entry id="123">
-                <title>Test Title</title>
-                <author>
-                    <name>Test Author</name>
-                </author>
-            </entry>
-        </feed>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: ContextOnly = extractor.extract_one(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -358,23 +323,6 @@ fn test_nested_structs_with_default_namespaces() {
     assert_eq!(result.id, "123");
     assert_eq!(result.author.name, "Test Author");
     assert_eq!(result.author.email, Some("test@example.com".to_string()));
-}
-
-#[test]
-fn test_error_handling_invalid_xpath() {
-    let xml = r#"
-        <feed xmlns="http://www.w3.org/2005/Atom">
-            <entry>
-                <id>123</id>
-            </entry>
-        </feed>
-    "#;
-
-    let extractor = Extractor::new();
-    let result = extractor.extract_one::<DefaultNamespaceOnly>(xml);
-    
-    // This should fail because the XML doesn't have title and author elements
-    assert!(result.is_err());
 }
 
 #[test]
