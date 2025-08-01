@@ -5,7 +5,10 @@
 
 use std::str::FromStr;
 use xee_xpath::{Documents, Item};
-
+use std::any::Any;
+pub trait XeeExtractMarker: Any {
+    fn as_any(&self) -> &dyn Any;
+}
 
 pub trait XeeExtract: Sized {
     fn extract(xml: &str) -> Result<Self, Error>;
@@ -43,6 +46,10 @@ pub trait XeeExtractDeserialize: Sized {
         documents: &mut Documents,
         item: &Item,
     ) -> Result<Self, Error>;
+
+    fn as_xee_extract(&self) -> Option<&dyn XeeExtract> {
+        None
+    }
 }
 
 /// Default XeeExtractDeserialize impl that punts to FromStr
