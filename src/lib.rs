@@ -17,7 +17,7 @@ pub trait XeeExtract: Sized {
         match item {
             Item::Node(_) => {
                 // Use the new context-based extraction method
-                Self::extract_from_context(documents, item)
+                Self::extract(documents, item)
             }
             _ => {
                 return Result::Err(Error::InvalidXPath(
@@ -30,7 +30,7 @@ pub trait XeeExtract: Sized {
     /// Extract from a context item using XPath expressions relative to that item
     /// This is more efficient than extract_from_node as it doesn't require
     /// serialization to XML string and re-parsing
-    fn extract_from_context(documents: &mut Documents, context_item: &Item) -> Result<Self, Error> {
+    fn extract(documents: &mut Documents, context_item: &Item) -> Result<Self, Error> {
         // For now, fall back to the existing implementation
         // This will be overridden by the macro to use context-based extraction
         Self::extract_from_node(documents, context_item)
@@ -141,7 +141,7 @@ impl Extractor {
         let item = doc.to_item(&mut documents)?;
 
         // Use the trait's deserialize method
-        T::extract_from_context(&mut documents, &item)
+        T::extract(&mut documents, &item)
     }
 }
 
