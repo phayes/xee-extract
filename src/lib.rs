@@ -9,6 +9,29 @@ use xee_xpath::{Documents, Item};
 
 pub trait XeeExtract: Sized {
     fn extract(xml: &str) -> Result<Self, Error>;
+    
+    /// Extract from an XML node (for recursive extraction)
+    fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+        // For Node items, we need to extract the XML content and parse it
+        match item {
+            Item::Node(node) => {
+                // Convert the node to XML string using the correct method
+                let xml_str = documents.xot().serialize_xml_string(
+                    xot::output::xml::Parameters {
+                        indentation: Default::default(),
+                        ..Default::default()
+                    },
+                    *node,
+                )?;
+                Self::extract(&xml_str)
+            }
+            _ => {
+                // For non-Node items, fall back to string conversion
+                let xml_str = item.string_value(documents.xot())?;
+                Self::extract(&xml_str)
+            }
+        }
+    }
 }
 
 /// Trait for deserializing a type from an XPath item
@@ -65,6 +88,13 @@ impl From<xee_interpreter::error::Error> for Error {
 impl From<xee_xpath::error::DocumentsError> for Error {
     fn from(err: xee_xpath::error::DocumentsError) -> Self {
         Error::DocumentsError(err)
+    }
+}
+
+// Add conversion for xot serialize errors
+impl From<xot::Error> for Error {
+    fn from(_err: xot::Error) -> Self {
+        Error::XeeInterpreterError(xee_interpreter::error::Error::FODC0002)
     }
 }
 
