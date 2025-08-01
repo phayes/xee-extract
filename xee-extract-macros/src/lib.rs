@@ -9,7 +9,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
 /// Derive macro for XPath-driven deserialization
-#[proc_macro_derive(Extract, attributes(xpath, extract, xml))]
+#[proc_macro_derive(Extract, attributes(xpath, extract, xml, ns, context))]
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -36,8 +36,12 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         }
     };
 
+    // Parse namespace and context attributes
+    let namespaces = parse_namespace_attributes(&input.attrs)?;
+    let (context_stmt, context_var) = parse_context_attribute(&input.attrs)?;
+
     // Generate field extraction code
-    let (field_extractions, field_names, field_values) = generate_field_extractions(fields)?;
+    let (field_extractions, field_names, field_values) = generate_field_extractions(fields, &context_var)?;
 
     let expanded = quote! {
         impl #impl_generics xee_extract::Extract for #name #ty_generics #where_clause {
@@ -47,11 +51,12 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
 
-                //TODO: Add namespaces to the static context builder
-                //TODO: If context is declared using the context attribute, override the provided context_item (this updated context_item is evaulauated using the passed in context_item as the context for the context attribute)
-
-                let static_context_builder = xee_xpath::context::StaticContextBuilder::default();
+                // Build static context with namespaces
+                let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
+                #namespaces
                 let queries = Queries::new(static_context_builder);
+
+                #context_stmt
 
                 #field_extractions
 
@@ -65,8 +70,64 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     Ok(expanded)
 }
 
+fn parse_namespace_attributes(attrs: &[syn::Attribute]) -> syn::Result<proc_macro2::TokenStream> {
+    let ns_attr = attrs.iter().find(|attr| attr.path().is_ident("ns"));
+    
+    if let Some(attr) = ns_attr {
+        let mut namespace_pairs = Vec::new();
+        
+        // Parse the namespace attribute as a list of key-value pairs
+        attr.parse_nested_meta(|meta| {
+            let ident = meta.path.get_ident()
+                .ok_or_else(|| syn::Error::new_spanned(&meta.path, "Expected namespace prefix"))?;
+            let prefix = ident.to_string();
+            
+            let value = meta.value()?.parse::<syn::LitStr>()?;
+            let uri = value.value();
+            
+            namespace_pairs.push((prefix, uri));
+            Ok(())
+        })?;
+        
+        // Generate code to add namespaces to the static context builder
+        let namespace_code = namespace_pairs.iter().map(|(prefix, uri)| {
+            quote! {
+                static_context_builder.add_namespace(#prefix, #uri);
+            }
+        });
+        
+        Ok(quote! {
+            #(#namespace_code)*
+        })
+    } else {
+        Ok(quote! {})
+    }
+}
+
+fn parse_context_attribute(attrs: &[syn::Attribute]) -> syn::Result<(proc_macro2::TokenStream, proc_macro2::TokenStream)> {
+    let context_attr = attrs.iter().find(|attr| attr.path().is_ident("context"));
+    let var = quote! { effective_context_item };
+    if let Some(attr) = context_attr {
+        let context_expr = attr.parse_args::<syn::LitStr>()?.value();
+        Ok((
+            quote! {
+                let #var = {
+                    let context_query = queries.one(#context_expr, |documents, item| Ok(item.clone()))?;
+                    context_query.execute_build_context(documents, |builder| {
+                        builder.context_item(context_item.clone());
+                    })?
+                };
+            },
+            var,
+        ))
+    } else {
+        Ok((quote! { let #var = context_item; }, var))
+    }
+}
+
 fn generate_field_extractions(
     fields: &syn::Fields,
+    context_var: &proc_macro2::TokenStream,
 ) -> syn::Result<(
     proc_macro2::TokenStream,
     Vec<proc_macro2::TokenStream>,
@@ -88,7 +149,7 @@ fn generate_field_extractions(
         field_names.push(quote! { #field_name });
 
         // Generate the extraction code based on the field type and attribute
-        let extraction = generate_field_extraction(field, &xpath_expr, attr_type)?;
+        let extraction = generate_field_extraction(field, &xpath_expr, attr_type, context_var)?;
         field_extractions.push(extraction);
         field_values.push(quote! { #field_name });
     }
@@ -140,17 +201,18 @@ fn generate_field_extraction(
     field: &syn::Field,
     xpath_expr: &str,
     attr_type: AttributeType,
+    context_var: &proc_macro2::TokenStream,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
 
     // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
-        generate_option_query(xpath_expr, field_type, attr_type)
+        generate_option_query(xpath_expr, field_type, attr_type, context_var)
     } else if is_vec_type(field_type) {
-        generate_vec_query(xpath_expr, field_type, attr_type)
+        generate_vec_query(xpath_expr, field_type, attr_type, context_var)
     } else {
-        generate_single_query(xpath_expr, field_type, attr_type)
+        generate_single_query(xpath_expr, field_type, attr_type, context_var)
     };
 
     Ok(quote! {
@@ -212,6 +274,7 @@ fn generate_single_query(
     xpath_expr: &str,
     field_type: &syn::Type,
     attr_type: AttributeType,
+    context_var: &proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     match attr_type {
         AttributeType::Extract => {
@@ -231,7 +294,7 @@ fn generate_single_query(
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -258,7 +321,7 @@ fn generate_single_query(
                     }
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -279,7 +342,7 @@ fn generate_single_query(
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -290,6 +353,7 @@ fn generate_option_query(
     xpath_expr: &str,
     field_type: &syn::Type,
     attr_type: AttributeType,
+    context_var: &proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     let inner_type =
         extract_option_inner_type(field_type).expect("Option type should have inner type");
@@ -311,7 +375,7 @@ fn generate_option_query(
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -338,7 +402,7 @@ fn generate_option_query(
                     }
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -359,7 +423,7 @@ fn generate_option_query(
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -370,6 +434,7 @@ fn generate_vec_query(
     xpath_expr: &str,
     field_type: &syn::Type,
     attr_type: AttributeType,
+    context_var: &proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     let inner_type = extract_vec_inner_type(field_type).expect("Vec type should have inner type");
 
@@ -390,7 +455,7 @@ fn generate_vec_query(
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -417,7 +482,7 @@ fn generate_vec_query(
                     }
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
@@ -438,7 +503,7 @@ fn generate_vec_query(
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
-                    builder.context_item(context_item.clone());
+                    builder.context_item(#context_var.clone());
                 })?
             }
         }
