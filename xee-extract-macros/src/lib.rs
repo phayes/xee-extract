@@ -38,15 +38,11 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let expanded = quote! {
         impl #impl_generics xee_extract::XeeExtract for #name #ty_generics #where_clause {
             fn extract(
-                xml: &str,
+                documents: &mut xee_xpath::Documents,
+                item: xee_xpath::Item,
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
                 let queries = Queries::default();
-                let mut documents = xee_xpath::Documents::new();
-                let doc = documents.add_string_without_uri(xml)?;
-
-                use xee_xpath::Itemable;
-                let item = doc.to_item(&mut documents)?;
 
                 #field_extractions
                 
@@ -267,7 +263,7 @@ fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
                             }
                         })
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
         AttributeType::Xml => {
@@ -292,7 +288,7 @@ fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
                         }
                     }
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
         AttributeType::XPath => {
@@ -311,7 +307,7 @@ fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
                             }
                         })
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
     }
@@ -337,7 +333,7 @@ fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
                             }
                         })
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
         AttributeType::Xml => {
@@ -362,7 +358,7 @@ fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
                         }
                     }
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
         AttributeType::XPath => {
@@ -381,7 +377,7 @@ fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
                             }
                         })
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
     }
@@ -407,7 +403,7 @@ fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: Attri
                             }
                         })
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
         AttributeType::Xml => {
@@ -432,7 +428,7 @@ fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: Attri
                         }
                     }
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
         AttributeType::XPath => {
@@ -451,7 +447,7 @@ fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: Attri
                             }
                         })
                 })?;
-                query.execute(&mut documents, &item)?
+                query.execute(documents, &item)?
             }
         }
     }

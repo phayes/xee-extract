@@ -10,8 +10,8 @@ use xee_xpath::{Documents, Item};
 pub use xee_extract_macros::XeeExtract;
 
 pub trait XeeExtract: Sized {
-    fn extract(xml: &str) -> Result<Self, Error>;
-    
+    fn extract(documents: &mut xee_xpath::Documents, context_item: xee_xpath::Item) -> Result<Self, Error>;
+    /// 
     /// Extract from an XML node (for recursive extraction)
     fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
         // For Node items, use the more efficient context-based extraction
@@ -21,9 +21,9 @@ pub trait XeeExtract: Sized {
                 Self::extract_from_context(documents, item)
             }
             _ => {
-                // For non-Node items, fall back to string conversion
-                let xml_str = item.string_value(documents.xot())?;
-                Self::extract(&xml_str)
+                return Result::Err(Error::InvalidXPath(
+                    "extract targets non-node items".to_string(),
+                ));
             }
         }
     }
@@ -135,8 +135,14 @@ impl Extractor {
     where
         T: XeeExtract,
     {
+        let mut documents = xee_xpath::Documents::new();
+        let doc = documents.add_string_without_uri(xml)?;
+
+        use xee_xpath::Itemable;
+        let item = doc.to_item(&mut documents)?;
+
         // Use the trait's deserialize method
-        T::extract(xml)
+        T::extract_from_context(&mut documents, &item)
     }
 }
 
