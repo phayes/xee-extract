@@ -10,6 +10,27 @@ pub trait XeeExtractMarker: Any {
     fn as_any(&self) -> &dyn Any;
 }
 
+/// Helper function to check if a value is of a specific type
+pub fn is_xee_extract<T: XeeExtractMarker + 'static>(x: &dyn XeeExtractMarker) -> bool {
+    x.as_any().is::<T>()
+}
+
+/// Helper function to downcast a XeeExtractMarker to a specific type
+pub fn downcast_xee_extract<T: XeeExtractMarker + 'static>(x: &dyn XeeExtractMarker) -> Option<&T> {
+    x.as_any().downcast_ref::<T>()
+}
+
+/// Helper function to downcast a boxed XeeExtractMarker to a specific type
+pub fn downcast_boxed_xee_extract<T: XeeExtractMarker + 'static>(x: Box<dyn XeeExtractMarker>) -> Result<Box<T>, Box<dyn XeeExtractMarker>> {
+    if x.as_any().is::<T>() {
+        // SAFETY: We just checked that x is of type T
+        let raw = Box::into_raw(x);
+        Ok(unsafe { Box::from_raw(raw as *mut T) })
+    } else {
+        Err(x)
+    }
+}
+
 pub trait XeeExtract: Sized {
     fn extract(xml: &str) -> Result<Self, Error>;
     
@@ -47,7 +68,7 @@ pub trait XeeExtractDeserialize: Sized {
         item: &Item,
     ) -> Result<Self, Error>;
 
-    fn as_xee_extract(&self) -> Option<&dyn XeeExtract> {
+    fn as_xee_extract(&self) -> Option<&dyn XeeExtractMarker> {
         None
     }
 }
@@ -397,5 +418,38 @@ mod tests {
         assert_eq!(extractor.variables.get("var1"), Some(&"value1".to_string()));
         assert_eq!(extractor.variables.get("var2"), Some(&"value2".to_string()));
         assert_eq!(extractor.variables.get("var3"), Some(&"value3".to_string()));
+    }
+
+    #[test]
+    fn test_marker_trait_functionality() {
+        let xml = r#"
+            <entry>
+                <id>123</id>
+                <title>Sample Title</title>
+                <category term="test"/>
+            </entry>
+        "#;
+        
+        let extractor = Extractor::new();
+        let result: SimpleStruct = extractor.extract_one(xml).unwrap();
+        
+        // Test that the marker trait works
+        let marker_ref: &dyn XeeExtractMarker = &result;
+        
+        // Test is_xee_extract function
+        assert!(is_xee_extract::<SimpleStruct>(marker_ref));
+        assert!(!is_xee_extract::<ComplexStruct>(marker_ref));
+        
+        // Test downcast_xee_extract function
+        let downcasted = downcast_xee_extract::<SimpleStruct>(marker_ref);
+        assert!(downcasted.is_some());
+        let downcasted = downcasted.unwrap();
+        assert_eq!(downcasted.id, "123");
+        assert_eq!(downcasted.title, "Sample Title");
+        assert_eq!(downcasted.category, Some("test".to_string()));
+        
+        // Test that downcasting to wrong type returns None
+        let wrong_downcast = downcast_xee_extract::<ComplexStruct>(marker_ref);
+        assert!(wrong_downcast.is_none());
     }
 }
