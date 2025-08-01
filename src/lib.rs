@@ -12,18 +12,11 @@ pub trait XeeExtract: Sized {
     
     /// Extract from an XML node (for recursive extraction)
     fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
-        // For Node items, we need to extract the XML content and parse it
+        // For Node items, use the more efficient context-based extraction
         match item {
-            Item::Node(node) => {
-                // Convert the node to XML string using the correct method
-                let xml_str = documents.xot().serialize_xml_string(
-                    xot::output::xml::Parameters {
-                        indentation: Default::default(),
-                        ..Default::default()
-                    },
-                    *node,
-                )?;
-                Self::extract(&xml_str)
+            Item::Node(_) => {
+                // Use the new context-based extraction method
+                Self::extract_from_context(documents, item)
             }
             _ => {
                 // For non-Node items, fall back to string conversion
@@ -31,6 +24,15 @@ pub trait XeeExtract: Sized {
                 Self::extract(&xml_str)
             }
         }
+    }
+
+    /// Extract from a context item using XPath expressions relative to that item
+    /// This is more efficient than extract_from_node as it doesn't require
+    /// serialization to XML string and re-parsing
+    fn extract_from_context(documents: &mut Documents, context_item: &Item) -> Result<Self, Error> {
+        // For now, fall back to the existing implementation
+        // This will be overridden by the macro to use context-based extraction
+        Self::extract_from_node(documents, context_item)
     }
 }
 

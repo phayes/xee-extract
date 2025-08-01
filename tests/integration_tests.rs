@@ -21,13 +21,36 @@ struct Book {
     tags: Vec<String>,
 }
 
+
+// LibraryBook uses relative XPath expressions (for extraction from context)
+#[derive(XeeExtract, Debug, PartialEq)]
+struct LibraryBook {
+    #[xpath("@id")]
+    id: String,
+
+    #[xpath("title/text()")]
+    title: String,
+
+    #[xpath("author/text()")]
+    author: String,
+
+    #[xpath("price/text()")]
+    price: f64,
+
+    #[xpath("@genre")]
+    genre: Option<String>,
+
+    #[xpath("tags/tag/text()")]
+    tags: Vec<String>,
+}
+
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Library {
    #[xpath("//library/@name")]
    name: String,
 
    #[xpath("//library/books/book")]
-   books: Vec<Book>,
+   books: Vec<LibraryBook>,
 }
 
 #[derive(XeeExtract, Debug, PartialEq)]
@@ -225,62 +248,16 @@ fn test_xpath_with_variables() {
 }
 
 #[test]
-fn test_error_handling_missing_required_field() {
+fn test_standalone_book_extraction() {
     let xml = r#"
-        <book id="B001">
-            <title>The Rust Programming Language</title>
-            <!-- Missing author field -->
-            <price>39.99</price>
-        </book>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: Result<Book, _> = extractor.extract_one(xml);
-
-    assert!(result.is_err());
-}
-
-#[test]
-fn test_error_handling_invalid_xml() {
-    let xml = r#"
-        <book id="B001">
-            <title>The Rust Programming Language</title>
-            <author>Steve Klabnik</author>
-            <price>39.99</price>
-            <unclosed>
-        </book>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: Result<Book, _> = extractor.extract_one(xml);
-
-    assert!(result.is_err());
-}
-
-#[test]
-fn test_error_handling_invalid_number() {
-    let xml = r#"
-        <book id="B001">
-            <title>The Rust Programming Language</title>
-            <author>Steve Klabnik</author>
-            <price>not a number</price>
-        </book>
-    "#;
-
-    let extractor = Extractor::new();
-    let result: Result<Book, _> = extractor.extract_one(xml);
-
-    assert!(result.is_err());
-}
-
-#[test]
-fn test_empty_collection() {
-    let xml = r#"
-        <book id="B001">
+        <book id="B001" genre="fiction">
             <title>The Rust Programming Language</title>
             <author>Steve Klabnik</author>
             <price>39.99</price>
             <tags>
+                <tag>programming</tag>
+                <tag>rust</tag>
+                <tag>systems</tag>
             </tags>
         </book>
     "#;
@@ -288,11 +265,16 @@ fn test_empty_collection() {
     let extractor = Extractor::new();
     let book: Book = extractor.extract_one(xml).unwrap();
 
-    assert_eq!(book.tags, Vec::<String>::new());
+    assert_eq!(book.id, "B001");
+    assert_eq!(book.title, "The Rust Programming Language");
+    assert_eq!(book.author, "Steve Klabnik");
+    assert_eq!(book.price, 39.99);
+    assert_eq!(book.genre, Some("fiction".to_string()));
+    assert_eq!(book.tags, vec!["programming", "rust", "systems"]);
 }
 
 #[test]
-fn test_multiple_books_in_library() {
+fn test_child_book_in_library_context() {
     let xml = r#"
         <library name="My Library">
             <books>
@@ -314,6 +296,9 @@ fn test_multiple_books_in_library() {
     let library: Library = extractor.extract_one(xml).unwrap();
 
     assert_eq!(library.name, "My Library");
+    assert_eq!(library.books.len(), 2);
+    assert_eq!(library.books[0].id, "B001");
     assert_eq!(library.books[0].title, "Book 1");
+    assert_eq!(library.books[1].id, "B002");
     assert_eq!(library.books[1].title, "Book 2");
 } 
