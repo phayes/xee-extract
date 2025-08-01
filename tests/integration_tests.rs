@@ -21,14 +21,14 @@ struct Book {
     tags: Vec<String>,
 }
 
-//#[derive(XeeExtract, Debug, PartialEq)]
-//struct Library {
-//    #[xpath("//library/@name")]
-//    name: String,
+#[derive(XeeExtract, Debug, PartialEq)]
+struct Library {
+   #[xpath("//library/@name")]
+   name: String,
 
-//    #[xpath("//library/books/book")]
-//    books: Vec<Book>,
-//}
+   #[xpath("//library/books/book")]
+   books: Vec<Book>,
+}
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Person {
@@ -51,17 +51,17 @@ struct Person {
     city: Option<String>,
 }
 
-//#[derive(XeeExtract, Debug, PartialEq)]
-//struct Company {
-//    #[xpath("//company/@id")]
-//    id: String,
+#[derive(XeeExtract, Debug, PartialEq)]
+struct Company {
+   #[xpath("//company/@id")]
+   id: String,
 
-//    #[xpath("//company/name/text()")]
-//    name: String,
+   #[xpath("//company/name/text()")]
+   name: String,
 
-//    #[xpath("//company/employees/person/name/first/text()")]
-//    employee_first_names: Vec<String>,
-//}
+   #[xpath("//company/employees/person/name/first/text()")]
+   employee_first_names: Vec<String>,
+}
 
 #[test]
 fn test_book_extraction() {
@@ -159,44 +159,44 @@ fn test_person_without_optional_fields() {
     assert_eq!(person.city, None);
 }
 
-// #[test]
-// fn test_complex_nested_extraction() {
-//     let xml = r#"
-//         <company id="C001">
-//             <name>Tech Corp</name>
-//             <employees>
-//                 <person id="P001">
-//                     <name>
-//                         <first>Alice</first>
-//                         <last>Johnson</last>
-//                     </name>
-//                     <email>alice@techcorp.com</email>
-//                     <address>
-//                         <street>456 Tech Ave</street>
-//                         <city>Tech City</city>
-//                     </address>
-//                 </person>
-//                 <person id="P002">
-//                     <name>
-//                         <first>Bob</first>
-//                         <last>Wilson</last>
-//                     </name>
-//                     <address>
-//                         <street>789 Dev Blvd</street>
-//                         <city>Dev Town</city>
-//                     </address>
-//                 </person>
-//             </employees>
-//         </company>
-//     "#;
+#[test]
+fn test_complex_nested_extraction() {
+    let xml = r#"
+        <company id="C001">
+            <name>Tech Corp</name>
+            <employees>
+                <person id="P001">
+                    <name>
+                        <first>Alice</first>
+                        <last>Johnson</last>
+                    </name>
+                    <email>alice@techcorp.com</email>
+                    <address>
+                        <street>456 Tech Ave</street>
+                        <city>Tech City</city>
+                    </address>
+                </person>
+                <person id="P002">
+                    <name>
+                        <first>Bob</first>
+                        <last>Wilson</last>
+                    </name>
+                    <address>
+                        <street>789 Dev Blvd</street>
+                        <city>Dev Town</city>
+                    </address>
+                </person>
+            </employees>
+        </company>
+    "#;
 
-//     let extractor = Extractor::new();
-//     let company: Company = extractor.extract_one(xml).unwrap();
+    let extractor = Extractor::new();
+    let company: Company = extractor.extract_one(xml).unwrap();
 
-//     assert_eq!(company.id, "C001");
-//     assert_eq!(company.name, "Tech Corp");
-//     assert_eq!(company.employee_first_names, vec!["Alice", "Bob"]);
-// }
+    assert_eq!(company.id, "C001");
+    assert_eq!(company.name, "Tech Corp");
+    assert_eq!(company.employee_first_names, vec!["Alice", "Bob"]);
+}
 
 #[test]
 fn test_xpath_with_variables() {
@@ -291,29 +291,29 @@ fn test_empty_collection() {
     assert_eq!(book.tags, Vec::<String>::new());
 }
 
-// #[test]
-// fn test_multiple_books_in_library() {
-//     let xml = r#"
-//         <library name="My Library">
-//             <books>
-//                 <book id="B001">
-//                     <title>Book 1</title>
-//                     <author>Author 1</author>
-//                     <price>10.00</price>
-//                 </book>
-//                 <book id="B002">
-//                     <title>Book 2</title>
-//                     <author>Author 2</author>
-//                     <price>20.00</price>
-//                 </book>
-//             </books>
-//         </library>
-//     "#;
+#[test]
+fn test_multiple_books_in_library() {
+    let xml = r#"
+        <library name="My Library">
+            <books>
+                <book id="B001">
+                    <title>Book 1</title>
+                    <author>Author 1</author>
+                    <price>10.00</price>
+                </book>
+                <book id="B002">
+                    <title>Book 2</title>
+                    <author>Author 2</author>
+                    <price>20.00</price>
+                </book>
+            </books>
+        </library>
+    "#;
 
-//     let extractor = Extractor::new();
-//     let library: Library = extractor.extract_one(xml).unwrap();
+    let extractor = Extractor::new();
+    let library: Library = extractor.extract_one(xml).unwrap();
 
-//     assert_eq!(library.name, "My Library");
-//     assert_eq!(library.books[0].title, "Book 1");
-//     assert_eq!(library.books[1].title, "Book 2");
-// } 
+    assert_eq!(library.name, "My Library");
+    assert_eq!(library.books[0].title, "Book 1");
+    assert_eq!(library.books[1].title, "Book 2");
+} 
