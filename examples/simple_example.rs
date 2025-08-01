@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor};
+use xee_extract::{Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct SimpleEntry {
@@ -36,12 +36,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             </author>
         </entry>
     "#;
-    
+
     println!("XML: {}", xml);
-    
+
     let extractor = Extractor::new();
     let entry: SimpleEntry = extractor.extract_one(xml)?;
-    
+
     println!("Extracted Entry:");
     println!("  ID: {}", entry.id);
     println!("  Title: {}", entry.title);
@@ -49,4 +49,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("  Author: {} ({:?})", entry.author.name, entry.author.email);
 
     Ok(())
-} 
+}

@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor};
+use xee_extract::{Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Article {
@@ -65,24 +65,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             </author>
         </article>
     "#;
-    
+
     let extractor = Extractor::new();
     let article: Article = extractor.extract_one(xml)?;
-    
+
     println!("Article ID: {}", article.id);
     println!("Title: {}", article.title);
     println!("\nContent (raw XML):");
     println!("{}", article.content);
-    
+
     if let Some(metadata) = &article.metadata {
         println!("\nMetadata (raw XML):");
         println!("{}", metadata);
     }
-    
+
     println!("\nAuthors:");
     for author in &article.authors {
         println!("  - {} ({:?})", author.name, author.bio);
     }
 
     Ok(())
-} 
+}

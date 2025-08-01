@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor};
+use xee_extract::{Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Library {
@@ -58,10 +58,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             </books>
         </library>
     "#;
-    
+
     let extractor = Extractor::new();
     let library: Library = extractor.extract_one(xml)?;
-    
+
     println!("Library: {}", library.name);
     println!("Books:");
     for book in &library.books {
@@ -70,4 +70,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
-} 
+}

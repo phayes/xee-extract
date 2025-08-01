@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor};
+use xee_extract::{Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Book {
@@ -20,7 +20,6 @@ struct Book {
     #[xpath("//book/tags/tag/text()")]
     tags: Vec<String>,
 }
-
 
 // LibraryBook uses relative XPath expressions (for extraction from context)
 #[derive(XeeExtract, Debug, PartialEq)]
@@ -46,11 +45,11 @@ struct LibraryBook {
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Library {
-   #[xpath("//library/@name")]
-   name: String,
+    #[xpath("//library/@name")]
+    name: String,
 
-   #[extract("//library/books/book")]
-   books: Vec<LibraryBook>,
+    #[extract("//library/books/book")]
+    books: Vec<LibraryBook>,
 }
 
 #[derive(XeeExtract, Debug, PartialEq)]
@@ -76,14 +75,14 @@ struct Person {
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Company {
-   #[xpath("//company/@id")]
-   id: String,
+    #[xpath("//company/@id")]
+    id: String,
 
-   #[xpath("//company/name/text()")]
-   name: String,
+    #[xpath("//company/name/text()")]
+    name: String,
 
-   #[xpath("//company/employees/person/name/first/text()")]
-   employee_first_names: Vec<String>,
+    #[xpath("//company/employees/person/name/first/text()")]
+    employee_first_names: Vec<String>,
 }
 
 #[test]
@@ -243,8 +242,14 @@ fn test_xpath_with_variables() {
     // Test that variables can be set and accessed
     // Note: The current implementation doesn't use variables in XPath expressions yet
     // This test verifies the variable setting functionality
-    assert_eq!(extractor.variables.get("env"), Some(&"production".to_string()));
-    assert_eq!(extractor.variables.get("api_version"), Some(&"v2".to_string()));
+    assert_eq!(
+        extractor.variables.get("env"),
+        Some(&"production".to_string())
+    );
+    assert_eq!(
+        extractor.variables.get("api_version"),
+        Some(&"v2".to_string())
+    );
 }
 
 #[test]
@@ -301,4 +306,4 @@ fn test_child_book_in_library_context() {
     assert_eq!(library.books[0].title, "Book 1");
     assert_eq!(library.books[1].id, "B002");
     assert_eq!(library.books[1].title, "Book 2");
-} 
+}

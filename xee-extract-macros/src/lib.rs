@@ -2,7 +2,7 @@
 //!
 //! This module provides the `XeeExtract` derive macro that allows you to
 //! deserialize XML documents into Rust structs using XPath expressions.
-//! 
+//!
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use quote::quote;
@@ -13,7 +13,7 @@ use syn::{parse_macro_input, DeriveInput};
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
-    
+
     // Parse the input and generate the implementation
     match impl_xee_extract(&input) {
         Ok(tokens) => tokens.into(),
@@ -24,16 +24,21 @@ pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
 fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
-    
+
     // Parse struct fields
     let fields = match &input.data {
         syn::Data::Struct(data) => &data.fields,
-        _ => return Err(syn::Error::new_spanned(name, "XeeExtract can only be derived for structs")),
+        _ => {
+            return Err(syn::Error::new_spanned(
+                name,
+                "XeeExtract can only be derived for structs",
+            ))
+        }
     };
-    
+
     // Generate field extraction code
     let (field_extractions, field_names, field_values) = generate_field_extractions(fields)?;
-    
+
     let expanded = quote! {
         impl #impl_generics xee_extract::XeeExtract for #name #ty_generics #where_clause {
             fn extract(
@@ -44,64 +49,79 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 let queries = Queries::default();
 
                 #field_extractions
-                
+
                 Ok(Self {
                     #(#field_names: #field_values,)*
                 })
             }
         }
     };
-    
+
     Ok(expanded)
 }
 
-
-
 fn generate_field_extractions(
     fields: &syn::Fields,
-) -> syn::Result<(proc_macro2::TokenStream, Vec<proc_macro2::TokenStream>, Vec<proc_macro2::TokenStream>)> {
+) -> syn::Result<(
+    proc_macro2::TokenStream,
+    Vec<proc_macro2::TokenStream>,
+    Vec<proc_macro2::TokenStream>,
+)> {
     let mut field_names = Vec::new();
     let mut field_values = Vec::new();
     let mut field_extractions = Vec::new();
-    
+
     for field in fields {
-        let field_name = field.ident.as_ref()
+        let field_name = field
+            .ident
+            .as_ref()
             .ok_or_else(|| syn::Error::new_spanned(field, "Expected named field"))?;
-        
+
         // Find xpath or extract attribute
         let (xpath_expr, attr_type) = find_xpath_or_extract_attribute(field)?;
-        
+
         field_names.push(quote! { #field_name });
-        
+
         // Generate the extraction code based on the field type and attribute
         let extraction = generate_field_extraction(field, &xpath_expr, attr_type)?;
         field_extractions.push(extraction);
         field_values.push(quote! { #field_name });
     }
-    
+
     Ok((quote! { #(#field_extractions)* }, field_names, field_values))
 }
 
 fn find_xpath_or_extract_attribute(field: &syn::Field) -> syn::Result<(String, AttributeType)> {
     // Check for xpath attribute first
-    if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("xpath")) {
+    if let Some(attr) = field
+        .attrs
+        .iter()
+        .find(|attr| attr.path().is_ident("xpath"))
+    {
         let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
         return Ok((xpath_expr, AttributeType::XPath));
     }
-    
+
     // Check for extract attribute
-    if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("extract")) {
+    if let Some(attr) = field
+        .attrs
+        .iter()
+        .find(|attr| attr.path().is_ident("extract"))
+    {
         let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
         return Ok((xpath_expr, AttributeType::Extract));
     }
-    
+
     // Check for xml attribute
     if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("xml")) {
         let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
         return Ok((xpath_expr, AttributeType::Xml));
     }
-    
-    Err(syn::Error::new_spanned(field, "Expected xpath, extract, or xml attribute"))
+
+    Err(syn::Error::new_spanned(
+        field,
+        "Expected xpath, extract, or xml attribute",
+    ))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -118,7 +138,7 @@ fn generate_field_extraction(
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
-    
+
     // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
         generate_option_query(xpath_expr, field_type, attr_type)
@@ -127,15 +147,13 @@ fn generate_field_extraction(
     } else {
         generate_single_query(xpath_expr, field_type, attr_type)
     };
-    
+
     Ok(quote! {
         let #field_name = {
             #query_code
         };
     })
 }
-
-
 
 fn is_option_type(ty: &syn::Type) -> bool {
     if let syn::Type::Path(type_path) = ty {
@@ -185,13 +203,11 @@ fn extract_vec_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
     None
 }
 
-
-
-
-
-
-
-fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
+fn generate_single_query(
+    xpath_expr: &str,
+    field_type: &syn::Type,
+    attr_type: AttributeType,
+) -> proc_macro2::TokenStream {
     match attr_type {
         AttributeType::Extract => {
             quote! {
@@ -265,10 +281,14 @@ fn generate_single_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
     }
 }
 
-fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
-    let inner_type = extract_option_inner_type(field_type)
-        .expect("Option type should have inner type");
-    
+fn generate_option_query(
+    xpath_expr: &str,
+    field_type: &syn::Type,
+    attr_type: AttributeType,
+) -> proc_macro2::TokenStream {
+    let inner_type =
+        extract_option_inner_type(field_type).expect("Option type should have inner type");
+
     match attr_type {
         AttributeType::Extract => {
             quote! {
@@ -341,10 +361,13 @@ fn generate_option_query(xpath_expr: &str, field_type: &syn::Type, attr_type: At
     }
 }
 
-fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: AttributeType) -> proc_macro2::TokenStream {
-    let inner_type = extract_vec_inner_type(field_type)
-        .expect("Vec type should have inner type");
-    
+fn generate_vec_query(
+    xpath_expr: &str,
+    field_type: &syn::Type,
+    attr_type: AttributeType,
+) -> proc_macro2::TokenStream {
+    let inner_type = extract_vec_inner_type(field_type).expect("Vec type should have inner type");
+
     match attr_type {
         AttributeType::Extract => {
             quote! {
@@ -415,4 +438,4 @@ fn generate_vec_query(xpath_expr: &str, field_type: &syn::Type, attr_type: Attri
             }
         }
     }
-} 
+}

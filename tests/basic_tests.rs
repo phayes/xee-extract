@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor, Error};
+use xee_extract::{Error, Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct SimpleStruct {
@@ -63,10 +63,10 @@ fn test_simple_extraction() {
             <category term="test"/>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: SimpleStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Sample Title");
     assert_eq!(result.category, Some("test".to_string()));
@@ -80,10 +80,10 @@ fn test_extraction_with_missing_optional_field() {
             <title>Sample Title</title>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: SimpleStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Sample Title");
     assert_eq!(result.category, None);
@@ -104,10 +104,10 @@ fn test_complex_extraction_with_vectors() {
             </tags>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: ComplexStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "456");
     assert_eq!(result.title, "Complex Title");
     assert_eq!(result.subtitle, Some("Complex Subtitle".to_string()));
@@ -126,10 +126,10 @@ fn test_nested_extraction() {
             </author>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: NestedStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "789");
     assert_eq!(result.author_name, "John Doe");
     assert_eq!(result.author_email, Some("john@example.com".to_string()));
@@ -145,10 +145,10 @@ fn test_nested_extraction_with_missing_optional() {
             </author>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: NestedStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "789");
     assert_eq!(result.author_name, "Jane Smith");
     assert_eq!(result.author_email, None);
@@ -163,14 +163,14 @@ fn test_extraction_with_variables() {
             <category term="test"/>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new()
         .with_variable("env", "production")
         .with_variable("base_url", "https://api.example.com");
-    
+
     // This test verifies that variables can be set (even if not used in this simple case)
     let result: SimpleStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "urn:uuid:12345678-1234-1234-1234-123456789abc");
     assert_eq!(result.title, "Sample Title");
     assert_eq!(result.category, Some("test".to_string()));
@@ -186,10 +186,10 @@ fn test_empty_vector_extraction() {
             </tags>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: ComplexStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Title");
     assert_eq!(result.tags, Vec::<String>::new());
@@ -203,10 +203,10 @@ fn test_missing_required_field_error() {
             <category term="test"/>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
-    
+
     assert!(result.is_err());
 }
 
@@ -219,10 +219,10 @@ fn test_invalid_xml_error() {
             <unclosed>
         </entry>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
-    
+
     assert!(result.is_err());
 }
 
@@ -232,7 +232,7 @@ fn test_extractor_with_multiple_variables() {
         .with_variable("var1", "value1")
         .with_variable("var2", "value2")
         .with_variable("var3", "value3");
-    
+
     // Test that the extractor can be created with multiple variables
     assert_eq!(extractor.variables.len(), 3);
     assert_eq!(extractor.variables.get("var1"), Some(&"value1".to_string()));

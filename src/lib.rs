@@ -10,7 +10,7 @@ use xee_xpath::{Documents, Item};
 pub use xee_extract_macros::XeeExtract;
 
 pub trait XeeExtract: Sized {
-    /// 
+    ///
     /// Extract from an XML node (for recursive extraction)
     fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
         // For Node items, use the more efficient context-based extraction
@@ -40,10 +40,7 @@ pub trait XeeExtract: Sized {
 /// Trait for deserializing a type from an XPath item
 pub trait XeeExtractDeserialize: Sized {
     /// Deserialize a value from an XPath item
-    fn deserialize(
-        documents: &mut Documents,
-        item: &Item,
-    ) -> Result<Self, Error>;
+    fn deserialize(documents: &mut Documents, item: &Item) -> Result<Self, Error>;
 }
 
 /// Default XeeExtractDeserialize impl that punts to FromStr
@@ -52,10 +49,7 @@ where
     T: FromStr,
     T::Err: std::fmt::Display,
 {
-    fn deserialize(
-        documents: &mut Documents,
-        item: &Item,
-    ) -> Result<Self, Error> {
+    fn deserialize(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
         let s = item.string_value(documents.xot())?;
         s.parse::<T>()
             .map_err(|e| Error::DeserializationError(e.to_string()))
@@ -150,4 +144,3 @@ impl Default for Extractor {
         Self::new()
     }
 }
-

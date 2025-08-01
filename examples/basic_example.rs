@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor};
+use xee_extract::{Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug)]
 //#[xpath(ns(
@@ -64,7 +64,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Extract a single struct from the XML document
     let entry: Entry = extractor.extract_one(&xml)?;
-    
+
     println!("Extracted Entry:");
     println!("  ID: {}", entry.id);
     println!("  Short ID: {}", entry.short_id);
@@ -73,7 +73,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("  Category: {:?}", entry.category);
     println!("  Authors:");
     for author in &entry.authors {
-       println!("    - {} ({:?})", author.name, author.homepage);
+        println!("    - {} ({:?})", author.name, author.homepage);
     }
     println!("  Metadata:");
     println!("    - First page: {:?}", entry.metadata.first_page);
@@ -81,4 +81,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("    - DOI: {:?}", entry.metadata.doi);
 
     Ok(())
-} 
+}

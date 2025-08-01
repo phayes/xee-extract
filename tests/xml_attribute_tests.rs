@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor};
+use xee_extract::{Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct DocumentWithXml {
@@ -58,15 +58,15 @@ fn test_xml_attribute_basic() {
             </metadata>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Document");
     assert!(result.content.contains("<p>This is some content</p>"));
     assert!(result.content.contains("<p>With multiple paragraphs</p>"));
-    
+
     let metadata = result.metadata.unwrap();
     assert!(metadata.contains("<author>John Doe</author>"));
     assert!(metadata.contains("<date>2023-01-01</date>"));
@@ -87,10 +87,10 @@ fn test_xml_attribute_with_vectors() {
             </section>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: ComplexDocument = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "456");
     assert_eq!(result.sections.len(), 2);
     assert!(result.sections[0].contains("<h1>Section 1</h1>"));
@@ -109,12 +109,15 @@ fn test_xml_attribute_with_optional() {
             </element>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: XmlWithAttributes = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "789");
-    assert!(result.special_content.unwrap().contains("<special>This is special content</special>"));
+    assert!(result
+        .special_content
+        .unwrap()
+        .contains("<special>This is special content</special>"));
 }
 
 #[test]
@@ -125,10 +128,10 @@ fn test_xml_attribute_missing_optional() {
             <!-- No special element -->
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: XmlWithAttributes = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "789");
     assert_eq!(result.special_content, None);
 }
@@ -141,13 +144,13 @@ fn test_xml_attribute_empty_vector() {
             <!-- No sections -->
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: ComplexDocument = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "999");
     assert_eq!(result.sections.len(), 0);
-} 
+}
 
 #[test]
 fn test_xml_attribute_debug() {
@@ -160,15 +163,18 @@ fn test_xml_attribute_debug() {
             </content>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-    
+
     println!("Content extracted: '{}'", result.content);
     println!("Content length: {}", result.content.len());
     println!("Content contains '<p>': {}", result.content.contains("<p>"));
-    println!("Content contains 'This is some content': {}", result.content.contains("This is some content"));
-} 
+    println!(
+        "Content contains 'This is some content': {}",
+        result.content.contains("This is some content")
+    );
+}
 
 #[test]
 fn test_xml_attribute_simple() {
@@ -181,13 +187,13 @@ fn test_xml_attribute_simple() {
             </content>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-    
+
     println!("ID: {}", result.id);
     println!("Content: '{}'", result.content);
-} 
+}
 
 #[test]
 fn test_xml_attribute_debug_simple() {
@@ -200,13 +206,13 @@ fn test_xml_attribute_debug_simple() {
             </content>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-    
+
     println!("ID: {}", result.id);
     println!("Content: '{}'", result.content);
-} 
+}
 
 #[test]
 fn test_xml_attribute_working_xpath() {
@@ -219,13 +225,13 @@ fn test_xml_attribute_working_xpath() {
             </content>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
-    
+
     println!("ID: {}", result.id);
     println!("Content: '{}'", result.content);
-} 
+}
 
 #[test]
 fn test_xml_attribute_simple_xpath() {
@@ -237,10 +243,10 @@ fn test_xml_attribute_simple_xpath() {
             </content>
         </document>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: SimpleXmlTest = extractor.extract_one(xml).unwrap();
-    
+
     println!("ID: {}", result.id);
     println!("Content: '{}'", result.content);
-} 
+}

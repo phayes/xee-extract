@@ -1,4 +1,4 @@
-use xee_extract::{XeeExtract, Extractor, Error};
+use xee_extract::{Error, Extractor, XeeExtract};
 
 #[derive(XeeExtract, Debug, PartialEq)]
 struct Library {
@@ -66,19 +66,19 @@ fn test_xpath_and_extract_attributes() {
             </books>
         </library>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: Library = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.name, "My Library");
     assert_eq!(result.books.len(), 2);
-    
+
     let first_book = &result.books[0];
     assert_eq!(first_book.title, "The Rust Programming Language");
     assert_eq!(first_book.author, "Steve Klabnik");
     assert_eq!(first_book.year, Some(2018));
     assert_eq!(first_book.genres, vec!["Programming", "Reference"]);
-    
+
     let second_book = &result.books[1];
     assert_eq!(second_book.title, "Programming Rust");
     assert_eq!(second_book.author, "Jim Blandy");
@@ -98,10 +98,10 @@ fn test_nested_extraction_with_new_attributes() {
             </nested>
         </root>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: SimpleStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
     assert_eq!(result.nested.value, "Nested Value");
@@ -119,10 +119,10 @@ fn test_nested_extraction_with_missing_optional() {
             </nested>
         </root>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: SimpleStruct = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
     assert_eq!(result.nested.value, "Nested Value");
@@ -137,10 +137,10 @@ fn test_missing_required_field_error() {
             <!-- Missing title -->
         </root>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: Result<SimpleStruct, Error> = extractor.extract_one(xml);
-    
+
     assert!(result.is_err());
 }
 
@@ -153,10 +153,10 @@ fn test_empty_vector_extraction() {
             </books>
         </library>
     "#;
-    
+
     let extractor = Extractor::new();
     let result: Library = extractor.extract_one(xml).unwrap();
-    
+
     assert_eq!(result.name, "Empty Library");
     assert_eq!(result.books.len(), 0);
-} 
+}
