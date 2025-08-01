@@ -100,10 +100,12 @@ Add namespaces for all xpath expressions. This has no effect if placed on a chil
 ```rust
 #[ns(
    atom = "http://www.w3.org/2005/Atom",
-   nlm = "https://id.nlm.nih.gov/datmm/",
    meta = "http://example.org/Meta"
 )]
-struct MyStruct{}
+struct MyStruct{
+    #[xee(xpath = "atom:name/text()")]
+    name: String,
+}
 ```
 
 ### `#[xee(context(expression))]`
