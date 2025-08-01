@@ -1,15 +1,15 @@
 //! XPath-driven deserialization crate using Xee as the underlying engine.
 //!
-//! This crate provides a procedural macro `XeeExtract` that allows you to
+//! This crate provides a procedural macro `Extract` that allows you to
 //! deserialize XML documents into Rust structs using XPath expressions.
 
 use std::str::FromStr;
 use xee_xpath::{Documents, Item};
 
 // Re-export the macro
-pub use xee_extract_macros::XeeExtract;
+pub use xee_extract_macros::Extract;
 
-pub trait XeeExtract: Sized {
+pub trait Extract: Sized {
     ///
     /// Extract from an XML node (for recursive extraction)
     fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
@@ -38,13 +38,13 @@ pub trait XeeExtract: Sized {
 }
 
 /// Trait for deserializing a type from an XPath item
-pub trait XeeExtractDeserialize: Sized {
+pub trait ExtractValue: Sized {
     /// Deserialize a value from an XPath item
     fn deserialize(documents: &mut Documents, item: &Item) -> Result<Self, Error>;
 }
 
-/// Default XeeExtractDeserialize impl that punts to FromStr
-impl<T> XeeExtractDeserialize for T
+/// Default ExtractValue impl that punts to FromStr
+impl<T> ExtractValue for T
 where
     T: FromStr,
     T::Err: std::fmt::Display,
@@ -107,7 +107,7 @@ impl std::fmt::Display for Error {
 /// Extractor for XML documents using XPath expressions
 pub struct Extractor {
     context: Option<String>,
-    variables: std::collections::HashMap<String, String>,
+    pub variables: std::collections::HashMap<String, String>,
 }
 
 impl Extractor {
@@ -128,7 +128,7 @@ impl Extractor {
     /// Extract a single struct from an XML document
     pub fn extract_one<T>(&self, xml: &str) -> Result<T, Error>
     where
-        T: XeeExtract,
+        T: Extract,
     {
         let mut documents = xee_xpath::Documents::new();
         let doc = documents.add_string_without_uri(xml)?;
