@@ -8,6 +8,8 @@ xee-xpath = { path = "vendor/xee/xee-xpath" }
 xee-interpreter = { path = "vendor/xee/xee-interpreter" }
 xot = "0.31.2"
 xee-extract-macros = { path = "xee-extract-macros" }
+hex = "0.4.3"
+base64 = "0.22.1"
 
 [workspace]
 members = ["xee-extract-macros"]

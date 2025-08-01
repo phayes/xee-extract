@@ -221,6 +221,11 @@ fn generate_field_extraction(
     let field_name = field.ident.as_ref().unwrap();
     let field_type = &field.ty;
 
+    // Check if this is Vec<u8> or Option<Vec<u8>> for special binary handling (only for XPath attribute)
+    if (is_vec_u8_type(field_type) || is_option_vec_u8_type(field_type)) && attr_type == AttributeType::XPath {
+        return generate_vec_u8_query(field_name, xpath_expr, field_type, context_var);
+    }
+
     // Generate the appropriate query based on the field type and attribute
     let query_code = if is_option_type(field_type) {
         generate_option_query(xpath_expr, field_type, attr_type, context_var)
@@ -230,8 +235,9 @@ fn generate_field_extraction(
         generate_single_query(xpath_expr, field_type, attr_type, context_var)
     };
 
+    let field_name_token = quote! { #field_name };
     Ok(quote! {
-        let #field_name = {
+        let #field_name_token = {
             #query_code
         };
     })
@@ -283,6 +289,24 @@ fn extract_vec_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
         }
     }
     None
+}
+
+fn is_vec_u8_type(ty: &syn::Type) -> bool {
+    if let Some(inner_type) = extract_vec_inner_type(ty) {
+        if let syn::Type::Path(type_path) = inner_type {
+            if let Some(segment) = type_path.path.segments.last() {
+                return segment.ident == "u8";
+            }
+        }
+    }
+    false
+}
+
+fn is_option_vec_u8_type(ty: &syn::Type) -> bool {
+    if let Some(inner_type) = extract_option_inner_type(ty) {
+        return is_vec_u8_type(inner_type);
+    }
+    false
 }
 
 fn generate_single_query(
@@ -523,4 +547,52 @@ fn generate_vec_query(
             }
         }
     }
+}
+
+fn generate_vec_u8_query(
+    field_name: &syn::Ident,
+    xpath_expr: &str,
+    field_type: &syn::Type,
+    context_var: &proc_macro2::TokenStream,
+) -> syn::Result<proc_macro2::TokenStream> {
+    // Check if this is Option<Vec<u8>>
+    let is_option = is_option_vec_u8_type(field_type);
+    
+    let query_method = if is_option { quote! { option } } else { quote! { one } };
+    
+    let query_code = quote! {
+        let query = queries.#query_method(#xpath_expr, |documents, item| {
+            // Special handling for Vec<u8> - check if item is Binary atomic
+            match item {
+                xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
+                    // For binary atomic values, return the data directly
+                    Ok(data.as_ref().to_vec())
+                }
+                _ => {
+                    // For non-binary items, try to decode from string value
+                    let s = item.string_value(documents.xot())?;
+                    // Try base64 first, then hex
+                    use base64::Engine;
+                    match base64::engine::general_purpose::STANDARD.decode(&s) {
+                        Ok(data) => Ok(data),
+                        Err(_) => {
+                            // Try hex decoding
+                            hex::decode(&s)
+                                .map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001))
+                        }
+                    }
+                }
+            }
+        })?;
+        query.execute_build_context(documents, |builder| {
+            builder.context_item(#context_var.clone());
+        })?
+    };
+
+    let field_name_token = quote! { #field_name };
+    Ok(quote! {
+        let #field_name_token = {
+            #query_code
+        };
+    })
 }
