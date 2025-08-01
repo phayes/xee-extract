@@ -40,7 +40,7 @@ pub trait Extract: Sized {
 /// Trait for deserializing a type from an XPath item
 pub trait ExtractValue: Sized {
     /// Deserialize a value from an XPath item
-    fn deserialize(documents: &mut Documents, item: &Item) -> Result<Self, Error>;
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error>;
 }
 
 /// Default ExtractValue impl that punts to FromStr
@@ -49,7 +49,7 @@ where
     T: FromStr,
     T::Err: std::fmt::Display,
 {
-    fn deserialize(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
         let s = item.string_value(documents.xot())?;
         s.parse::<T>()
             .map_err(|e| Error::DeserializationError(e.to_string()))
@@ -106,7 +106,6 @@ impl std::fmt::Display for Error {
 
 /// Extractor for XML documents using XPath expressions
 pub struct Extractor {
-    context: Option<String>,
     pub variables: std::collections::HashMap<String, String>,
 }
 
@@ -114,7 +113,6 @@ impl Extractor {
     /// Create a new extractor
     pub fn new() -> Self {
         Self {
-            context: None,
             variables: std::collections::HashMap::new(),
         }
     }

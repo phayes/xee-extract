@@ -368,7 +368,7 @@ fn generate_single_query(
             quote! {
                 let query = queries.one(#xpath_expr, |documents, item| {
                     use xee_extract::ExtractValue;
-                    <#field_type>::deserialize(documents, item)
+                    <#field_type>::extract_value(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
                             // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
@@ -449,7 +449,7 @@ fn generate_option_query(
             quote! {
                 let query = queries.option(#xpath_expr, |documents, item| {
                     use xee_extract::ExtractValue;
-                    <#inner_type>::deserialize(documents, item)
+                    <#inner_type>::extract_value(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
                             // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
@@ -529,7 +529,7 @@ fn generate_vec_query(
             quote! {
                 let query = queries.many(#xpath_expr, |documents, item| {
                     use xee_extract::ExtractValue;
-                    <#inner_type>::deserialize(documents, item)
+                    <#inner_type>::extract_value(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
                             // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
@@ -559,7 +559,7 @@ fn generate_vec_u8_query(
     let is_option = is_option_vec_u8_type(field_type);
     
     let query_method = if is_option { quote! { option } } else { quote! { one } };
-    
+
     let query_code = quote! {
         let query = queries.#query_method(#xpath_expr, |documents, item| {
             // Special handling for Vec<u8> - check if item is Binary atomic
@@ -569,18 +569,9 @@ fn generate_vec_u8_query(
                     Ok(data.as_ref().to_vec())
                 }
                 _ => {
-                    // For non-binary items, try to decode from string value
-                    let s = item.string_value(documents.xot())?;
-                    // Try base64 first, then hex
-                    use base64::Engine;
-                    match base64::engine::general_purpose::STANDARD.decode(&s) {
-                        Ok(data) => Ok(data),
-                        Err(_) => {
-                            // Try hex decoding
-                            hex::decode(&s)
-                                .map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001))
-                        }
-                    }
+                    // Just extract the binary value of the string value of the item
+                    let string_value = item.string_value(documents.xot())?;
+                    Ok(string_value.as_bytes().to_vec())
                 }
             }
         })?;
