@@ -1,6 +1,6 @@
 # xee-extract
 
-A powerful Rust crate for XPath-driven XML data extractioin using the Xee engine. This crate provides a procedural macro `XeeExtract` that allows you to deserialize XML documents into Rust structs using XPath expressions.
+A powerful Rust crate for XPath-driven XML data extraction using the Xee engine. This crate provides a procedural macro `Extract` that allows you to deserialize XML documents into Rust structs using XPath expressions.
 
 ## Installation
 
@@ -16,9 +16,9 @@ xee-extract = "0.1.0"
 Here's a simple example to get you started:
 
 ```rust
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct SimpleEntry {
     #[xpath("//id/text()")]
     id: String,
@@ -33,7 +33,7 @@ struct SimpleEntry {
     author: Author,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Author {
     #[xpath("name/text()")]
     name: String,
@@ -105,6 +105,55 @@ content: String,
 metadata: Option<String>,
 ```
 
+## Error Handling
+
+The crate provides two levels of error handling:
+
+### Basic Error Handling
+
+For simple error handling, use the standard `extract_one` method:
+
+```rust
+let result: Result<SimpleEntry, Error> = extractor.extract_one(xml);
+match result {
+    Ok(entry) => println!("Success: {:?}", entry),
+    Err(error) => eprintln!("Error: {}", error),
+}
+```
+
+### Pretty Error Handling
+
+For user-friendly error messages with XML context, use the `extract_one_pretty` method:
+
+```rust
+let result: Result<SimpleEntry, ExtractorError> = extractor.extract_one_pretty(xml);
+match result {
+    Ok(entry) => println!("Success: {:?}", entry),
+    Err(error) => {
+        println!("Pretty error: {}", error);
+        // The error includes:
+        // - Human-readable error messages
+        // - XML context around the error location
+        // - Line number information when available
+        // - Additional context if provided
+    }
+}
+```
+
+The `ExtractorError` provides rich error information including:
+- **XML Context**: Shows the relevant XML snippet around the error location
+- **Line Numbers**: Indicates approximately where the error occurred
+- **Error Types**: Distinguishes between XPath errors, XML parsing errors, and deserialization errors
+- **Additional Context**: Allows you to add custom context information
+
+### Error Types
+
+- `InvalidXPath`: Invalid XPath expressions
+- `DeserializationError`: Failed to convert XML values to Rust types
+- `SpannedError`: XPath errors with source location information
+- `XeeInterpreterError`: Low-level XPath interpreter errors
+- `DocumentsError`: XML document parsing errors
+
 ## TODO - Showcase of what is not yet supported, but will be
 
  - namespace support
@@ -112,7 +161,7 @@ metadata: Option<String>,
  - context support
 
 ```rust
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
 
 // Provides namespace registration
@@ -131,7 +180,7 @@ use xee_extract::{Extractor, XeeExtract};
 // Context for all xpaths
 #[xee_context("(if self::entry then self else /entry)")]
 
-#[derive(XeeExtract, Debug)]
+#[derive(Extract, Debug)]
 struct Entry {
     ...
 }
