@@ -1,6 +1,6 @@
 //! Procedural macros for XPath-driven deserialization
 //!
-//! This module provides the `XeeExtract` derive macro that allows you to
+//! This module provides the `Extract` derive macro that allows you to
 //! deserialize XML documents into Rust structs using XPath expressions.
 //!
 use proc_macro::TokenStream;
@@ -9,7 +9,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
 /// Derive macro for XPath-driven deserialization
-#[proc_macro_derive(XeeExtract, attributes(xpath, extract, xml))]
+#[proc_macro_derive(Extract, attributes(xpath, extract, xml))]
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -31,7 +31,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         _ => {
             return Err(syn::Error::new_spanned(
                 name,
-                "XeeExtract can only be derived for structs",
+                "Extract can only be derived for structs",
             ))
         }
     };
@@ -40,13 +40,18 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let (field_extractions, field_names, field_values) = generate_field_extractions(fields)?;
 
     let expanded = quote! {
-        impl #impl_generics xee_extract::XeeExtract for #name #ty_generics #where_clause {
+        impl #impl_generics xee_extract::Extract for #name #ty_generics #where_clause {
             fn extract(
                 documents: &mut xee_xpath::Documents,
                 context_item: &xee_xpath::Item,
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
-                let queries = Queries::default();
+
+                //TODO: Add namespaces to the static context builder
+                //TODO: If context is declared using the context attribute, override the provided context_item (this updated context_item is evaulauated using the passed in context_item as the context for the context attribute)
+
+                let static_context_builder = xee_xpath::context::StaticContextBuilder::default();
+                let queries = Queries::new(static_context_builder);
 
                 #field_extractions
 
@@ -213,7 +218,7 @@ fn generate_single_query(
             quote! {
                 let query = queries.one(#xpath_expr, |documents, item| {
                     // For extract attribute, use extract for efficiency
-                    use xee_extract::XeeExtract;
+                    use xee_extract::Extract;
                     <#field_type>::extract(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
@@ -260,7 +265,7 @@ fn generate_single_query(
         AttributeType::XPath => {
             quote! {
                 let query = queries.one(#xpath_expr, |documents, item| {
-                    use xee_extract::XeeExtractDeserialize;
+                    use xee_extract::ExtractValue;
                     <#field_type>::deserialize(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
@@ -294,7 +299,7 @@ fn generate_option_query(
             quote! {
                 let query = queries.option(#xpath_expr, |documents, item| {
                     // For extract attribute, use extract for efficiency
-                    use xee_extract::XeeExtract;
+                    use xee_extract::Extract;
                     <#inner_type>::extract(documents, item)
                         .map_err(|e| {
                             match e {
@@ -340,7 +345,7 @@ fn generate_option_query(
         AttributeType::XPath => {
             quote! {
                 let query = queries.option(#xpath_expr, |documents, item| {
-                    use xee_extract::XeeExtractDeserialize;
+                    use xee_extract::ExtractValue;
                     <#inner_type>::deserialize(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
@@ -373,7 +378,7 @@ fn generate_vec_query(
             quote! {
                 let query = queries.many(#xpath_expr, |documents, item| {
                     // For extract attribute, use extract for efficiency
-                    use xee_extract::XeeExtract;
+                    use xee_extract::Extract;
                     <#inner_type>::extract(documents, item)
                         .map_err(|e| {
                             match e {
@@ -419,7 +424,7 @@ fn generate_vec_query(
         AttributeType::XPath => {
             quote! {
                 let query = queries.many(#xpath_expr, |documents, item| {
-                    use xee_extract::XeeExtractDeserialize;
+                    use xee_extract::ExtractValue;
                     <#inner_type>::deserialize(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError

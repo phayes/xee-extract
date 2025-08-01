@@ -1,6 +1,6 @@
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct SimpleEntry {
     #[xpath("//id/text()")]
     id: String,
@@ -15,7 +15,7 @@ struct SimpleEntry {
     author: Author,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Author {
     #[xpath("name/text()")]
     name: String,

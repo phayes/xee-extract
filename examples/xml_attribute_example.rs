@@ -1,6 +1,6 @@
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Article {
     #[xpath("//article/@id")]
     id: String,
@@ -18,7 +18,7 @@ struct Article {
     authors: Vec<Author>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Author {
     #[xpath("name/text()")]
     name: String,

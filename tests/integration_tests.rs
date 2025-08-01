@@ -1,6 +1,6 @@
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Book {
     #[xpath("//book/@id")]
     id: String,
@@ -22,7 +22,7 @@ struct Book {
 }
 
 // LibraryBook uses relative XPath expressions (for extraction from context)
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct LibraryBook {
     #[xpath("@id")]
     id: String,
@@ -43,7 +43,7 @@ struct LibraryBook {
     tags: Vec<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Library {
     #[xpath("//library/@name")]
     name: String,
@@ -52,7 +52,7 @@ struct Library {
     books: Vec<LibraryBook>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Person {
     #[xpath("//person/@id")]
     id: String,
@@ -73,7 +73,7 @@ struct Person {
     city: Option<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Company {
     #[xpath("//company/@id")]
     id: String,

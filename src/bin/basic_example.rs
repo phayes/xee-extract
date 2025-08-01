@@ -1,6 +1,6 @@
 use xee_extract::{Extractor, Extract};
 
-#[derive(Extract, Debug)]
+#[derive(Extract)]
 //#[xpath(ns(
 //    atom = "http://www.w3.org/2005/Atom",
 //    nlm = "https://id.nlm.nih.gov/datmm/",
@@ -33,7 +33,7 @@ struct Entry {
     category: Option<String>,
 }
 
-#[derive(Extract, Debug)]
+#[derive(Extract)]
 //#[xpath(ns(atom = "http://www.w3.org/2005/Atom"))]
 struct Author {
     #[xpath("atom:name/text()")]
@@ -43,7 +43,7 @@ struct Author {
     homepage: Option<String>,
 }
 
-#[derive(Extract, Debug)]
+#[derive(Extract)]
 //#[xpath(ns(
 //    nlm = "https://id.nlm.nih.gov/datmm/",
 //))]

@@ -1,6 +1,6 @@
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct DocumentWithXml {
     #[xpath("//id/text()")]
     id: String,
@@ -15,7 +15,7 @@ struct DocumentWithXml {
     metadata: Option<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct ComplexDocument {
     #[xpath("//id/text()")]
     id: String,
@@ -24,7 +24,7 @@ struct ComplexDocument {
     sections: Vec<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct XmlWithAttributes {
     #[xpath("//id/text()")]
     id: String,
@@ -33,7 +33,7 @@ struct XmlWithAttributes {
     special_content: Option<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct SimpleXmlTest {
     #[xpath("//id/text()")]
     id: String,

@@ -1,6 +1,6 @@
-use xee_extract::{Extractor, XeeExtract};
+use xee_extract::{Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Library {
     #[xpath("//library/@name")]
     name: String,
@@ -9,7 +9,7 @@ struct Library {
     books: Vec<Book>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct Book {
     #[xpath("title/text()")]
     title: String,
@@ -24,7 +24,7 @@ struct Book {
     genres: Vec<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct SimpleBook {
     #[xpath("title/text()")]
     title: String,

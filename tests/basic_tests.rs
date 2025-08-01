@@ -1,6 +1,6 @@
-use xee_extract::{Error, Extractor, XeeExtract};
+use xee_extract::{Error, Extractor, Extract};
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
     #[xpath("//id/text()")]
     id: String,
@@ -12,7 +12,7 @@ struct SimpleStruct {
     category: Option<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct ComplexStruct {
     #[xpath("//id/text()")]
     id: String,
@@ -30,7 +30,7 @@ struct ComplexStruct {
     tags: Vec<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct NestedStruct {
     #[xpath("//id/text()")]
     id: String,
@@ -42,7 +42,7 @@ struct NestedStruct {
     author_email: Option<String>,
 }
 
-#[derive(XeeExtract, Debug, PartialEq)]
+#[derive(Extract, Debug, PartialEq)]
 struct NamespaceStruct {
     #[xpath("//atom:id/text()")]
     id: String,
