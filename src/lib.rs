@@ -109,8 +109,8 @@ impl std::fmt::Display for Error {
 pub struct ExtractorError {
     /// The underlying core error
     pub error: Error,
-    /// The original XML document
-    pub xml: String,
+    /// The XML context around the error location
+    pub xml_context: Option<String>,
     /// Optional span information for highlighting the error location
     pub span: Option<xee_interpreter::span::SourceSpan>,
     /// Additional context about where the error occurred
@@ -118,11 +118,21 @@ pub struct ExtractorError {
 }
 
 impl ExtractorError {
-    /// Create a new ExtractorError from a core Error and XML document
-    pub fn new(error: Error, xml: String) -> Self {
+    /// Create a new ExtractorError from a core Error
+    pub fn new(error: Error) -> Self {
         Self {
             error,
-            xml,
+            xml_context: None,
+            span: None,
+            context: None,
+        }
+    }
+
+    /// Create a new ExtractorError from a core Error with XML context
+    pub fn with_xml_context(error: Error, xml_context: String) -> Self {
+        Self {
+            error,
+            xml_context: Some(xml_context),
             span: None,
             context: None,
         }
@@ -141,12 +151,11 @@ impl ExtractorError {
     }
 
     /// Extract the XML snippet around the error location if span is available
-    fn extract_xml_context(&self) -> Option<String> {
-        let span = self.span?;
+    fn extract_xml_context(xml: &str, span: &xee_interpreter::span::SourceSpan) -> Option<String> {
         let range = span.range();
         
         // Find the start and end of the XML element containing the error
-        let xml_bytes = self.xml.as_bytes();
+        let xml_bytes = xml.as_bytes();
         let start = range.start.saturating_sub(200); // Look back 200 bytes
         let end = (range.end + 200).min(xml_bytes.len()); // Look forward 200 bytes
         
@@ -227,36 +236,26 @@ impl ExtractorError {
             message.push_str(&format!("Context: {}\n", context));
         }
         
-        // Add XML context if span is available
-        if let Some(xml_snippet) = self.extract_xml_context() {
+        // Add XML context if available
+        if let Some(xml_snippet) = &self.xml_context {
             message.push_str("\nRelevant XML context:\n");
             message.push_str("```xml\n");
-            message.push_str(&xml_snippet);
+            message.push_str(xml_snippet);
             message.push_str("\n```\n");
             
             // Add pointer to the error location if we can determine it
-            if let Some(span) = self.span {
-                let range = span.range();
-                let snippet_start = self.xml.as_bytes()[..range.start]
-                    .iter()
-                    .filter(|&&b| b == b'\n')
-                    .count();
-                let error_line = snippet_start + 1;
-                message.push_str(&format!("Error occurred around line {}\n", error_line));
-            }
-        } else {
-            // If we don't have span info, show the first part of the XML for context
-            let xml_preview = if self.xml.len() > 200 {
-                format!("{}...", &self.xml[..200])
+            if let Some(_span) = self.span {
+                // Calculate line number from the XML context
+                let line_count = xml_snippet.lines().count();
+                if line_count > 1 {
+                    message.push_str(&format!("Error occurred around line {}\n", line_count / 2));
+                }
             } else {
-                self.xml.clone()
-            };
-            
-            if !xml_preview.trim().is_empty() {
-                message.push_str("\nXML document:\n");
-                message.push_str("```xml\n");
-                message.push_str(&xml_preview);
-                message.push_str("\n```\n");
+                // For errors without span info, still show some location info
+                let line_count = xml_snippet.lines().count();
+                if line_count > 1 {
+                    message.push_str(&format!("Error occurred in XML document ({} lines)\n", line_count));
+                }
             }
         }
         
@@ -312,24 +311,62 @@ impl Extractor {
         T: Extract,
     {
         self.extract_one::<T>(xml).map_err(|error| {
-            let mut extractor_error = ExtractorError::new(error, xml.to_string());
+            let mut extractor_error = ExtractorError::new(error);
             
-            // If the error has span information, include it
+            // Extract XML context for all error types
             match &extractor_error.error {
                 Error::SpannedError(spanned_err) => {
                     if let Some(span) = spanned_err.span {
                         extractor_error = extractor_error.with_span(span);
+                        // Extract XML context around the error location
+                        if let Some(xml_context) = ExtractorError::extract_xml_context(xml, &span) {
+                            extractor_error.xml_context = Some(xml_context);
+                        }
+                    } else {
+                        // No span info, but still provide some XML context
+                        let xml_preview = if xml.len() > 200 {
+                            format!("{}...", &xml[..200])
+                        } else {
+                            xml.to_string()
+                        };
+                        if !xml_preview.trim().is_empty() {
+                            extractor_error.xml_context = Some(xml_preview);
+                        }
                     }
                 }
                 Error::XeeInterpreterError(_) => {
-                    // For interpreter errors, we might not have span info
-                    // but we can still provide context
+                    // For interpreter errors, provide XML preview
+                    let xml_preview = if xml.len() > 200 {
+                        format!("{}...", &xml[..200])
+                    } else {
+                        xml.to_string()
+                    };
+                    if !xml_preview.trim().is_empty() {
+                        extractor_error.xml_context = Some(xml_preview);
+                    }
                 }
                 Error::DocumentsError(_) => {
-                    // For document errors, we might not have span info
-                    // but we can still provide context
+                    // For document errors, provide XML preview
+                    let xml_preview = if xml.len() > 200 {
+                        format!("{}...", &xml[..200])
+                    } else {
+                        xml.to_string()
+                    };
+                    if !xml_preview.trim().is_empty() {
+                        extractor_error.xml_context = Some(xml_preview);
+                    }
                 }
-                _ => {}
+                _ => {
+                    // For other error types, provide XML preview
+                    let xml_preview = if xml.len() > 200 {
+                        format!("{}...", &xml[..200])
+                    } else {
+                        xml.to_string()
+                    };
+                    if !xml_preview.trim().is_empty() {
+                        extractor_error.xml_context = Some(xml_preview);
+                    }
+                }
             }
             
             extractor_error

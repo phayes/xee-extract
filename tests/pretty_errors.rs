@@ -160,7 +160,7 @@ fn test_pretty_error_with_span() {
     
     // Should contain XML context and line information
     assert!(message.contains("XML document:") || message.contains("Relevant XML context:"));
-    assert!(message.contains("Error occurred around line") || message.contains("XML document:"));
+    assert!(message.contains("Error occurred around line") || message.contains("Error occurred in XML document"));
     assert!(message.contains("<malformed>No closing tag"));
 }
 
