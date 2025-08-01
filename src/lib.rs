@@ -10,7 +10,6 @@ use xee_xpath::{Documents, Item};
 pub use xee_extract_macros::XeeExtract;
 
 pub trait XeeExtract: Sized {
-    fn extract(documents: &mut xee_xpath::Documents, context_item: xee_xpath::Item) -> Result<Self, Error>;
     /// 
     /// Extract from an XML node (for recursive extraction)
     fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
