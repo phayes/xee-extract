@@ -1,15 +1,15 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
-//#[xpath(ns(
-//    atom = "http://www.w3.org/2005/Atom",
-//    nlm = "https://id.nlm.nih.gov/datmm/",
-//    meta = "http://example.org/Meta"
-//))]
-//#[xpath(var(
-//    baseurl = "if ($env = 'production') then 'https://prod.api.org' else 'https://dev.api.org'",
-//    short_id = "tokenize(atom:id, ':')[last()]"
-//))]
+#[xpath(ns(
+    atom = "http://www.w3.org/2005/Atom",
+    nlm = "https://id.nlm.nih.gov/datmm/",
+    meta = "http://example.org/Meta"
+))]
+#[xpath(var(
+    baseurl = "if ($env = 'production') then 'https://prod.api.org' else 'https://dev.api.org'",
+    short_id = "tokenize(atom:id, ':')[last()]"
+))]
 struct Entry {
     #[xpath("atom:id/text()")]
     id: String,
@@ -34,7 +34,7 @@ struct Entry {
 }
 
 #[derive(Extract)]
-//#[xpath(ns(atom = "http://www.w3.org/2005/Atom"))]
+#[xpath(ns(atom = "http://www.w3.org/2005/Atom"))]
 struct Author {
     #[xpath("atom:name/text()")]
     name: String,
@@ -44,9 +44,9 @@ struct Author {
 }
 
 #[derive(Extract)]
-//#[xpath(ns(
-//    nlm = "https://id.nlm.nih.gov/datmm/",
-//))]
+#[xpath(ns(
+    nlm = "https://id.nlm.nih.gov/datmm/",
+))]
 struct Metadata {
     #[xpath("nlm:fpage/text()")]
     first_page: Option<String>,

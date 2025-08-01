@@ -85,11 +85,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[derive(Extract, Debug)]
     struct InvalidXPathBook {
         #[xpath("title/text()")]
-        title: String,
+        _title: String,
         
         // This XPath is invalid
         #[xpath("invalid xpath [")]
-        invalid: String,
+        _invalid: String,
     }
 
     let xml4 = r#"

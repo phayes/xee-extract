@@ -327,12 +327,20 @@ fn generate_unified_query(
                     <#field_type>::extract(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                            match e {
-                                xee_extract::Error::DeserializationError(msg) => {
-                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                                }
-                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                            }
+                            // Use ApplicationError instead of FORG0001
+                            let app_error = xee_interpreter::error::ApplicationError::new(
+                                xot::xmlname::OwnedName::new(
+                                    "extract-error".to_string(),
+                                    "http://xee-extract.org/errors".to_string(),
+                                    "".to_string(),
+                                ),
+                                match e {
+                                    xee_extract::Error::DeserializationError(msg) => msg,
+                                    _ => "Extraction failed".to_string(),
+                                },
+                            );
+                            let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
+                            xee_interpreter::error::SpannedError::from(error_value)
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
@@ -352,7 +360,18 @@ fn generate_unified_query(
                                     ..Default::default()
                                 },
                                 *node,
-                            ).map_err(|_| xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002))?;
+                            ).map_err(|_| {
+                                let app_error = xee_interpreter::error::ApplicationError::new(
+                                    xot::xmlname::OwnedName::new(
+                                        "xml-serialization-error".to_string(),
+                                        "http://xee-extract.org/errors".to_string(),
+                                        "".to_string(),
+                                    ),
+                                    "Failed to serialize XML".to_string(),
+                                );
+                                let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
+                                xee_interpreter::error::SpannedError::from(error_value)
+                            })?;
                             Ok(xml_str)
                         }
                         _ => {
@@ -374,13 +393,20 @@ fn generate_unified_query(
                     <#field_type>::extract_value(documents, item)
                         .map_err(|e| {
                             // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                            // For deserialization errors, use FORG0001 (Invalid value for cast/constructor)
-                            match e {
-                                xee_extract::Error::DeserializationError(msg) => {
-                                    xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FORG0001)
-                                }
-                                _ => xee_interpreter::error::SpannedError::from(xee_interpreter::error::Error::FODC0002)
-                            }
+                            // Use ApplicationError instead of FORG0001
+                            let app_error = xee_interpreter::error::ApplicationError::new(
+                                xot::xmlname::OwnedName::new(
+                                    "extract-value-error".to_string(),
+                                    "http://xee-extract.org/errors".to_string(),
+                                    "".to_string(),
+                                ),
+                                match e {
+                                    xee_extract::Error::DeserializationError(msg) => msg,
+                                    _ => "Value extraction failed".to_string(),
+                                },
+                            );
+                            let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
+                            xee_interpreter::error::SpannedError::from(error_value)
                         })
                 })?;
                 query.execute_build_context(documents, |builder| {
