@@ -9,7 +9,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
 /// Derive macro for XPath-driven deserialization
-#[proc_macro_derive(Extract, attributes(xpath, extract, xml, ns, context))]
+#[proc_macro_derive(Extract, attributes(xpath, extract, xml, ns, context, default_ns))]
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -39,6 +39,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     // Parse namespace and context attributes
     let namespaces = parse_namespace_attributes(&input.attrs)?;
     let (context_stmt, context_var) = parse_context_attribute(&input.attrs)?;
+    let default_namespace = parse_default_namespace_attribute(&input.attrs)?;
 
     // Generate field extraction code
     let (field_extractions, field_names, field_values) = generate_field_extractions(fields, &context_var)?;
@@ -54,6 +55,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 // Build static context with namespaces
                 let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
                 #namespaces
+                #default_namespace
                 let queries = Queries::new(static_context_builder);
 
                 #context_stmt
@@ -122,6 +124,19 @@ fn parse_context_attribute(attrs: &[syn::Attribute]) -> syn::Result<(proc_macro2
         ))
     } else {
         Ok((quote! { let #var = context_item; }, var))
+    }
+}
+
+fn parse_default_namespace_attribute(attrs: &[syn::Attribute]) -> syn::Result<proc_macro2::TokenStream> {
+    let default_ns_attr = attrs.iter().find(|attr| attr.path().is_ident("default_ns"));
+    
+    if let Some(attr) = default_ns_attr {
+        let namespace_uri = attr.parse_args::<syn::LitStr>()?.value();
+        Ok(quote! {
+            static_context_builder.default_element_namespace(#namespace_uri);
+        })
+    } else {
+        Ok(quote! {})
     }
 }
 
