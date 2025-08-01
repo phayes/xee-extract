@@ -7,7 +7,7 @@ Declarative data extraction from large XML documents using Xpath.
 ```rust
 use xee_extract::{Extractor, Extract};
 
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct SimpleEntry {
     #[xpath("//id/text()")]
     id: String,
@@ -22,7 +22,7 @@ struct SimpleEntry {
     author: Author,
 }
 
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Author {
     #[xpath("name/text()")]
     name: String,
@@ -63,8 +63,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 Extract a single value using an XPath expression.
 
 ```rust
-#[xpath("//title/text()")]
-title: String,
+#[derive(xee_extract::Extract)]
+struct Foo {
+  #[xpath("//title/text()")]
+  title: String,
+}
+
 ```
 
 ### `#[extract("expression")]`
@@ -72,11 +76,14 @@ title: String,
 Extract a nested struct or vector of structs.
 
 ```rust
-#[extract("//author")]
-author: Author,
-
-#[extract("//book")]
-books: Vec<Book>,
+#[derive(xee_extract::Extract)]
+struct Foo {
+    #[extract("//author")]
+    author: Author,
+    
+    #[extract("//book")]
+    books: Vec<Book>,
+}
 ```
 
 ### `#[xee(xml = "expression")]`
@@ -84,11 +91,14 @@ books: Vec<Book>,
 Extract raw XML content.
 
 ```rust
-#[xml("//content")]
-content: String,
-
-#[xml("//metadata")]
-metadata: Option<String>,
+#[derive(xee_extract::Extract)]
+struct Foo {
+    #[xml("//content")]
+    content: String,
+    
+    #[xml("//metadata")]
+    metadata: Option<String>,
+}
 ```
 
 ## Struct attributes
@@ -102,7 +112,7 @@ Add namespaces for all xpath expressions. This has no effect if placed on a chil
    atom = "http://www.w3.org/2005/Atom",
    meta = "http://example.org/Meta"
 )]
-struct MyStruct{
+struct Foo {
     #[xpath("atom:name/text()")]
     name: String,
 }
