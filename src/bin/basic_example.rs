@@ -6,25 +6,15 @@ use xee_extract::{Extractor, Extract};
     nlm = "https://id.nlm.nih.gov/datmm/",
     meta = "http://example.org/Meta"
 ))]
-#[xpath(var(
-    baseurl = "if ($env = 'production') then 'https://prod.api.org' else 'https://dev.api.org'",
-    short_id = "tokenize(atom:id, ':')[last()]"
-))]
 struct Entry {
     #[xpath("atom:id/text()")]
     id: String,
-
-    #[xpath("$short_id")]
-    short_id: String,
 
     #[xpath("if (exists(atom:subtitle)) then atom:subtitle else atom:title")]
     title: String,
 
     #[extract("atom:author")]
     authors: Vec<Author>,
-
-    #[xpath("concat($baseurl, '/entry/', $short_id)")]
-    url: Option<String>,
 
     #[extract("//nlm:article-meta")]
     metadata: Metadata,
@@ -67,9 +57,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Extracted Entry:");
     println!("  ID: {}", entry.id);
-    println!("  Short ID: {}", entry.short_id);
     println!("  Title: {}", entry.title);
-    println!("  URL: {:?}", entry.url);
     println!("  Category: {:?}", entry.category);
     println!("  Authors:");
     for author in &entry.authors {

@@ -61,8 +61,7 @@ fn test_pretty_error_invalid_xml() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
-    println!("Pretty error message:\n{}", message);
+    let message = error.message();
     
     // Should contain XML context
     assert!(message.contains("Context:"));
@@ -95,8 +94,8 @@ fn test_pretty_error_invalid_xpath() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
-    println!("Pretty error message:\n{}", message);
+    let message = error.message();
+    println!("Error message:\n{}", message);
     
     // Should contain XPath error information
     assert!(message.contains("XPath error:"));
@@ -119,10 +118,8 @@ fn test_pretty_error_with_span() {
     assert!(result.is_err());
     let error = result.unwrap_err();
 
-    dbg!(&error);
-    
-    let message = error.pretty_message();
-    println!("Pretty error message:\n{}", message);
+    let message = error.message();
+    println!("Error message:\n{}", message);
     
     // Should contain XML context and line information
     assert!(message.contains("Context"));
@@ -139,8 +136,8 @@ fn test_pretty_error_empty_xml() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
-    println!("Pretty error message:\n{}", message);
+    let message = error.message();
+    println!("Error message:\n{}", message);
     
     // Should contain document error information
     assert!(message.contains("XML document error:"));
@@ -164,7 +161,7 @@ fn test_application_error_extract_value() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
+    let message = error.message();
     println!("Book extraction error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
@@ -199,7 +196,7 @@ fn test_application_error_value_extraction() {
     // Debug: Print the actual error type
     println!("Error type: {:?}", error.error);
     
-    let message = error.pretty_message();
+    let message = error.message();
     println!("Value extraction ApplicationError test:\n{}", message);
     
     // Should contain XPath error information
@@ -229,7 +226,7 @@ fn test_application_error_extract_struct() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
+    let message = error.message();
     println!("Struct extraction error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
@@ -257,7 +254,7 @@ fn test_application_error_xml_serialization() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
+    let message = error.message();
     println!("XML serialization error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
@@ -290,7 +287,7 @@ fn test_application_error_namespace() {
     assert!(result.is_err());
     let error = result.unwrap_err();
     
-    let message = error.pretty_message();
+    let message = error.message();
     println!("Namespace error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information

@@ -145,8 +145,8 @@ impl ExtractError {
         }
     }
 
-    /// Generate a pretty error message with XML context
-    pub fn pretty_message(&self) -> String {
+    /// Generate a full error message
+    pub fn message(&self) -> String {
         let mut message = String::new();
         
         // Add the main error message
@@ -198,6 +198,6 @@ impl std::error::Error for ExtractError {}
 
 impl std::fmt::Display for ExtractError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.pretty_message())
+        write!(f, "{}", self.message())
     }
 } 
