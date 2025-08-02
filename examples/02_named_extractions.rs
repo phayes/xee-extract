@@ -13,19 +13,19 @@ use xee_extract::{Extractor, Extract};
 #[xee(ns(atom = "http://www.w3.org/2005/Atom", "bar"))]         // named extraction "bar"
 #[xee(context("//atom:entry", "bar"))]                          // named extraction "bar"
 struct Entry {
-    #[xee(xpath("//atom:id/text()"))]                          // default
-    #[xee(xpath("//nlm:id/text()", "foo"))]                   
-    #[xee(xpath("atom:id/text()", "bar"))]                 
+    #[xee(xpath("//atom:id"))]                          // default
+    #[xee(xpath("//nlm:id", "foo"))]                   
+    #[xee(xpath("atom:id", "bar"))]                 
     id: String,
 
-    #[xee(xpath("//atom:title/text()"))]                       // default
-    #[xee(xpath("//nlm:title/text()", "foo"))]                
-    #[xee(xpath("atom:title/text()", "bar"))]              
+    #[xee(xpath("//atom:title"))]                       // default
+    #[xee(xpath("//nlm:title", "foo"))]                
+    #[xee(xpath("atom:title", "bar"))]              
     title: String,
 
-    #[xee(xpath("//atom:author/atom:name/text()"))]           
-    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name/text()", "foo"))] 
-    #[xee(xpath("atom:author/atom:name/text()", "bar"))]  
+    #[xee(xpath("//atom:author/atom:name"))]           
+    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name", "foo"))] 
+    #[xee(xpath("atom:author/atom:name", "bar"))]  
     author: Option<String>,
 }
 

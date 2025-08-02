@@ -12,13 +12,13 @@ struct Book {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("title/text()"))]
+    #[xee(xpath("title"))]
     title: String,
 
-    #[xee(xpath("author/text()"))]
+    #[xee(xpath("author"))]
     author: String,
 
-    #[xee(xpath("price/text()"))]
+    #[xee(xpath("price"))]
     price: f64,
 
     #[xee(xpath("@genre"))]
@@ -32,13 +32,13 @@ struct FlexibleBook {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("title/text()"))]
+    #[xee(xpath("title"))]
     title: String,
 
-    #[xee(xpath("author/text()"))]
+    #[xee(xpath("author"))]
     author: String,
 
-    #[xee(xpath("price/text()"))]
+    #[xee(xpath("price"))]
     price: f64,
 }
 
@@ -49,10 +49,10 @@ struct FirstEntry {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("title/text()"))]
+    #[xee(xpath("title"))]
     title: String,
 
-    #[xee(xpath("author/name/text()"))]
+    #[xee(xpath("author/name"))]
     author_name: String,
 }
 
@@ -63,13 +63,13 @@ struct FirstProduct {
     #[xee(xpath("@sku"))]
     sku: String,
 
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("price/text()"))]
+    #[xee(xpath("price"))]
     price: f64,
 
-    #[xee(xpath("category/text()"))]
+    #[xee(xpath("category"))]
     category: Option<String>,
 }
 
@@ -80,13 +80,13 @@ struct AdminUser {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("email/text()"))]
+    #[xee(xpath("email"))]
     email: String,
 
-    #[xee(xpath("permissions/permission/text()"))]
+    #[xee(xpath("permissions/permission"))]
     permissions: Vec<String>,
 }
 

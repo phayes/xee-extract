@@ -8,7 +8,7 @@ use xee_extract::{Extractor, Extract};
 /// Struct for extracting raw XML content
 #[derive(Extract)]
 struct RawXMLData {
-    #[xee(xpath("//title/text()"))]
+    #[xee(xpath("//title"))]
     title: String,
 
     #[xee(xml("//content"))]
@@ -24,7 +24,7 @@ struct RawXMLData {
 /// Struct for extracting HTML content embedded in XML
 #[derive(Extract)]
 struct HTMLContent {
-    #[xee(xpath("//title/text()"))]
+    #[xee(xpath("//title"))]
     title: String,
 
     #[xee(xml("//html_content"))]
@@ -53,7 +53,7 @@ struct DocumentWithMixedContent {
     #[xee(xpath("//document/@id"))]
     id: String,
 
-    #[xee(xpath("//document/title/text()"))]
+    #[xee(xpath("//document/title"))]
     title: String,
 
     #[xee(xml("//document/body"))]

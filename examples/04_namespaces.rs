@@ -9,16 +9,16 @@ use xee_extract::{Extractor, Extract};
 #[derive(Extract)]
 #[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
 struct AtomFeed {
-    #[xee(xpath("//atom:feed/atom:title/text()"))]
+    #[xee(xpath("//atom:feed/atom:title"))]
     title: String,
 
-    #[xee(xpath("//atom:feed/atom:subtitle/text()"))]
+    #[xee(xpath("//atom:feed/atom:subtitle"))]
     subtitle: Option<String>,
 
-    #[xee(xpath("//atom:feed/atom:entry/atom:title/text()"))]
+    #[xee(xpath("//atom:feed/atom:entry/atom:title"))]
     entry_titles: Vec<String>,
 
-    #[xee(xpath("//atom:feed/atom:entry/atom:author/atom:name/text()"))]
+    #[xee(xpath("//atom:feed/atom:entry/atom:author/atom:name"))]
     author_names: Vec<String>,
 }
 
@@ -26,13 +26,13 @@ struct AtomFeed {
 #[derive(Extract)]
 #[xee(ns(rss = "http://purl.org/rss/1.0/"))]
 struct RSSFeed {
-    #[xee(xpath("//rss:rss/rss:channel/rss:title/text()"))]
+    #[xee(xpath("//rss:rss/rss:channel/rss:title"))]
     title: String,
 
-    #[xee(xpath("//rss:rss/rss:channel/rss:description/text()"))]
+    #[xee(xpath("//rss:rss/rss:channel/rss:description"))]
     description: Option<String>,
 
-    #[xee(xpath("//rss:rss/rss:channel/rss:item/rss:title/text()"))]
+    #[xee(xpath("//rss:rss/rss:channel/rss:item/rss:title"))]
     item_titles: Vec<String>,
 }
 
@@ -41,13 +41,13 @@ struct RSSFeed {
 #[xee(ns(soap = "http://schemas.xmlsoap.org/soap/envelope/"))]
 #[xee(ns(xsd = "http://www.w3.org/2001/XMLSchema"))]
 struct SOAPMessage {
-    #[xee(xpath("//soap:Envelope/soap:Header/soap:Action/text()"))]
+    #[xee(xpath("//soap:Envelope/soap:Header/soap:Action"))]
     action: String,
 
-    #[xee(xpath("//soap:Envelope/soap:Body/xsd:string/text()"))]
+    #[xee(xpath("//soap:Envelope/soap:Body/xsd:string"))]
     body_content: Option<String>,
 
-    #[xee(xpath("//soap:Envelope/soap:Header/soap:MessageID/text()"))]
+    #[xee(xpath("//soap:Envelope/soap:Header/soap:MessageID"))]
     message_id: Option<String>,
 }
 
@@ -55,10 +55,10 @@ struct SOAPMessage {
 #[derive(Extract)]
 #[xee(default_ns("http://example.com/default"))]
 struct DefaultNamespaceData {
-    #[xee(xpath("//root/title/text()"))]
+    #[xee(xpath("//root/title"))]
     title: String,
 
-    #[xee(xpath("//root/items/item/text()"))]
+    #[xee(xpath("//root/items/item"))]
     items: Vec<String>,
 }
 

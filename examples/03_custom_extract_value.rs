@@ -115,19 +115,19 @@ impl ExtractValue for DateRange {
 /// Struct using custom ExtractValue implementations
 #[derive(Extract)]
 struct Product {
-    #[xee(xpath("//name/text()"))]
+    #[xee(xpath("//name"))]
     name: String,
 
-    #[xee(xpath("//tags/text()"))]
+    #[xee(xpath("//tags"))]
     tags: Option<CSV>,
 
-    #[xee(xpath("//location/text()"))]
+    #[xee(xpath("//location"))]
     location: Option<Coordinates>,
 
-    #[xee(xpath("//availability/text()"))]
+    #[xee(xpath("//availability"))]
     availability: Option<DateRange>,
 
-    #[xee(xpath("//categories/text()"))]
+    #[xee(xpath("//categories"))]
     categories: Option<CSV>,
 }
 
@@ -137,13 +137,13 @@ struct Store {
     #[xee(xpath("//store/@id"))]
     id: String,
 
-    #[xee(xpath("//store/name/text()"))]
+    #[xee(xpath("//store/name"))]
     name: String,
 
-    #[xee(xpath("//store/coordinates/text()"))]
+    #[xee(xpath("//store/coordinates"))]
     coordinates: Coordinates,
 
-    #[xee(xpath("//store/hours/text()"))]
+    #[xee(xpath("//store/hours"))]
     hours: DateRange,
 }
 

@@ -8,29 +8,29 @@ use xee_extract::{Extractor, Extract};
 /// Nested struct for book metadata
 #[derive(Extract)]
 struct BookMetadata {
-    #[xee(xpath("isbn/text()"))]
+    #[xee(xpath("isbn"))]
     isbn: String,
 
-    #[xee(xpath("publisher/text()"))]
+    #[xee(xpath("publisher"))]
     publisher: Option<String>,
 
-    #[xee(xpath("publication_date/text()"))]
+    #[xee(xpath("publication_date"))]
     publication_date: Option<String>,
 
-    #[xee(xpath("reviews/text()"))]
+    #[xee(xpath("reviews"))]
     reviews: Option<String>,
 }
 
 /// Nested struct for author information
 #[derive(Extract)]
 struct Author {
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("email/text()"))]
+    #[xee(xpath("email"))]
     email: Option<String>,
 
-    #[xee(xpath("bio/text()"))]
+    #[xee(xpath("bio"))]
     bio: Option<String>,
 }
 
@@ -41,10 +41,10 @@ struct Book {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("title/text()"))]
+    #[xee(xpath("title"))]
     title: String,
 
-    #[xee(xpath("price/text()"))]
+    #[xee(xpath("price"))]
     price: f64,
 
     #[xee(xpath("@genre"))]
@@ -63,13 +63,13 @@ struct Department {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
     #[xee(extract("manager"))]
     manager: Author,
 
-    #[xee(xpath("employees/employee/name/text()"))]
+    #[xee(xpath("employees/employee/name"))]
     employee_names: Vec<String>,
 }
 
@@ -80,10 +80,10 @@ struct Company {
     #[xee(xpath("@id"))]
     id: String,
 
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("location/text()"))]
+    #[xee(xpath("location"))]
     location: Option<String>,
 
     #[xee(extract("departments/department"))]
@@ -96,13 +96,13 @@ struct OrderItem {
     #[xee(xpath("@sku"))]
     sku: String,
 
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("quantity/text()"))]
+    #[xee(xpath("quantity"))]
     quantity: u32,
 
-    #[xee(xpath("price/text()"))]
+    #[xee(xpath("price"))]
     price: f64,
 }
 
@@ -113,7 +113,7 @@ struct Order {
     #[xee(xpath("@order_id"))]
     order_id: String,
 
-    #[xee(xpath("order_date/text()"))]
+    #[xee(xpath("order_date"))]
     order_date: String,
 
     #[xee(extract("customer"))]
@@ -122,7 +122,7 @@ struct Order {
     #[xee(extract("items/item"))]
     items: Vec<OrderItem>,
 
-    #[xee(xpath("total/text()"))]
+    #[xee(xpath("total"))]
     total: f64,
 }
 

@@ -9,13 +9,13 @@ use xee_extract::{Extractor, Extract};
 #[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct Base64Data {
-    #[xee(xpath("string(//base64-data/text()) cast as xs:base64Binary"))]
+    #[xee(xpath("string(//base64-data) cast as xs:base64Binary"))]
     data: Vec<u8>,
 
-    #[xee(xpath("string(//optional-base64/text()) cast as xs:base64Binary"))]
+    #[xee(xpath("string(//optional-base64) cast as xs:base64Binary"))]
     optional_data: Option<Vec<u8>>,
 
-    #[xee(xpath("string(//base64-node/text()) cast as xs:base64Binary"))]
+    #[xee(xpath("string(//base64-node) cast as xs:base64Binary"))]
     node_data: Vec<u8>,
 }
 
@@ -23,13 +23,13 @@ struct Base64Data {
 #[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct HexData {
-    #[xee(xpath("string(//hex-data/text()) cast as xs:hexBinary"))]
+    #[xee(xpath("string(//hex-data) cast as xs:hexBinary"))]
     data: Vec<u8>,
 
-    #[xee(xpath("string(//optional-hex/text()) cast as xs:hexBinary"))]
+    #[xee(xpath("string(//optional-hex) cast as xs:hexBinary"))]
     optional_data: Option<Vec<u8>>,
 
-    #[xee(xpath("string(//hex-node/text()) cast as xs:hexBinary"))]
+    #[xee(xpath("string(//hex-node) cast as xs:hexBinary"))]
     node_data: Vec<u8>,
 }
 
@@ -37,13 +37,13 @@ struct HexData {
 #[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct MixedBinaryData {
-    #[xee(xpath("string(//base64-field/text()) cast as xs:base64Binary"))]
+    #[xee(xpath("string(//base64-field) cast as xs:base64Binary"))]
     base64_field: Vec<u8>,
 
-    #[xee(xpath("string(//hex-field/text()) cast as xs:hexBinary"))]
+    #[xee(xpath("string(//hex-field) cast as xs:hexBinary"))]
     hex_field: Vec<u8>,
 
-    #[xee(xpath("string(//optional-binary/text()) cast as xs:base64Binary"))]
+    #[xee(xpath("string(//optional-binary) cast as xs:base64Binary"))]
     optional_binary: Option<Vec<u8>>,
 }
 
@@ -57,13 +57,13 @@ struct BinaryWithMetadata {
     #[xee(xpath("//binary/@type"))]
     binary_type: String,
 
-    #[xee(xpath("string(//binary/data/text()) cast as xs:base64Binary"))]
+    #[xee(xpath("string(//binary/data) cast as xs:base64Binary"))]
     data: Vec<u8>,
 
-    #[xee(xpath("//binary/size/text()"))]
+    #[xee(xpath("//binary/size"))]
     size: u32,
 
-    #[xee(xpath("//binary/checksum/text()"))]
+    #[xee(xpath("//binary/checksum"))]
     checksum: Option<String>,
 }
 

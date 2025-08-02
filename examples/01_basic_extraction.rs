@@ -8,16 +8,16 @@ use xee_extract::{Extractor, Extract};
 /// A simple struct demonstrating basic field extraction
 #[derive(Extract)]
 struct Person {
-    #[xee(xpath("//name/text()"))]
+    #[xee(xpath("//name"))]
     name: String,
 
-    #[xee(xpath("//age/text()"))]
+    #[xee(xpath("//age"))]
     age: u32,
 
-    #[xee(xpath("//email/text()"))]
+    #[xee(xpath("//email"))]
     email: Option<String>,
 
-    #[xee(xpath("//hobbies/hobby/text()"))]
+    #[xee(xpath("//hobbies/hobby"))]
     hobbies: Vec<String>,
 }
 
@@ -27,13 +27,13 @@ struct Company {
     #[xee(xpath("//company/@id"))]
     id: String,
 
-    #[xee(xpath("//company/name/text()"))]
+    #[xee(xpath("//company/name"))]
     name: String,
 
-    #[xee(xpath("//company/employees/employee/name/text()"))]
+    #[xee(xpath("//company/employees/employee/name"))]
     employee_names: Vec<String>,
 
-    #[xee(xpath("//company/address/city/text()"))]
+    #[xee(xpath("//company/address/city"))]
     city: Option<String>,
 }
 
