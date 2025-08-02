@@ -36,6 +36,7 @@ struct Author {
 
 /// Main book struct with nested components
 #[derive(Extract, Debug, PartialEq)]
+#[xee(context("/book"))]
 struct Book {
     #[xee(xpath("@id"))]
     id: String,
@@ -74,6 +75,7 @@ struct Department {
 
 /// Company struct with nested departments
 #[derive(Extract, Debug, PartialEq)]
+#[xee(context("/company"))]
 struct Company {
     #[xee(xpath("@id"))]
     id: String,
@@ -106,6 +108,7 @@ struct OrderItem {
 
 /// Order struct with nested items and customer
 #[derive(Extract, Debug, PartialEq)]
+#[xee(context("/order"))]
 struct Order {
     #[xee(xpath("@order_id"))]
     order_id: String,
@@ -254,20 +257,4 @@ fn main() {
     println!("  Total: ${:.2}", order.total);
     println!();
 
-    // Example 4: Error handling for missing nested elements
-    let incomplete_xml = r#"
-        <book id="B002" genre="fiction">
-            <title>Incomplete Book</title>
-            <price>19.99</price>
-            <!-- Missing author and metadata -->
-        </book>
-    "#;
-
-    let result = extractor.extract_one::<Book>(incomplete_xml);
-    
-    println!("Error handling for missing nested elements:");
-    match result {
-        Ok(book) => println!("  Unexpected success: {:?}", book),
-        Err(e) => println!("  Expected error: {}", e),
-    }
 } 
