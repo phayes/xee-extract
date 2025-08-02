@@ -442,22 +442,25 @@ fn generate_unified_query(
     let combined_msg_lit = proc_macro2::Literal::string(&combined_msg_prefix);
 
     let body = match tag {
-        XeeExtractAttributeTag::Extract => quote! {
-            use xee_extract::Extract;
-            <#field_type>::extract(documents, item, #extract_id).map_err(|e| {
-                xee_interpreter::error::SpannedError::from(
-                    xee_interpreter::error::Error::Application(Box::new(
-                        xee_interpreter::error::ApplicationError::new(
-                            xot::xmlname::OwnedName::new(
-                                "extract-value-error".to_string(),
-                                "http://github.com/Paligo/xee/errors".to_string(),
-                                "".to_string(),
-                            ),
-                            format!("{}{}", #combined_msg_lit, e)
-                        )
-                    ))
-                )
-            })
+        XeeExtractAttributeTag::Extract => {
+            let extract_id_expr = extract_id.map(|id| quote! { Some(#id) }).unwrap_or_else(|| quote! { None });
+            quote! {
+                use xee_extract::Extract;
+                <#field_type>::extract(documents, item, #extract_id_expr).map_err(|e| {
+                    xee_interpreter::error::SpannedError::from(
+                        xee_interpreter::error::Error::Application(Box::new(
+                            xee_interpreter::error::ApplicationError::new(
+                                xot::xmlname::OwnedName::new(
+                                    "extract-value-error".to_string(),
+                                    "http://github.com/Paligo/xee/errors".to_string(),
+                                    "".to_string(),
+                                ),
+                                format!("{}{}", #combined_msg_lit, e)
+                            )
+                        ))
+                    )
+                })
+            }
         },
 
         XeeExtractAttributeTag::Xml => quote! {
