@@ -567,7 +567,7 @@ mod tests {
             attr(quote!(xpath("foo/bar"))),
         ];
 
-        let parsed = parse_xee_attrs(&attrs).unwrap();
+        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Field).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Xpath));
@@ -581,7 +581,7 @@ mod tests {
             attr(quote!(xpath("foo/bar", "my_alias"))),
         ];
 
-        let parsed = parse_xee_attrs(&attrs).unwrap();
+        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Field).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert_eq!(attr.attr_value, "foo/bar");
@@ -594,7 +594,7 @@ mod tests {
             attr(quote!(ns(atom = "http://www.w3.org/2005/Atom"))),
         ];
 
-        let parsed = parse_xee_attrs(&attrs).unwrap();
+        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Ns));
@@ -609,7 +609,7 @@ mod tests {
             attr(quote!(ns(atom = "http://www.w3.org/2005/Atom", "ns_alias"))),
         ];
 
-        let parsed = parse_xee_attrs(&attrs).unwrap();
+        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert_eq!(attr.attr_key.as_deref(), Some("atom"));
@@ -620,17 +620,15 @@ mod tests {
     #[test]
     fn test_multiple_attributes() {
         let attrs = vec![
-            attr(quote!(xpath("id"))),
             attr(quote!(ns(atom = "http://atom", "alias"))),
             attr(quote!(context("ctx", "ctx_alias"))),
         ];
 
-        let parsed = parse_xee_attrs(&attrs).unwrap();
-        assert_eq!(parsed.len(), 3);
+        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
+        assert_eq!(parsed.len(), 2);
 
-        assert!(matches!(parsed[0].attr, XeeExtractAttributeTag::Xpath));
-        assert!(matches!(parsed[1].attr, XeeExtractAttributeTag::Ns));
-        assert!(matches!(parsed[2].attr, XeeExtractAttributeTag::Context));
+        assert!(matches!(parsed[0].attr, XeeExtractAttributeTag::Ns));
+        assert!(matches!(parsed[1].attr, XeeExtractAttributeTag::Context));
     }
 
     #[test]
@@ -639,7 +637,7 @@ mod tests {
             attr(quote!(nonsense("abc"))),
         ];
 
-        let result = parse_xee_attrs(&attrs);
+        let result = parse_xee_attrs(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());
     }
 
@@ -649,7 +647,7 @@ mod tests {
             attr(quote!(ns(atom = 123))),
         ];
 
-        let result = parse_xee_attrs(&attrs);
+        let result = parse_xee_attrs(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());
     }
 }
