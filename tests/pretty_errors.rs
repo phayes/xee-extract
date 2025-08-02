@@ -202,7 +202,7 @@ fn test_application_error_value_extraction() {
     // Should contain XPath error information
     assert!(message.contains("XPath error:"));
     // The error should mention the field name and the parsing error
-    assert!(message.contains("Error extracting value for field _year:"));
+    assert!(message.contains("Error extracting value for field '_year':"));
     assert!(message.contains("invalid digit found in string"));
 }
 

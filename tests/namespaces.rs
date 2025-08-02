@@ -2,10 +2,8 @@ use xee_extract::{Extractor, Extract};
 
 // Test 1: Basic namespace prefixes only
 #[derive(Extract, Debug, PartialEq)]
-#[xee(ns(
-    atom = "http://www.w3.org/2005/Atom",
-    dc = "http://purl.org/dc/elements/1.1/"
-))]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
+#[xee(ns(dc = "http://purl.org/dc/elements/1.1/"))]
 #[xee(context("(//entry)[1]"))]
 struct NamespaceOnly {
     #[xee(xpath("atom:id/text()"))]
@@ -35,10 +33,8 @@ struct DefaultNamespaceOnly {
 
 // Test 3: Namespace prefixes + Context
 #[derive(Extract, Debug, PartialEq)]
-#[xee(ns(
-    atom = "http://www.w3.org/2005/Atom",
-    dc = "http://purl.org/dc/elements/1.1/"
-))]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
+#[xee(ns(dc = "http://purl.org/dc/elements/1.1/"))]
 #[xee(context("(//entry)[1]"))]
 struct NamespaceAndContext {
     #[xee(xpath("atom:id/text()"))]
@@ -69,9 +65,7 @@ struct DefaultNamespaceAndContext {
 // Test 5: Default namespace + Namespace prefixes
 #[derive(Extract, Debug, PartialEq)]
 #[xee(default_ns("http://www.w3.org/2005/Atom"))]
-#[xee(ns(
-    dc = "http://purl.org/dc/elements/1.1/"
-))]
+#[xee(ns(dc = "http://purl.org/dc/elements/1.1/"))]
 #[xee(context("(//entry)[1]"))]
 struct DefaultAndPrefixedNamespaces {
     #[xee(xpath("id/text()"))]
@@ -87,9 +81,7 @@ struct DefaultAndPrefixedNamespaces {
 // Test 6: All three combined
 #[derive(Extract, Debug, PartialEq)]
 #[xee(default_ns("http://www.w3.org/2005/Atom"))]
-#[xee(ns(
-    dc = "http://purl.org/dc/elements/1.1/"
-))]
+#[xee(ns(dc = "http://purl.org/dc/elements/1.1/"))]
 #[xee(context("(//entry)[1]"))]
 struct AllCombined {
     #[xee(xpath("id/text()"))]
@@ -105,9 +97,7 @@ struct AllCombined {
 // Test 7: Nested structs with different namespace configurations
 #[derive(Extract, Debug, PartialEq)]
 #[xee(default_ns("http://www.w3.org/2005/Atom"))]
-#[xee(ns(
-    dc = "http://purl.org/dc/elements/1.1/"
-))]
+#[xee(ns(dc = "http://purl.org/dc/elements/1.1/"))]
 #[xee(context("(//entry)[1]"))]
 struct ParentWithNamespaces {
     #[xee(xpath("id/text()"))]
@@ -118,9 +108,7 @@ struct ParentWithNamespaces {
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[xee(ns(
-    atom = "http://www.w3.org/2005/Atom"
-))]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
 struct ChildWithDifferentNamespaces {
     #[xee(xpath("atom:name/text()"))]
     name: String,
