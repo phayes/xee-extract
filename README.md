@@ -9,25 +9,25 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
 struct SimpleEntry {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 
-    #[extract("//author")]
+    #[xee(extract("//author"))]
     author: Author,
 }
 
 #[derive(Extract)]
 struct Author {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 
-    #[xpath("email/text()")]
+    #[xee(xpath("email/text()"))]
     email: Option<String>,
 }
 
@@ -58,88 +58,86 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Field Attributes
 
-### `#[xpath("expression")]`
+### `#[xee(xpath("expression"))]`
 
 Extract a single value using an XPath expression.
 
 ```rust
 #[derive(xee_extract::Extract)]
 struct Foo {
-  #[xpath("//title/text()")]
+  #[xee(xpath("//title/text()"))]
   title: String,
 }
 
 ```
 
-### `#[extract("expression")]`
+### `#[xee(extract("expression"))]`
 
 Extract a nested struct or vector of structs.
 
 ```rust
 #[derive(xee_extract::Extract)]
 struct Foo {
-    #[extract("//author")]
+    #[xee(extract("//author"))]
     author: Author,
     
-    #[extract("//book")]
+    #[xee(extract("//book"))]
     books: Vec<Book>,
 }
 ```
 
-### `#[xee(xml = "expression")]`
+### `#[xee(xml("expression"))]`
 
 Extract raw XML content.
 
 ```rust
 #[derive(xee_extract::Extract)]
 struct Foo {
-    #[xml("//content")]
+    #[xee(xml("//content"))]
     content: String,
     
-    #[xml("//metadata")]
+    #[xee(xml("//metadata"))]
     metadata: Option<String>,
 }
 ```
 
 ## Struct attributes
 
-### `#[context(expression)]`
+### `#[xee(context("expression"))]`
 
 Provide a custom context for the xpath expressions in this struct. By default top-level struct expressions are evaluated using the default root node, and child-structs are evaluated using the their extraction node as context. 
 
 This can be useful when you have a struct that might be extracted as a child-node that is part of a larger structure, but also might be extracted on it's own.
 
 ```rust
-#[context("(if self::entry then . else /entry)")]
+#[xee(context("(if self::entry then . else /entry)"))]
 struct Entry {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 }
 ```
 
-### `#[ns(name = "url")]`
+### `#[xee(ns(name = "url"))]`
 
 Add namespaces for all xpath expressions. This has no effect if placed on a child struct (child structs inherit their parents namespaces when extracting via the parent). 
 
 ```rust
-#[ns(
-   atom = "http://www.w3.org/2005/Atom",
-   meta = "http://example.org/Meta"
-)]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom")]
+#[xee(ns(meta = "http://example.org/Meta")]
 struct Foo {
-    #[xpath("atom:name/text()")]
+    #[xee(xpath("atom:name/text()"))]
     name: String,
 }
 ```
 
-### `#[default_ns(name = "url")]`
+### `#[xee(default_ns(name = "url"))]`
 
 Set the default namespace for xpath queries. 
 
 ```rust
-#[default_ns(atom = "http://www.w3.org/2005/Atom"]
+#[xee(default_ns(atom = "http://www.w3.org/2005/Atom"))]
 struct Foo {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 }
 ```
