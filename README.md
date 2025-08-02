@@ -1,6 +1,6 @@
 # xee-extract
 
-Declarative data extraction from large XML documents using Xpath. 
+Declarative data extraction from large XML documents using Xpath.
 
 ## Quick Start
 
@@ -52,6 +52,46 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Category: {:?}", entry.category);
     println!("Author: {} ({:?})", entry.author.name, entry.author.email);
 
+    Ok(())
+}
+```
+
+## Custom Value Extraction
+
+`ExtractValue` controls how individual field values are deserialized.
+Any type that implements `FromStr` works out of the box, but you can
+provide custom parsing by implementing this trait yourself.
+
+### Example: parsing a comma separated list
+
+```rust
+use xee_extract::{Extract, Extractor, ExtractValue, Error};
+use xee_xpath::{Documents, Item};
+
+struct CsvTags(Vec<String>);
+
+impl ExtractValue for CsvTags {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+        let s = item.string_value(documents.xot())?;
+        Ok(CsvTags(
+            s.split(',')
+                .map(|s| s.trim().to_string())
+                .collect(),
+        ))
+    }
+}
+
+#[derive(Extract)]
+struct TaggedEntry {
+    #[xee(xpath("//tags/text()"))]
+    tags: CsvTags,
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
+    let extractor = Extractor::new();
+    let entry: TaggedEntry = extractor.extract_one(xml)?;
+    assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
     Ok(())
 }
 ```
