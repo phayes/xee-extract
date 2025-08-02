@@ -132,7 +132,7 @@ struct Foo {
 
 ### `#[xee(default_ns(name = "url"))]`
 
-Set the default namespace for xpath queries. 
+Set the default namespace for xpath queries.
 
 ```rust
 #[xee(default_ns(atom = "http://www.w3.org/2005/Atom"))]
@@ -141,3 +141,38 @@ struct Foo {
     name: String,
 }
 ```
+
+## Named Extractions
+
+Sometimes a single struct needs to support multiple XML formats.  Each
+`#[xee(...)]` attribute can take an optional second string argument that
+associates it with a named extraction.  When using
+`Extractor::named("nlm")`, only the attributes tagged with that name are
+applied; attributes without a name form the default extraction used by
+`Extractor::default()`.
+
+```rust
+use xee_extract::{Extractor, Extract};
+
+#[derive(Extract)]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]       // named
+struct Entry {
+    #[xee(xpath("//atom:id/text()"))]                          // default
+    #[xee(xpath("//nlm:id/text()", "nlm"))]                   // named
+    id: String,
+
+    #[xee(xpath("//atom:title/text()"))]
+    #[xee(xpath("//nlm:title/text()", "nlm"))]
+    title: String,
+}
+
+// Parse Atom
+let atom: Entry = Extractor::default().extract_one(atom_xml)?;
+// Parse NLM using the named extraction
+let nlm: Entry = Extractor::named("nlm").extract_one(nlm_xml)?;
+```
+
+This mechanism works for other struct-level attributes like `context` and
+`default_ns`, enabling a single type to handle multiple extraction
+configurations.
