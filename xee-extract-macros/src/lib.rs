@@ -162,8 +162,7 @@ fn generate_extract_for_attr(
 
         tag @ (Xpath | Context | DefaultNs | Extract | Xml) => {
             let xpath_expr = &attr.attr_value;
-            let field_ident_str = field_ident.to_string();
-            let strategy = attr.named_extract.as_deref().unwrap_or(&field_ident_str);
+            let extract_id: Option<&str> = attr.named_extract.as_deref();
 
             if is_vec_u8_type(field_type) || is_option_vec_u8_type(field_type) {
                 return generate_vec_u8_query(field_ident, xpath_expr, field_type, context_var);
@@ -185,7 +184,7 @@ fn generate_extract_for_attr(
                 context_var,
                 query_method,
                 field_ident,
-                strategy,
+                extract_id,
             );
         }
     }
@@ -348,6 +347,7 @@ fn is_option_vec_u8_type(ty: &syn::Type) -> bool {
     }
     false
 }
+
 fn generate_unified_query(
     xpath_expr: &str,
     field_type: &syn::Type,
@@ -355,9 +355,10 @@ fn generate_unified_query(
     context_var: &proc_macro2::TokenStream,
     query_method: proc_macro2::TokenStream,
     field_name: &syn::Ident,
-    var_name: &str,
+    extract_id: Option<&str>,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
+    let extract_id_str = extract_id.map(|id| format!(" using named extract '{}'", id)).unwrap_or_default();
 
     let body = match tag {
         XeeExtractAttributeTag::Extract => quote! {
@@ -367,7 +368,7 @@ fn generate_unified_query(
                     xee_interpreter::error::Error::Application(Box::new(
                         xee_interpreter::error::ApplicationError::new(
                             xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
-                            format!("Struct extraction failed for field {}: {}", #field_name_str, e)
+                            format!("Struct extraction failed for field '{}'{extract_id_str}: {}", #field_name_str, #extract_id_str e)
                         )
                     ))
                 )
@@ -381,7 +382,7 @@ fn generate_unified_query(
                             xee_interpreter::error::Error::Application(Box::new(
                                 xee_interpreter::error::ApplicationError::new(
                                     xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
-                                    format!("Failed to serialize XML for field {}: {}", #field_name_str, e)
+                                    format!("Failed to serialize XML for field '{}'{extract_id_str}: {}", #extract_id_str, #field_name_str, e)
                                 )
                             ))
                         ))?;
@@ -397,7 +398,7 @@ fn generate_unified_query(
                     xee_interpreter::error::Error::Application(Box::new(
                         xee_interpreter::error::ApplicationError::new(
                             xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
-                            format!("Error extracting value for field {}: {}", #field_name_str, e)
+                            format!("Error extracting value for field '{}'{extract_id_str}: {}", #field_name_str, #extract_id_str, e)
                         )
                     ))
                 )
@@ -454,4 +455,107 @@ fn generate_vec_u8_query(
             #query_code
         };
     })
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use syn::parse_quote;
+
+    fn attr(input: proc_macro2::TokenStream) -> syn::Attribute {
+        parse_quote!(#[xee(#input)])
+    }
+
+    #[test]
+    fn test_xpath_single_arg() {
+        let attrs = vec![
+            attr(quote!(xpath("foo/bar"))),
+        ];
+
+        let parsed = parse_xee_attrs(&attrs).unwrap();
+        assert_eq!(parsed.len(), 1);
+        let attr = &parsed[0];
+        assert!(matches!(attr.attr, XeeExtractAttributeTag::Xpath));
+        assert_eq!(attr.attr_value, "foo/bar");
+        assert_eq!(attr.named_extract, None);
+    }
+
+    #[test]
+    fn test_xpath_with_alias() {
+        let attrs = vec![
+            attr(quote!(xpath("foo/bar", "my_alias"))),
+        ];
+
+        let parsed = parse_xee_attrs(&attrs).unwrap();
+        assert_eq!(parsed.len(), 1);
+        let attr = &parsed[0];
+        assert_eq!(attr.attr_value, "foo/bar");
+        assert_eq!(attr.named_extract.as_deref(), Some("my_alias"));
+    }
+
+    #[test]
+    fn test_ns_with_key_value() {
+        let attrs = vec![
+            attr(quote!(ns(atom = "http://www.w3.org/2005/Atom"))),
+        ];
+
+        let parsed = parse_xee_attrs(&attrs).unwrap();
+        assert_eq!(parsed.len(), 1);
+        let attr = &parsed[0];
+        assert!(matches!(attr.attr, XeeExtractAttributeTag::Ns));
+        assert_eq!(attr.attr_key.as_deref(), Some("atom"));
+        assert_eq!(attr.attr_value, "http://www.w3.org/2005/Atom");
+        assert_eq!(attr.named_extract, None);
+    }
+
+    #[test]
+    fn test_ns_with_key_value_and_alias() {
+        let attrs = vec![
+            attr(quote!(ns(atom = "http://www.w3.org/2005/Atom", "ns_alias"))),
+        ];
+
+        let parsed = parse_xee_attrs(&attrs).unwrap();
+        assert_eq!(parsed.len(), 1);
+        let attr = &parsed[0];
+        assert_eq!(attr.attr_key.as_deref(), Some("atom"));
+        assert_eq!(attr.attr_value, "http://www.w3.org/2005/Atom");
+        assert_eq!(attr.named_extract.as_deref(), Some("ns_alias"));
+    }
+
+    #[test]
+    fn test_multiple_attributes() {
+        let attrs = vec![
+            attr(quote!(xpath("id"))),
+            attr(quote!(ns(atom = "http://atom", "alias"))),
+            attr(quote!(context("ctx", "ctx_alias"))),
+        ];
+
+        let parsed = parse_xee_attrs(&attrs).unwrap();
+        assert_eq!(parsed.len(), 3);
+
+        assert!(matches!(parsed[0].attr, XeeExtractAttributeTag::Xpath));
+        assert!(matches!(parsed[1].attr, XeeExtractAttributeTag::Ns));
+        assert!(matches!(parsed[2].attr, XeeExtractAttributeTag::Context));
+    }
+
+    #[test]
+    fn test_invalid_tag() {
+        let attrs = vec![
+            attr(quote!(nonsense("abc"))),
+        ];
+
+        let result = parse_xee_attrs(&attrs);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_invalid_ns_missing_value() {
+        let attrs = vec![
+            attr(quote!(ns(atom = 123))),
+        ];
+
+        let result = parse_xee_attrs(&attrs);
+        assert!(result.is_err());
+    }
 }
