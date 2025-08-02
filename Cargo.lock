@@ -2457,8 +2457,6 @@ dependencies = [
 name = "xee-extract-macros"
 version = "0.1.0"
 dependencies = [
- "base64 0.22.1",
- "hex",
  "proc-macro-error 1.0.4",
  "proc-macro2 1.0.95",
  "quote 1.0.40",
