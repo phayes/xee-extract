@@ -177,6 +177,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             fn extract(
                 documents: &mut xee_xpath::Documents,
                 context_item: &xee_xpath::Item,
+                extract_id: Option<&str>,
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
 
@@ -443,7 +444,7 @@ fn generate_unified_query(
     let body = match tag {
         XeeExtractAttributeTag::Extract => quote! {
             use xee_extract::Extract;
-            <#field_type>::extract(documents, item).map_err(|e| {
+            <#field_type>::extract(documents, item, #extract_id).map_err(|e| {
                 xee_interpreter::error::SpannedError::from(
                     xee_interpreter::error::Error::Application(Box::new(
                         xee_interpreter::error::ApplicationError::new(

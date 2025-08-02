@@ -16,14 +16,11 @@ pub mod error;
 pub use error::{Error, ExtractError};
 
 pub trait Extract: Sized {
-    ///
     /// Extract from an XML node (for recursive extraction)
-    fn extract_from_node(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
-        // For Node items, use the more efficient context-based extraction
+    fn extract_from_node(documents: &mut Documents, item: &Item, extract_id: Option<&str>) -> Result<Self, Error> {
         match item {
             Item::Node(_) => {
-                // Use the new context-based extraction method
-                Self::extract(documents, item)
+                Self::extract(documents, item, extract_id)
             }
             _ => {
                 return Result::Err(Error::InvalidXPath(
@@ -34,13 +31,7 @@ pub trait Extract: Sized {
     }
 
     /// Extract from a context item using XPath expressions relative to that item
-    /// This is more efficient than extract_from_node as it doesn't require
-    /// serialization to XML string and re-parsing
-    fn extract(documents: &mut Documents, context_item: &Item) -> Result<Self, Error> {
-        // For now, fall back to the existing implementation
-        // This will be overridden by the macro to use context-based extraction
-        Self::extract_from_node(documents, context_item)
-    }
+    fn extract(documents: &mut Documents, context_item: &Item, extract_id: Option<&str>) -> Result<Self, Error>;
 }
 
 /// Trait for deserializing a type from an XPath item
@@ -69,13 +60,28 @@ where
 /// Extractor for XML documents using XPath expressions
 pub struct Extractor {
     pub variables: std::collections::HashMap<String, String>,
+    pub extract_name: Option<String>,
+}
+
+impl Default for Extractor {
+    fn default() -> Self {
+        Self {
+            variables: std::collections::HashMap::new(),
+            extract_name: None,
+        }
+    }
 }
 
 impl Extractor {
     /// Create a new extractor
     pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn named(name: &str) -> Self {
         Self {
             variables: std::collections::HashMap::new(),
+            extract_name: Some(name.to_string()),
         }
     }
 
@@ -97,17 +103,11 @@ impl Extractor {
         let item = doc.to_item(&mut documents).map_err(|e| ExtractError::new(Error::SpannedError(e), &xml))?;
 
         // Use the trait's deserialize method
-        let res = T::extract(&mut documents, &item);
+        let res = T::extract(&mut documents, &item, self.extract_name.as_deref());
 
         match res {
             Ok(value) => Ok(value),
             Err(error) => Err(ExtractError::new(error, &xml)),
         }
-    }
-}
-
-impl Default for Extractor {
-    fn default() -> Self {
-        Self::new()
     }
 }
