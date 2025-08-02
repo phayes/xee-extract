@@ -6,7 +6,7 @@
 use xee_extract::{Extractor, Extract};
 
 /// A simple struct demonstrating basic field extraction
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Person {
     #[xee(xpath("//name/text()"))]
     name: String,
@@ -22,7 +22,7 @@ struct Person {
 }
 
 /// A more complex struct with nested data
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Company {
     #[xee(xpath("//company/@id"))]
     id: String,

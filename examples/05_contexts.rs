@@ -6,7 +6,7 @@
 use xee_extract::{Extractor, Extract};
 
 /// Struct with simple context - extracts from a specific element
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("(//book)[1]"))]
 struct Book {
     #[xee(xpath("@id"))]
@@ -26,7 +26,7 @@ struct Book {
 }
 
 /// Struct with conditional context - handles different XML structures
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("if (self::book) then . else //book"))]
 struct FlexibleBook {
     #[xee(xpath("@id"))]
@@ -43,7 +43,7 @@ struct FlexibleBook {
 }
 
 /// Struct with multiple context options
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("(//entry)[1]"))]
 struct FirstEntry {
     #[xee(xpath("@id"))]
@@ -57,7 +57,7 @@ struct FirstEntry {
 }
 
 /// Struct for extracting from a specific position in a list
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("//products/product[position() = 1]"))]
 struct FirstProduct {
     #[xee(xpath("@sku"))]
@@ -74,7 +74,7 @@ struct FirstProduct {
 }
 
 /// Struct for extracting with complex context logic
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("//users/user[@type = 'admin']"))]
 struct AdminUser {
     #[xee(xpath("@id"))]

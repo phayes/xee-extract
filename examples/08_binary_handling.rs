@@ -6,7 +6,7 @@
 use xee_extract::{Extractor, Extract};
 
 /// Struct for handling base64 encoded binary data
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct Base64Data {
     #[xee(xpath("string(//base64-data/text()) cast as xs:base64Binary"))]
@@ -20,7 +20,7 @@ struct Base64Data {
 }
 
 /// Struct for handling hex encoded binary data
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct HexData {
     #[xee(xpath("string(//hex-data/text()) cast as xs:hexBinary"))]
@@ -34,7 +34,7 @@ struct HexData {
 }
 
 /// Struct for mixed binary data types
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct MixedBinaryData {
     #[xee(xpath("string(//base64-field/text()) cast as xs:base64Binary"))]
@@ -48,7 +48,7 @@ struct MixedBinaryData {
 }
 
 /// Struct for binary data with metadata
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct BinaryWithMetadata {
     #[xee(xpath("//binary/@name"))]
@@ -168,7 +168,7 @@ fn main() {
     
     println!("Error handling for invalid binary data:");
     match result {
-        Ok(data) => println!("  Unexpected success: {:?}", data),
+        Ok(_data) => println!("  Unexpected success: Data extracted"),
         Err(e) => println!("  Expected error: {}", e),
     }
 

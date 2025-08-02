@@ -7,7 +7,6 @@ use xee_extract::{Extractor, Extract, ExtractValue, Error};
 use xee_xpath::{Documents, Item};
 
 /// Custom struct for CSV data that implements ExtractValue
-#[derive(Debug, PartialEq)]
 struct CSV {
     values: Vec<String>,
 }
@@ -43,7 +42,6 @@ impl ExtractValue for CSV {
 }
 
 /// Custom struct for coordinates that implements ExtractValue
-#[derive(Debug, PartialEq)]
 struct Coordinates {
     latitude: f64,
     longitude: f64,
@@ -83,7 +81,6 @@ impl ExtractValue for Coordinates {
 }
 
 /// Custom struct for date range that implements ExtractValue
-#[derive(Debug, PartialEq)]
 struct DateRange {
     start_date: String,
     end_date: String,
@@ -116,7 +113,7 @@ impl ExtractValue for DateRange {
 }
 
 /// Struct using custom ExtractValue implementations
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Product {
     #[xee(xpath("//name/text()"))]
     name: String,
@@ -135,7 +132,7 @@ struct Product {
 }
 
 /// Struct for complex data with custom types
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Store {
     #[xee(xpath("//store/@id"))]
     id: String,
@@ -168,8 +165,8 @@ fn main() {
     println!("Product with custom ExtractValue types:");
     println!("  Name: {}", product.name);
     println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
-    println!("  Location: {:?}", product.location);
-    println!("  Availability: {:?}", product.availability);
+    println!("  Location: {:?}", product.location.as_ref().map(|c| format!("({}, {})", c.latitude, c.longitude)));
+    println!("  Availability: {:?}", product.availability.as_ref().map(|d| format!("{} to {}", d.start_date, d.end_date)));
     println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
     println!();
 
@@ -205,8 +202,8 @@ fn main() {
     println!("Product with missing optional fields:");
     println!("  Name: {}", product.name);
     println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
-    println!("  Location: {:?}", product.location);
-    println!("  Availability: {:?}", product.availability);
+    println!("  Location: {:?}", product.location.as_ref().map(|c| format!("({}, {})", c.latitude, c.longitude)));
+    println!("  Availability: {:?}", product.availability.as_ref().map(|d| format!("{} to {}", d.start_date, d.end_date)));
     println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
     println!();
 
@@ -241,7 +238,7 @@ fn main() {
     
     println!("Error handling for invalid coordinates:");
     match result {
-        Ok(product) => println!("  Unexpected success: {:?}", product),
+        Ok(_product) => println!("  Unexpected success: Product extracted"),
         Err(e) => println!("  Expected error: {}", e),
     }
 
@@ -259,7 +256,7 @@ fn main() {
     
     println!("Error handling for invalid date range:");
     match result {
-        Ok(product) => println!("  Unexpected success: {:?}", product),
+        Ok(_product) => println!("  Unexpected success: Product extracted"),
         Err(e) => println!("  Expected error: {}", e),
     }
 

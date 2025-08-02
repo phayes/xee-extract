@@ -6,7 +6,7 @@
 use xee_extract::{Extractor, Extract};
 
 /// Struct for extracting Atom feed data with namespaces
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
 struct AtomFeed {
     #[xee(xpath("//atom:feed/atom:title/text()"))]
@@ -23,7 +23,7 @@ struct AtomFeed {
 }
 
 /// Struct for extracting RSS feed data with namespaces
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(rss = "http://purl.org/rss/1.0/"))]
 struct RSSFeed {
     #[xee(xpath("//rss:rss/rss:channel/rss:title/text()"))]
@@ -37,7 +37,7 @@ struct RSSFeed {
 }
 
 /// Struct for extracting SOAP data with multiple namespaces
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(soap = "http://schemas.xmlsoap.org/soap/envelope/"))]
 #[xee(ns(xsd = "http://www.w3.org/2001/XMLSchema"))]
 struct SOAPMessage {
@@ -52,7 +52,7 @@ struct SOAPMessage {
 }
 
 /// Struct for extracting data with default namespace
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(default_ns("http://example.com/default"))]
 struct DefaultNamespaceData {
     #[xee(xpath("//root/title/text()"))]
@@ -175,7 +175,7 @@ fn main() {
     
     println!("Error handling for missing namespace:");
     match result {
-        Ok(feed) => println!("  Unexpected success: {:?}", feed),
+        Ok(_feed) => println!("  Unexpected success: Feed extracted"),
         Err(e) => println!("  Expected error: {}", e),
     }
 } 

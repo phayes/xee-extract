@@ -6,7 +6,7 @@
 use xee_extract::{Extractor, Extract};
 
 /// Struct for extracting raw XML content
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct RawXMLData {
     #[xee(xpath("//title/text()"))]
     title: String,
@@ -22,7 +22,7 @@ struct RawXMLData {
 }
 
 /// Struct for extracting HTML content embedded in XML
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct HTMLContent {
     #[xee(xpath("//title/text()"))]
     title: String,
@@ -35,7 +35,7 @@ struct HTMLContent {
 }
 
 /// Struct for extracting configuration with raw XML
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct ConfigWithXML {
     #[xee(xpath("//config/@name"))]
     name: String,
@@ -48,7 +48,7 @@ struct ConfigWithXML {
 }
 
 /// Struct for extracting document with mixed content
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct DocumentWithMixedContent {
     #[xee(xpath("//document/@id"))]
     id: String,
@@ -247,7 +247,7 @@ fn main() {
     
     println!("Error handling for missing XML elements:");
     match result {
-        Ok(data) => println!("  Unexpected success: {:?}", data),
+        Ok(_data) => println!("  Unexpected success: Data extracted"),
         Err(e) => println!("  Expected error: {}", e),
     }
 } 

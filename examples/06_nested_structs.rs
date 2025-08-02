@@ -6,7 +6,7 @@
 use xee_extract::{Extractor, Extract};
 
 /// Nested struct for book metadata
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct BookMetadata {
     #[xee(xpath("isbn/text()"))]
     isbn: String,
@@ -22,7 +22,7 @@ struct BookMetadata {
 }
 
 /// Nested struct for author information
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Author {
     #[xee(xpath("name/text()"))]
     name: String,
@@ -35,7 +35,7 @@ struct Author {
 }
 
 /// Main book struct with nested components
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("/book"))]
 struct Book {
     #[xee(xpath("@id"))]
@@ -58,7 +58,7 @@ struct Book {
 }
 
 /// Nested struct for department information
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct Department {
     #[xee(xpath("@id"))]
     id: String,
@@ -74,7 +74,7 @@ struct Department {
 }
 
 /// Company struct with nested departments
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("/company"))]
 struct Company {
     #[xee(xpath("@id"))]
@@ -91,7 +91,7 @@ struct Company {
 }
 
 /// Nested struct for order items
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 struct OrderItem {
     #[xee(xpath("@sku"))]
     sku: String,
@@ -107,7 +107,7 @@ struct OrderItem {
 }
 
 /// Order struct with nested items and customer
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(context("/order"))]
 struct Order {
     #[xee(xpath("@order_id"))]

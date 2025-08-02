@@ -7,7 +7,7 @@ use xee_extract::{Extractor, Extract};
 
 /// A struct that can be extracted from different XML structures
 /// using named extractions with different namespaces and XPath expressions
-#[derive(Extract, Debug, PartialEq)]
+#[derive(Extract)]
 #[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default namespace
 #[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "foo"))]        // named extraction "foo"
 #[xee(ns(atom = "http://www.w3.org/2005/Atom", "bar"))]         // named extraction "bar"
@@ -107,7 +107,7 @@ fn main() {
     
     println!("Error handling for incompatible XML:");
     match result {
-        Ok(entry) => println!("  Unexpected success: {:?}", entry),
+        Ok(_entry) => println!("  Unexpected success: Entry extracted"),
         Err(e) => println!("  Expected error: {}", e),
     }
 
