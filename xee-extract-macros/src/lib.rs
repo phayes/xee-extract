@@ -32,6 +32,24 @@ impl XeeExtractAttributeTag {
             _ => None,
         }
     }
+
+    fn allowed_position(&self) -> &'static [XeeAttrPosition] {
+        use XeeAttrPosition::*;
+        match self {
+            Self::Xpath => &[Field],
+            Self::Ns => &[Struct],
+            Self::Context => &[Field, Struct],
+            Self::DefaultNs => &[Struct],
+            Self::Extract => &[Field],
+            Self::Xml => &[Field],
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum XeeAttrPosition {
+    Struct,
+    Field,
 }
 
 #[derive(Debug)]
@@ -88,6 +106,39 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         }
     };
 
+    // Parse struct-level attributes
+    let struct_level_attrs = parse_xee_attrs(&input.attrs, XeeAttrPosition::Struct)?;
+    let mut static_context_setup = Vec::new();
+
+    for attr in &struct_level_attrs {
+        match attr.attr {
+            XeeExtractAttributeTag::Ns => {
+                let key = attr.attr_key.as_ref().ok_or_else(|| {
+                    syn::Error::new_spanned(&input.ident, "ns(...) attribute must have a key=value pair like atom = \"uri\"")
+                })?;
+                let alias = attr.named_extract.as_deref().unwrap_or(key);
+                let value = &attr.attr_value;
+                static_context_setup.push(quote! {
+                    static_context_builder.add_namespace(#alias, #value);
+                });
+            }
+    
+            XeeExtractAttributeTag::DefaultNs => {
+                let ns_uri = &attr.attr_value;
+                static_context_setup.push(quote! {
+                    static_context_builder.set_default_namespace(#ns_uri);
+                });
+            }
+    
+            _ => {
+                return Err(syn::Error::new_spanned(
+                    &input.ident,
+                    format!("Unsupported attribute at struct level: {:?}", attr.attr),
+                ));
+            }
+        }
+    }
+
     // Use context_item as the default
     let context_stmt = quote! {
         let effective_context_item = context_item;
@@ -100,7 +151,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
     for field in fields {
         let field_ident = field.ident.as_ref().unwrap();
-        let xee_attrs = parse_xee_attrs(&field.attrs)?;
+        let xee_attrs = parse_xee_attrs(&field.attrs, XeeAttrPosition::Field)?;
 
         for xee_attr in xee_attrs {
             let extract_code = generate_extract_for_attr(field_ident, &xee_attr, &context_var, &field.ty)?;
@@ -120,6 +171,9 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 use xee_xpath::{Queries, Query};
 
                 let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
+
+                #(#static_context_setup)*
+
                 let queries = Queries::new(static_context_builder);
 
                 #context_stmt
@@ -194,7 +248,7 @@ fn extract_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
     extract_option_inner_type(ty).or_else(|| extract_vec_inner_type(ty))
 }
 
-fn parse_xee_attrs(attrs: &[Attribute]) -> syn::Result<Vec<XeeExtractAttribute>> {
+fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Result<Vec<XeeExtractAttribute>> {
     let mut results = Vec::new();
 
     for attr in attrs {
@@ -219,6 +273,13 @@ fn parse_xee_attrs(attrs: &[Attribute]) -> syn::Result<Vec<XeeExtractAttribute>>
 
             let tag = XeeExtractAttributeTag::from_str(&tag_ident)
                 .ok_or_else(|| syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident)))?;
+
+            if !tag.allowed_position().contains(&position) {
+                return Err(syn::Error::new_spanned(
+                    inner_list,
+                    format!("attribute {:?} not allowed on {:?}", tag, position),
+                ));
+            }
 
             match tag {
                 XeeExtractAttributeTag::Ns => {
@@ -358,7 +419,16 @@ fn generate_unified_query(
     extract_id: Option<&str>,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
-    let extract_id_str = extract_id.map(|id| format!(" using named extract '{}'", id)).unwrap_or_default();
+    let extract_id_str = extract_id
+        .map(|id| format!(" using named extract '{}'", id))
+        .unwrap_or_default();
+
+    let combined_msg_prefix = format!(
+        "Error extracting value for field '{}'{extract_id_str}: ",
+        field_name_str
+    );
+
+    let combined_msg_lit = proc_macro2::Literal::string(&combined_msg_prefix);
 
     let body = match tag {
         XeeExtractAttributeTag::Extract => quote! {
@@ -367,13 +437,18 @@ fn generate_unified_query(
                 xee_interpreter::error::SpannedError::from(
                     xee_interpreter::error::Error::Application(Box::new(
                         xee_interpreter::error::ApplicationError::new(
-                            xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
-                            format!("Struct extraction failed for field '{}'{extract_id_str}: {}", #field_name_str, #extract_id_str e)
+                            xot::xmlname::OwnedName::new(
+                                "extract-value-error".to_string(),
+                                "http://github.com/Paligo/xee/errors".to_string(),
+                                "".to_string(),
+                            ),
+                            format!("{}{}", #combined_msg_lit, e)
                         )
                     ))
                 )
             })
         },
+
         XeeExtractAttributeTag::Xml => quote! {
             match item {
                 xee_xpath::Item::Node(node) => {
@@ -381,8 +456,12 @@ fn generate_unified_query(
                         .map_err(|e| xee_interpreter::error::SpannedError::from(
                             xee_interpreter::error::Error::Application(Box::new(
                                 xee_interpreter::error::ApplicationError::new(
-                                    xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
-                                    format!("Failed to serialize XML for field '{}'{extract_id_str}: {}", #extract_id_str, #field_name_str, e)
+                                    xot::xmlname::OwnedName::new(
+                                        "extract-value-error".to_string(),
+                                        "http://github.com/Paligo/xee/errors".to_string(),
+                                        "".to_string(),
+                                    ),
+                                    format!("{}{}", #combined_msg_lit, e)
                                 )
                             ))
                         ))?;
@@ -391,14 +470,19 @@ fn generate_unified_query(
                 _ => Ok(item.string_value(documents.xot())?)
             }
         },
+
         _ => quote! {
             use xee_extract::ExtractValue;
             <#field_type>::extract_value(documents, item).map_err(|e| {
                 xee_interpreter::error::SpannedError::from(
                     xee_interpreter::error::Error::Application(Box::new(
                         xee_interpreter::error::ApplicationError::new(
-                            xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
-                            format!("Error extracting value for field '{}'{extract_id_str}: {}", #field_name_str, #extract_id_str, e)
+                            xot::xmlname::OwnedName::new(
+                                "extract-value-error".to_string(),
+                                "http://github.com/Paligo/xee/errors".to_string(),
+                                "".to_string(),
+                            ),
+                            format!("{}{}", #combined_msg_lit, e)
                         )
                     ))
                 )

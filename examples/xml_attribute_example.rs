@@ -2,28 +2,28 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct Article {
-    #[xpath("//article/@id")]
+    #[xee(xpath("//article/@id"))]
     id: String,
 
-    #[xpath("//article/title/text()")]
+    #[xee(xpath("//article/title/text()"))]
     title: String,
 
-    #[xml("//article/content")]
+    #[xee(xml("//article/content"))]
     content: String,
 
-    #[xml("//article/metadata")]
+    #[xee(xml("//article/metadata"))]
     metadata: Option<String>,
 
-    #[extract("//article/author")]
+    #[xee(extract("//article/author"))]
     authors: Vec<Author>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Author {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 
-    #[xml("bio")]
+    #[xee(xml("bio"))]
     bio: Option<String>,
 }
 

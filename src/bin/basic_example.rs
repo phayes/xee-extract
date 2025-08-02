@@ -1,72 +1,61 @@
 use xee_extract::{Extractor, Extract};
 
-#[derive(Extract)]
-#[xpath(ns(
-    atom = "http://www.w3.org/2005/Atom",
-    nlm = "https://id.nlm.nih.gov/datmm/",
-    meta = "http://example.org/Meta"
-))]
-struct Entry {
-    #[xpath("atom:id/text()")]
+#[derive(Extract, Debug, PartialEq)]
+struct SimpleStruct {
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("if (exists(atom:subtitle)) then atom:subtitle else atom:title")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[extract("atom:author")]
-    authors: Vec<Author>,
-
-    #[extract("//nlm:article-meta")]
-    metadata: Metadata,
-
-    #[xpath("atom:category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 }
 
-#[derive(Extract)]
-#[xpath(ns(atom = "http://www.w3.org/2005/Atom"))]
-struct Author {
-    #[xpath("atom:name/text()")]
-    name: String,
+#[derive(Extract, Debug, PartialEq)]
+struct ComplexStruct {
+    #[xee(xpath("//id/text()"))]
+    id: String,
 
-    #[xpath("atom:uri/text()")]
-    homepage: Option<String>,
+    #[xee(xpath("//title/text()"))]
+    title: String,
+
+    #[xee(xpath("//subtitle/text()"))]
+    subtitle: Option<String>,
+
+    #[xee(xpath("//category/@term"))]
+    category: Option<String>,
+
+    #[xee(xpath("//tags/tag/text()"))]
+    tags: Vec<String>,
 }
 
-#[derive(Extract)]
-#[xpath(ns(
-    nlm = "https://id.nlm.nih.gov/datmm/",
-))]
-struct Metadata {
-    #[xpath("nlm:fpage/text()")]
-    first_page: Option<String>,
+#[derive(Extract, Debug, PartialEq)]
+struct NestedStruct {
+    #[xee(xpath("//id/text()"))]
+    id: String,
 
-    #[xpath("nlm:lpage/text()")]
-    last_page: Option<String>,
+    #[xee(xpath("//author/name/text()"))]
+    author_name: String,
 
-    #[xpath("nlm:pub-id[@pub-id-type='doi'][1]/text()")]
-    doi: Option<String>,
+    #[xee(xpath("//author/email/text()"))]
+    author_email: Option<String>,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let xml = std::fs::read_to_string("examples/entry.xml")?;
-    let extractor = Extractor::new().with_variable("env", "production");
+fn main() {
+    let xml = r#"
+        <entry>
+            <id>123</id>
+            <title>Sample Title</title>
+            <category term="test"/>
+        </entry>
+    "#;
 
-    // Extract a single struct from the XML document
-    let entry: Entry = extractor.extract_one(&xml)?;
+    let extractor = Extractor::new();
+    let result: SimpleStruct = extractor.extract_one(xml).expect("Extraction failed");
 
-    println!("Extracted Entry:");
-    println!("  ID: {}", entry.id);
-    println!("  Title: {}", entry.title);
-    println!("  Category: {:?}", entry.category);
-    println!("  Authors:");
-    for author in &entry.authors {
-        println!("    - {} ({:?})", author.name, author.homepage);
-    }
-    println!("  Metadata:");
-    println!("    - First page: {:?}", entry.metadata.first_page);
-    println!("    - Last page: {:?}", entry.metadata.last_page);
-    println!("    - DOI: {:?}", entry.metadata.doi);
-
-    Ok(())
+    println!("Extracted SimpleStruct:");
+    println!("ID: {}", result.id);
+    println!("Title: {}", result.title);
+    println!("Category: {:?}", result.category);
 }
