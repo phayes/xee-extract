@@ -7,7 +7,7 @@ use xee_extract::{Extractor, Extract};
 
 /// Struct with simple context - extracts from a specific element
 #[derive(Extract, Debug, PartialEq)]
-#[xee(context("//book"))]
+#[xee(context("(//book)[1]"))]
 struct Book {
     #[xee(xpath("@id"))]
     id: String,
@@ -27,7 +27,7 @@ struct Book {
 
 /// Struct with conditional context - handles different XML structures
 #[derive(Extract, Debug, PartialEq)]
-#[xee(context("if (self::book) then . else /library/book"))]
+#[xee(context("if (self::book) then . else //book"))]
 struct FlexibleBook {
     #[xee(xpath("@id"))]
     id: String,
@@ -238,22 +238,4 @@ fn main() {
     println!("  Email: {}", admin.email);
     println!("  Permissions: {:?}", admin.permissions);
     println!();
-
-    // Example 6: Error handling for context that doesn't match
-    let no_admin_xml = r#"
-        <users>
-            <user id="U003" type="user">
-                <name>Regular User</name>
-                <email>user@example.com</email>
-            </user>
-        </users>
-    "#;
-
-    let result = extractor.extract_one::<AdminUser>(no_admin_xml);
-    
-    println!("Error handling for missing context:");
-    match result {
-        Ok(admin) => println!("  Unexpected success: {:?}", admin),
-        Err(e) => println!("  Expected error: {}", e),
-    }
 } 
