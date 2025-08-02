@@ -467,6 +467,18 @@ fn is_option_vec_u8_type(ty: &syn::Type) -> bool {
     false
 }
 
+fn is_f32_type(ty: &syn::Type) -> bool {
+    matches!(ty, syn::Type::Path(type_path) if type_path.qself.is_none() && type_path.path.is_ident("f32"))
+}
+
+fn is_f64_type(ty: &syn::Type) -> bool {
+    matches!(ty, syn::Type::Path(type_path) if type_path.qself.is_none() && type_path.path.is_ident("f64"))
+}
+
+fn is_bool_type(ty: &syn::Type) -> bool {
+    matches!(ty, syn::Type::Path(type_path) if type_path.qself.is_none() && type_path.path.is_ident("bool"))
+}
+
 fn generate_unified_query(
     xpath_expr: &str,
     field_type: &syn::Type,
@@ -531,22 +543,45 @@ fn generate_unified_query(
             }
         },
 
-        XeeExtractAttributeTag::Xpath => quote! {
-            use xee_extract::ExtractValue;
-            <#field_type>::extract_value(documents, item).map_err(|e| {
-                xee_interpreter::error::SpannedError::from(
-                    xee_interpreter::error::Error::Application(Box::new(
-                        xee_interpreter::error::ApplicationError::new(
-                            xot::xmlname::OwnedName::new(
-                                "extract-value-error".to_string(),
-                                "http://github.com/Paligo/xee/errors".to_string(),
-                                "".to_string(),
-                            ),
-                            format!("{}", e)
-                        )
-                    ))
-                )
-            })
+        XeeExtractAttributeTag::Xpath => {
+            let hot_path = if is_f32_type(field_type) {
+                quote! { xee_xpath::Item::Atomic(xee_xpath::Atomic::Float(f)) => Ok(f.0), }
+            } else if is_f64_type(field_type) {
+                quote! { xee_xpath::Item::Atomic(xee_xpath::Atomic::Double(f)) => Ok(f.0), }
+            } else if is_bool_type(field_type) {
+                quote! { xee_xpath::Item::Atomic(xee_xpath::Atomic::Boolean(b)) => Ok(*b), }
+            } else {
+                quote! {}
+            };
+
+            let extract_value_expr = quote! {
+                use xee_extract::ExtractValue;
+                <#field_type>::extract_value(documents, item).map_err(|e| {
+                    xee_interpreter::error::SpannedError::from(
+                        xee_interpreter::error::Error::Application(Box::new(
+                            xee_interpreter::error::ApplicationError::new(
+                                xot::xmlname::OwnedName::new(
+                                    "extract-value-error".to_string(),
+                                    "http://github.com/Paligo/xee/errors".to_string(),
+                                    "".to_string(),
+                                ),
+                                format!("{}", e)
+                            )
+                        ))
+                    )
+                })
+            };
+
+            if is_f32_type(field_type) || is_f64_type(field_type) || is_bool_type(field_type) {
+                quote! {
+                    match item {
+                        #hot_path
+                        _ => { #extract_value_expr },
+                    }
+                }
+            } else {
+                extract_value_expr
+            }
         },
 
         _ => {
