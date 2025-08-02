@@ -6,15 +6,59 @@
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput};
+use syn::{DeriveInput, Attribute, Meta, MetaList, MetaNameValue, NestedMeta, Lit};
+
+
+#[derive(Debug)]
+#[derive(Clone, Copy)]
+enum XeeExtractAttributeTag {
+    Ns,
+    Xpath,
+    Context,
+    DefaultNs,
+    Extract,
+    Xml,
+}
+
+impl XeeExtractAttributeTag {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "xpath" => Some(Self::Xpath),
+            "ns" => Some(Self::Ns),
+            "context" => Some(Self::Context),
+            "default_ns" => Some(Self::DefaultNs),
+            "extract" => Some(Self::Extract),
+            "xml" => Some(Self::Xml),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug)]
+struct XeeExtractAttribute {
+    /// Type of the attribute (either Xpath or Ns)
+    pub attr: XeeExtractAttributeTag,
+
+    /// For `ns(...)` only: the namespace prefix (e.g., `atom` in `atom = "..."`)
+    pub attr_key: Option<String>,
+
+    /// Primary string value:
+    /// - for `xpath(...)` it's the XPath string (e.g., `"atom:id/text()"`)
+    /// - for `ns(...)` it's the namespace URI (e.g., `"http://www.w3.org/2005/Atom"`)
+    pub attr_value: String,
+
+    /// Optional trailing string (used as an override variable name or alias)
+    pub named_extract: Option<String>,
+}
 
 /// Derive macro for XPath-driven deserialization
-#[proc_macro_derive(Extract, attributes(xpath, extract, xml, ns, context, default_ns))]
+#[proc_macro_derive(Extract, attributes(xee))]
 #[proc_macro_error]
 pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(input as DeriveInput);
+    // Parse the input into a DeriveInput
+    let input = syn::parse_macro_input!(input as syn::DeriveInput);
 
-    // Parse the input and generate the implementation
+    // Call your implementation logic
     match impl_xee_extract(&input) {
         Ok(tokens) => tokens.into(),
         Err(err) => err.to_compile_error().into(),
@@ -25,9 +69,17 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
-    // Parse struct fields
+    // Ensure struct with named fields
     let fields = match &input.data {
-        syn::Data::Struct(data) => &data.fields,
+        syn::Data::Struct(data) => match &data.fields {
+            syn::Fields::Named(named) => &named.named,
+            _ => {
+                return Err(syn::Error::new_spanned(
+                    name,
+                    "Extract can only be derived for structs with named fields",
+                ))
+            }
+        },
         _ => {
             return Err(syn::Error::new_spanned(
                 name,
@@ -36,13 +88,28 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         }
     };
 
-    // Parse namespace and context attributes
-    let namespaces = parse_namespace_attributes(&input.attrs)?;
-    let (context_stmt, context_var) = parse_context_attribute(&input.attrs)?;
-    let default_namespace = parse_default_namespace_attribute(&input.attrs)?;
+    // Use context_item as the default
+    let context_stmt = quote! {
+        let effective_context_item = context_item;
+    };
+    let context_var = quote! { effective_context_item };
 
-    // Generate field extraction code
-    let (field_extractions, field_names, field_values) = generate_field_extractions(fields, &context_var)?;
+    let mut field_extractions = Vec::new();
+    let mut field_names = Vec::new();
+    let mut field_values = Vec::new();
+
+    for field in fields {
+        let field_ident = field.ident.as_ref().unwrap();
+        let xee_attrs = parse_xee_attrs(&field.attrs)?;
+
+        for xee_attr in xee_attrs {
+            let extract_code = generate_extract_for_attr(field_ident, &xee_attr, &context_var, &field.ty)?;
+            field_extractions.push(extract_code);
+        }
+
+        field_names.push(field_ident);
+        field_values.push(quote! { #field_ident });
+    }
 
     let expanded = quote! {
         impl #impl_generics xee_extract::Extract for #name #ty_generics #where_clause {
@@ -52,15 +119,12 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
 
-                // Build static context with namespaces
                 let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
-                #namespaces
-                #default_namespace
                 let queries = Queries::new(static_context_builder);
 
                 #context_stmt
 
-                #field_extractions
+                #(#field_extractions)*
 
                 Ok(Self {
                     #(#field_names: #field_values,)*
@@ -72,178 +136,152 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     Ok(expanded)
 }
 
-fn parse_namespace_attributes(attrs: &[syn::Attribute]) -> syn::Result<proc_macro2::TokenStream> {
-    let ns_attr = attrs.iter().find(|attr| attr.path().is_ident("ns"));
-    
-    if let Some(attr) = ns_attr {
-        let mut namespace_pairs = Vec::new();
-        
-        // Parse the namespace attribute as a list of key-value pairs
-        attr.parse_nested_meta(|meta| {
-            let ident = meta.path.get_ident()
-                .ok_or_else(|| syn::Error::new_spanned(&meta.path, "Expected namespace prefix"))?;
-            let prefix = ident.to_string();
-            
-            let value = meta.value()?.parse::<syn::LitStr>()?;
-            let uri = value.value();
-            
-            namespace_pairs.push((prefix, uri));
-            Ok(())
-        })?;
-        
-        // Generate code to add namespaces to the static context builder
-        let namespace_code = namespace_pairs.iter().map(|(prefix, uri)| {
-            quote! {
-                static_context_builder.add_namespace(#prefix, #uri);
-            }
-        });
-        
-        Ok(quote! {
-            #(#namespace_code)*
-        })
-    } else {
-        Ok(quote! {})
-    }
-}
-
-fn parse_context_attribute(attrs: &[syn::Attribute]) -> syn::Result<(proc_macro2::TokenStream, proc_macro2::TokenStream)> {
-    let context_attr = attrs.iter().find(|attr| attr.path().is_ident("context"));
-    let var = quote! { effective_context_item };
-    if let Some(attr) = context_attr {
-        let context_expr = attr.parse_args::<syn::LitStr>()?.value();
-        Ok((
-            quote! {
-                let #var = {
-                    let context_query = queries.one(#context_expr, |documents, item| Ok(item.clone()))?;
-                    context_query.execute_build_context(documents, |builder| {
-                        builder.context_item(context_item.clone());
-                    })?
-                };
-            },
-            var,
-        ))
-    } else {
-        Ok((quote! { let #var = context_item; }, var))
-    }
-}
-
-fn parse_default_namespace_attribute(attrs: &[syn::Attribute]) -> syn::Result<proc_macro2::TokenStream> {
-    let default_ns_attr = attrs.iter().find(|attr| attr.path().is_ident("default_ns"));
-    
-    if let Some(attr) = default_ns_attr {
-        let namespace_uri = attr.parse_args::<syn::LitStr>()?.value();
-        Ok(quote! {
-            static_context_builder.default_element_namespace(#namespace_uri);
-        })
-    } else {
-        Ok(quote! {})
-    }
-}
-
-fn generate_field_extractions(
-    fields: &syn::Fields,
+fn generate_extract_for_attr(
+    field_ident: &syn::Ident,
+    attr: &XeeExtractAttribute,
     context_var: &proc_macro2::TokenStream,
-) -> syn::Result<(
-    proc_macro2::TokenStream,
-    Vec<proc_macro2::TokenStream>,
-    Vec<proc_macro2::TokenStream>,
-)> {
-    let mut field_names = Vec::new();
-    let mut field_values = Vec::new();
-    let mut field_extractions = Vec::new();
-
-    for field in fields {
-        let field_name = field
-            .ident
-            .as_ref()
-            .ok_or_else(|| syn::Error::new_spanned(field, "Expected named field"))?;
-
-        // Find xpath or extract attribute
-        let (xpath_expr, attr_type) = find_xpath_or_extract_attribute(field)?;
-
-        field_names.push(quote! { #field_name });
-
-        // Generate the extraction code based on the field type and attribute
-        let extraction = generate_field_extraction(field, &xpath_expr, attr_type, context_var)?;
-        field_extractions.push(extraction);
-        field_values.push(quote! { #field_name });
-    }
-
-    Ok((quote! { #(#field_extractions)* }, field_names, field_values))
-}
-
-fn find_xpath_or_extract_attribute(field: &syn::Field) -> syn::Result<(String, AttributeType)> {
-    // Check for xpath attribute first
-    if let Some(attr) = field
-        .attrs
-        .iter()
-        .find(|attr| attr.path().is_ident("xpath"))
-    {
-        let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
-        return Ok((xpath_expr, AttributeType::XPath));
-    }
-
-    // Check for extract attribute
-    if let Some(attr) = field
-        .attrs
-        .iter()
-        .find(|attr| attr.path().is_ident("extract"))
-    {
-        let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
-        return Ok((xpath_expr, AttributeType::Extract));
-    }
-
-    // Check for xml attribute
-    if let Some(attr) = field.attrs.iter().find(|attr| attr.path().is_ident("xml")) {
-        let xpath_expr = attr.parse_args::<syn::LitStr>()?.value();
-        return Ok((xpath_expr, AttributeType::Xml));
-    }
-
-    Err(syn::Error::new_spanned(
-        field,
-        "Expected xpath, extract, or xml attribute",
-    ))
-}
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-enum AttributeType {
-    XPath,
-    Extract,
-    Xml,
-}
-
-fn generate_field_extraction(
-    field: &syn::Field,
-    xpath_expr: &str,
-    attr_type: AttributeType,
-    context_var: &proc_macro2::TokenStream,
+    field_type: &syn::Type,
 ) -> syn::Result<proc_macro2::TokenStream> {
-    let field_name = field.ident.as_ref().unwrap();
-    let field_type = &field.ty;
+    use XeeExtractAttributeTag::*;
 
-    // Check if this is Vec<u8> or Option<Vec<u8>> for special binary handling (only for XPath attribute)
-    if (is_vec_u8_type(field_type) || is_option_vec_u8_type(field_type)) && attr_type == AttributeType::XPath {
-        return generate_vec_u8_query(field_name, xpath_expr, field_type, context_var);
+    match &attr.attr {
+        Ns => {
+            let key = attr.attr_key.as_ref().ok_or_else(|| {
+                syn::Error::new_spanned(
+                    field_ident,
+                    "ns(...) attribute must have a key=value pair like atom = \"uri\"",
+                )
+            })?;
+            let value = &attr.attr_value;
+            let registration = match attr.named_extract.as_deref() {
+                Some(alias) => quote! { static_context_builder.add_namespace(#alias, #value); },
+                None => quote! { static_context_builder.add_namespace(#key, #value); },
+            };
+            return Ok(quote! { #registration });
+        }
+
+        tag @ (Xpath | Context | DefaultNs | Extract | Xml) => {
+            let xpath_expr = &attr.attr_value;
+            let field_ident_str = field_ident.to_string();
+            let strategy = attr.named_extract.as_deref().unwrap_or(&field_ident_str);
+
+            if is_vec_u8_type(field_type) || is_option_vec_u8_type(field_type) {
+                return generate_vec_u8_query(field_ident, xpath_expr, field_type, context_var);
+            }
+
+            let query_method = if is_option_type(field_type) {
+                quote! { option }
+            } else if is_vec_type(field_type) {
+                quote! { many }
+            } else {
+                quote! { one }
+            };
+
+            let inner_type = extract_inner_type(field_type);
+            return generate_unified_query(
+                xpath_expr,
+                inner_type.unwrap_or(field_type),
+                *tag,
+                context_var,
+                query_method,
+                field_ident,
+                strategy,
+            );
+        }
+    }
+}
+
+fn extract_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
+    extract_option_inner_type(ty).or_else(|| extract_vec_inner_type(ty))
+}
+
+fn parse_xee_attrs(attrs: &[Attribute]) -> syn::Result<Vec<XeeExtractAttribute>> {
+    let mut results = Vec::new();
+
+    for attr in attrs {
+        if !attr.path.is_ident("xee") {
+            continue;
+        }
+
+        let meta = attr.parse_meta()?;
+        let Meta::List(MetaList { nested, .. }) = meta else {
+            return Err(syn::Error::new_spanned(attr, "expected #[xee(...)]"));
+        };
+
+        for nested_meta in nested {
+            let inner_list = match &nested_meta {
+                NestedMeta::Meta(Meta::List(list)) => list,
+                _ => return Err(syn::Error::new_spanned(&nested_meta, "expected #[xee(tag(...))]")),
+            };
+
+            let tag_ident = inner_list.path.get_ident()
+                .ok_or_else(|| syn::Error::new_spanned(&inner_list.path, "expected tag ident"))?
+                .to_string();
+
+            let tag = XeeExtractAttributeTag::from_str(&tag_ident)
+                .ok_or_else(|| syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident)))?;
+
+            match tag {
+                XeeExtractAttributeTag::Ns => {
+                    let mut attr_key = None;
+                    let mut attr_value = None;
+                    let mut named_extract = None;
+
+                    for item in &inner_list.nested {
+                        match item {
+                            NestedMeta::Meta(Meta::NameValue(MetaNameValue { path, lit: Lit::Str(s), .. })) => {
+                                let key = path.get_ident()
+                                    .ok_or_else(|| syn::Error::new_spanned(path, "expected identifier key"))?
+                                    .to_string();
+                                attr_key = Some(key);
+                                attr_value = Some(s.value());
+                            }
+                            NestedMeta::Lit(Lit::Str(s)) => {
+                                named_extract = Some(s.value());
+                            }
+                            _ => return Err(syn::Error::new_spanned(item, "unexpected item in ns(...)")),
+                        }
+                    }
+
+                    let attr = XeeExtractAttribute {
+                        attr: tag,
+                        attr_key,
+                        attr_value: attr_value.ok_or_else(|| syn::Error::new_spanned(&inner_list, "missing ns value"))?,
+                        named_extract,
+                    };
+
+                    results.push(attr);
+                }
+
+                _ => {
+                    let mut args = inner_list.nested.iter();
+
+                    let first = match args.next() {
+                        Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
+                        Some(other) => return Err(syn::Error::new_spanned(other, "expected string literal")),
+                        None => return Err(syn::Error::new_spanned(&inner_list, "missing argument")),
+                    };
+
+                    let second = match args.next() {
+                        Some(NestedMeta::Lit(Lit::Str(s))) => Some(s.value()),
+                        Some(other) => return Err(syn::Error::new_spanned(other, "expected string literal")),
+                        None => None,
+                    };
+
+                    results.push(XeeExtractAttribute {
+                        attr: tag,
+                        attr_key: None,
+                        attr_value: first,
+                        named_extract: second,
+                    });
+                }
+            }
+        }
     }
 
-    // Generate the appropriate query based on the field type and attribute
-    let query_code = if is_option_type(field_type) {
-        let inner_type = extract_option_inner_type(field_type).expect("Option type should have inner type");
-        generate_unified_query(xpath_expr, inner_type, attr_type, context_var, quote! { option }, field_name)
-    } else if is_vec_type(field_type) {
-        let inner_type = extract_vec_inner_type(field_type).expect("Vec type should have inner type");
-        generate_unified_query(xpath_expr, inner_type, attr_type, context_var, quote! { many }, field_name)
-    } else {
-        generate_unified_query(xpath_expr, field_type, attr_type, context_var, quote! { one }, field_name)
-    };
-
-    let field_name_token = quote! { #field_name };
-    Ok(quote! {
-        let #field_name_token = {
-            #query_code
-        };
-    })
+    Ok(results)
 }
+
 
 fn is_option_type(ty: &syn::Type) -> bool {
     if let syn::Type::Path(type_path) = ty {
@@ -310,104 +348,73 @@ fn is_option_vec_u8_type(ty: &syn::Type) -> bool {
     }
     false
 }
-
 fn generate_unified_query(
     xpath_expr: &str,
     field_type: &syn::Type,
-    attr_type: AttributeType,
+    tag: XeeExtractAttributeTag,
     context_var: &proc_macro2::TokenStream,
     query_method: proc_macro2::TokenStream,
     field_name: &syn::Ident,
-) -> proc_macro2::TokenStream {
+    var_name: &str,
+) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
-    match attr_type {
-        AttributeType::Extract => {
-            quote! {
-                let query = queries.#query_method(#xpath_expr, |documents, item| {
-                    use xee_extract::Extract;
-                    <#field_type>::extract(documents, item)
-                        .map_err(|e| {
-                            let app_error = xee_interpreter::error::ApplicationError::new(
-                                xot::xmlname::OwnedName::new(
-                                    "extract-value-error".to_string(),
-                                    "http://github.com/Paligo/xee/errors".to_string(),
-                                    "".to_string(),
-                                ),
-                                format!("Struct extraction failed for field {}: {}", #field_name_str, e)
-                            );
-                            let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
-                            xee_interpreter::error::SpannedError::from(error_value)
-                        })
-                })?;
-                query.execute_build_context(documents, |builder| {
-                    builder.context_item(#context_var.clone());
-                })?
-            }
-        }
-        AttributeType::Xml => {
-            quote! {
-                let query = queries.#query_method(#xpath_expr, |documents, item| {
-                    // For xml attribute, get the full XML serialization
-                    match item {
-                        xee_xpath::Item::Node(node) => {
-                            let xml_str = documents.xot().serialize_xml_string(
-                                xot::output::xml::Parameters {
-                                    indentation: Default::default(),
-                                    ..Default::default()
-                                },
-                                *node,
-                            ).map_err(|e| {
-                                let app_error = xee_interpreter::error::ApplicationError::new(
-                                    xot::xmlname::OwnedName::new(
-                                        "extract-value-error".to_string(),
-                                        "http://github.com/Paligo/xee/errors".to_string(),
-                                        "".to_string(),
-                                    ),
+
+    let body = match tag {
+        XeeExtractAttributeTag::Extract => quote! {
+            use xee_extract::Extract;
+            <#field_type>::extract(documents, item).map_err(|e| {
+                xee_interpreter::error::SpannedError::from(
+                    xee_interpreter::error::Error::Application(Box::new(
+                        xee_interpreter::error::ApplicationError::new(
+                            xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
+                            format!("Struct extraction failed for field {}: {}", #field_name_str, e)
+                        )
+                    ))
+                )
+            })
+        },
+        XeeExtractAttributeTag::Xml => quote! {
+            match item {
+                xee_xpath::Item::Node(node) => {
+                    let xml_str = documents.xot().serialize_xml_string(Default::default(), *node)
+                        .map_err(|e| xee_interpreter::error::SpannedError::from(
+                            xee_interpreter::error::Error::Application(Box::new(
+                                xee_interpreter::error::ApplicationError::new(
+                                    xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
                                     format!("Failed to serialize XML for field {}: {}", #field_name_str, e)
-                                );
-                                let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
-                                xee_interpreter::error::SpannedError::from(error_value)
-                            })?;
-                            Ok(xml_str)
-                        }
-                        _ => {
-                            // For non-node items, fall back to string_value
-                            let xml_str = item.string_value(documents.xot())?;
-                            Ok(xml_str)
-                        }
-                    }
-                })?;
-                query.execute_build_context(documents, |builder| {
-                    builder.context_item(#context_var.clone());
-                })?
+                                )
+                            ))
+                        ))?;
+                    Ok(xml_str)
+                }
+                _ => Ok(item.string_value(documents.xot())?)
             }
-        }
-        AttributeType::XPath => {
-            quote! {
-                let query = queries.#query_method(#xpath_expr, |documents, item| {
-                    use xee_extract::ExtractValue;
-                    <#field_type>::extract_value(documents, item)
-                        .map_err(|e| {
-                            // Convert xee_extract::Error to xee_interpreter::error::SpannedError
-                            // Use ApplicationError instead of FORG0001
-                            let app_error = xee_interpreter::error::ApplicationError::new(
-                                xot::xmlname::OwnedName::new(
-                                    "extract-value-error".to_string(),
-                                    "http://github.com/Paligo/xee/errors".to_string(),
-                                    "".to_string(),
-                                ),
-                                format!("Error extracting value for field {}: {}", #field_name_str, e)
-                            );
-                            let error_value = xee_interpreter::error::Error::Application(Box::new(app_error));
-                            xee_interpreter::error::SpannedError::from(error_value)
-                        })
-                })?;
-                query.execute_build_context(documents, |builder| {
-                    builder.context_item(#context_var.clone());
-                })?
-            }
-        }
-    }
+        },
+        _ => quote! {
+            use xee_extract::ExtractValue;
+            <#field_type>::extract_value(documents, item).map_err(|e| {
+                xee_interpreter::error::SpannedError::from(
+                    xee_interpreter::error::Error::Application(Box::new(
+                        xee_interpreter::error::ApplicationError::new(
+                            xot::xmlname::OwnedName::new("extract-value-error", "http://github.com/Paligo/xee/errors", ""),
+                            format!("Error extracting value for field {}: {}", #field_name_str, e)
+                        )
+                    ))
+                )
+            })
+        },
+    };
+
+    Ok(quote! {
+        let #field_name = {
+            let query = queries.#query_method(#xpath_expr, |documents, item| {
+                #body
+            })?;
+            query.execute_build_context(documents, |builder| {
+                builder.context_item(#context_var.clone());
+            })?
+        };
+    })
 }
 
 fn generate_vec_u8_query(
