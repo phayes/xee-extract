@@ -183,6 +183,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
+Note that if your type already implements `FromStr` you cannot also implement `ExtractValue`. This is a known limitation and will be resolved when [Specialization](https://std-dev-guide.rust-lang.org/policy/specialization.html) lands. 
+
 ## Named Extractions
 
 Sometimes a single struct needs to support multiple XML formats.  Each
