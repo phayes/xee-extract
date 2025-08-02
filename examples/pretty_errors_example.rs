@@ -2,16 +2,16 @@ use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug)]
 struct Book {
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 
-    #[xpath("year/text()")]
+    #[xee(xpath("year/text()"))]
     year: Option<String>,
 
-    #[xpath("genre/text()")]
+    #[xee(xpath("genre/text()"))]
     genres: Vec<String>,
 }
 
@@ -84,11 +84,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n4. Error with invalid XPath expression:");
     #[derive(Extract, Debug)]
     struct InvalidXPathBook {
-        #[xpath("title/text()")]
+        #[xee(xpath("title/text()"))]
         _title: String,
         
         // This XPath is invalid
-        #[xpath("invalid xpath [")]
+        #[xee(xpath("invalid xpath ["))]
         _invalid: String,
     }
 

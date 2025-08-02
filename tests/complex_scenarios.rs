@@ -1,99 +1,99 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
-#[context("if (self::book) then . else /book")]
+#[xee(context("if (self::book) then . else /book"))]
 struct Book {
-    #[xpath("@id")]
+    #[xee(xpath("@id"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 
-    #[xpath("price/text()")]
+    #[xee(xpath("price/text()"))]
     price: f64,
 
-    #[xpath("@genre")]
+    #[xee(xpath("@genre"))]
     genre: Option<String>,
 
-    #[xpath("tags/tag/text()")]
+    #[xee(xpath("tags/tag/text()"))]
     tags: Vec<String>,
 
-    #[extract("metadata")]
+    #[xee(extract("metadata"))]
     metadata: BookMetadata,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct BookMetadata {
-    #[xpath("isbn/text()")]
+    #[xee(xpath("isbn/text()"))]
     isbn: String,
 
-    #[xpath("publisher/text()")]
+    #[xee(xpath("publisher/text()"))]
     publisher: Option<String>,
 
-    #[xpath("publication_date/text()")]
+    #[xee(xpath("publication_date/text()"))]
     publication_date: Option<String>,
 
-    #[xpath("reviews/text()")]
+    #[xee(xpath("reviews/text()"))]
     reviews: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct LibraryWithComplexBooks {
-    #[xpath("//library/@name")]
+    #[xee(xpath("//library/@name"))]
     name: String,
 
-    #[xpath("//library/@location")]
+    #[xee(xpath("//library/@location"))]
     location: Option<String>,
 
-    #[extract("//library/books/book")]
+    #[xee(extract("//library/books/book"))]
     books: Vec<Book>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct CompanyWithDepartments {
-    #[xpath("//company/@id")]
+    #[xee(xpath("//company/@id"))]
     id: String,
 
-    #[xpath("//company/name/text()")]
+    #[xee(xpath("//company/name/text()"))]
     name: String,
 
-    #[extract("//company/departments/department")]
+    #[xee(extract("//company/departments/department"))]
     departments: Vec<Department>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Department {
-    #[xpath("@id")]
+    #[xee(xpath("@id"))]
     id: String,
 
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 
-    #[xpath("manager/name/text()")]
+    #[xee(xpath("manager/name/text()"))]
     manager_name: String,
 
-    #[xpath("manager/email/text()")]
+    #[xee(xpath("manager/email/text()"))]
     manager_email: Option<String>,
 
-    #[xpath("employees/employee/name/text()")]
+    #[xee(xpath("employees/employee/name/text()"))]
     employee_names: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct ConfigStruct {
-    #[xpath("//config/api/base_url/text()")]
+    #[xee(xpath("//config/api/base_url/text()"))]
     base_url: String,
 
-    #[xpath("//config/api/version/text()")]
+    #[xee(xpath("//config/api/version/text()"))]
     version: String,
 
-    #[xpath("//config/user/id/text()")]
+    #[xee(xpath("//config/user/id/text()"))]
     user_id: String,
 
-    #[xpath("//config/user/name/text()")]
+    #[xee(xpath("//config/user/name/text()"))]
     user_name: String,
 }
 

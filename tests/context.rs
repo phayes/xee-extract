@@ -2,38 +2,38 @@ use xee_extract::{Extractor, Extract};
 
 // Test 1: Context only
 #[derive(Extract, Debug, PartialEq)]
-#[context("(//entry)[1]")]
+#[xee(context("(//entry)[1]"))]
 struct ContextOnly {
-    #[xpath("@id")]
+    #[xee(xpath("@id"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/name/text()")]
+    #[xee(xpath("author/name/text()"))]
     author_name: String,
 }
 
 // Test 2: Context with conditional logic
 #[derive(Extract, Debug, PartialEq)]
-#[context("if (self::book) then . else /book")]
+#[xee(context("if (self::book) then . else /book"))]
 struct Book {
-    #[xpath("@id")]
+    #[xee(xpath("@id"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 
-    #[xpath("price/text()")]
+    #[xee(xpath("price/text()"))]
     price: f64,
 
-    #[xpath("@genre")]
+    #[xee(xpath("@genre"))]
     genre: Option<String>,
 
-    #[xpath("tags/tag/text()")]
+    #[xee(xpath("tags/tag/text()"))]
     tags: Vec<String>,
 }
 

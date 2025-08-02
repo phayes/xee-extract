@@ -1,29 +1,29 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[context("(//entry)[1]")]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(context("(//entry)[1]"))]
 struct Entry {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("category/@term")]
+    #[xee(xpath("category/@term"))]
     category: Option<String>,
 
-    #[extract("author")]
+    #[xee(extract("author"))]
     author: Author,
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
 struct Author {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 
-    #[xpath("email/text()")]
+    #[xee(xpath("email/text()"))]
     email: Option<String>,
 }
 

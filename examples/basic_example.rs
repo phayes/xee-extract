@@ -1,60 +1,60 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug)]
-//#[xpath(ns(
+//#[xee(xpath(ns(
 //    atom = "http://www.w3.org/2005/Atom",
 //    nlm = "https://id.nlm.nih.gov/datmm/",
 //    meta = "http://example.org/Meta"
-//))]
-//#[xpath(var(
+//)))]
+//#[xee(xpath(var(
 //    baseurl = "if ($env = 'production') then 'https://prod.api.org' else 'https://dev.api.org'",
 //    short_id = "tokenize(atom:id, ':')[last()]"
-//))]
+//)))]
 struct Entry {
-    #[xpath("atom:id/text()")]
+    #[xee(xpath("atom:id/text()"))]
     id: String,
 
-    #[xpath("$short_id")]
+    #[xee(xpath("$short_id"))]
     short_id: String,
 
-    #[xpath("if (exists(atom:subtitle)) then atom:subtitle else atom:title")]
+    #[xee(xpath("if (exists(atom:subtitle)) then atom:subtitle else atom:title"))]
     title: String,
 
-    #[extract("atom:author")]
+    #[xee(extract("atom:author"))]
     authors: Vec<Author>,
 
-    #[xpath("concat($baseurl, '/entry/', $short_id)")]
+    #[xee(xpath("concat($baseurl, '/entry/', $short_id)"))]
     url: Option<String>,
 
-    #[extract("//nlm:article-meta")]
+    #[xee(extract("//nlm:article-meta"))]
     metadata: Metadata,
 
-    #[xpath("atom:category/@term")]
+    #[xee(xpath("atom:category/@term"))]
     category: Option<String>,
 }
 
 #[derive(Extract, Debug)]
-//#[xpath(ns(atom = "http://www.w3.org/2005/Atom"))]
+//#[xee(xpath(ns(atom = "http://www.w3.org/2005/Atom")))]
 struct Author {
-    #[xpath("atom:name/text()")]
+    #[xee(xpath("atom:name/text()"))]
     name: String,
 
-    #[xpath("atom:uri/text()")]
+    #[xee(xpath("atom:uri/text()"))]
     homepage: Option<String>,
 }
 
 #[derive(Extract, Debug)]
-//#[xpath(ns(
+//#[xee(xpath(ns(
 //    nlm = "https://id.nlm.nih.gov/datmm/",
-//))]
+//)))]
 struct Metadata {
-    #[xpath("nlm:fpage/text()")]
+    #[xee(xpath("nlm:fpage/text()"))]
     first_page: Option<String>,
 
-    #[xpath("nlm:lpage/text()")]
+    #[xee(xpath("nlm:lpage/text()"))]
     last_page: Option<String>,
 
-    #[xpath("nlm:pub-id[@pub-id-type='doi'][1]/text()")]
+    #[xee(xpath("nlm:pub-id[@pub-id-type='doi'][1]/text()"))]
     doi: Option<String>,
 }
 

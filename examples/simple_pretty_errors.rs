@@ -2,13 +2,13 @@ use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug)]
 struct SimpleBook {
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//author/text()")]
+    #[xee(xpath("//author/text()"))]
     author: String,
 
-    #[xpath("//year/text()")]
+    #[xee(xpath("//year/text()"))]
     year: Option<String>,
 }
 
