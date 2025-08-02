@@ -87,83 +87,65 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
-    // Ensure struct with named fields
     let fields = match &input.data {
         syn::Data::Struct(data) => match &data.fields {
             syn::Fields::Named(named) => &named.named,
-            _ => {
-                return Err(syn::Error::new_spanned(
-                    name,
-                    "Extract can only be derived for structs with named fields",
-                ))
-            }
+            _ => return Err(syn::Error::new_spanned(name, "Extract can only be derived for structs with named fields")),
         },
-        _ => {
-            return Err(syn::Error::new_spanned(
-                name,
-                "Extract can only be derived for structs",
-            ))
-        }
+        _ => return Err(syn::Error::new_spanned(name, "Extract can only be derived for structs")),
     };
 
     // Parse struct-level attributes
     let struct_level_attrs = parse_xee_attrs(&input.attrs, XeeAttrPosition::Struct)?;
-    let mut static_context_setup = Vec::new();
-    let mut context_stmt = quote! {
-        let effective_context_item = context_item;
-    };
+
+    // Collect static context setup instructions per extract_id
+    let mut static_context_setup: HashMap<Option<String>, Vec<proc_macro2::TokenStream>> = HashMap::new();
+    let mut context_stmt_by_extract: HashMap<Option<String>, proc_macro2::TokenStream> = HashMap::new();
 
     for attr in &struct_level_attrs {
+        let key = attr.named_extract.clone();
+        let entry = static_context_setup.entry(key.clone()).or_default();
+
         match attr.attr {
             XeeExtractAttributeTag::Ns => {
-                let key = attr.attr_key.as_ref().ok_or_else(|| {
-                    syn::Error::new_spanned(
-                        &input.ident,
-                        "ns(...) attribute must have a key=value pair like atom = \"uri\"",
-                    )
+                let ns_prefix = attr.attr_key.as_ref().ok_or_else(|| {
+                    syn::Error::new_spanned(&input.ident, "ns(...) must have key=value like atom = \"uri\"")
                 })?;
-                let alias = attr.named_extract.as_deref().unwrap_or(key);
-                let value = &attr.attr_value;
-                static_context_setup.push(quote! {
-                    static_context_builder.add_namespace(#alias, #value);
+                let ns_uri = &attr.attr_value;
+                entry.push(quote! {
+                    static_context_builder.add_namespace(#ns_prefix, #ns_uri);
                 });
             }
 
             XeeExtractAttributeTag::DefaultNs => {
                 let ns_uri = &attr.attr_value;
-                static_context_setup.push(quote! {
+                entry.push(quote! {
                     static_context_builder.default_element_namespace(#ns_uri);
                 });
             }
 
             XeeExtractAttributeTag::Context => {
                 let xpath_expr = &attr.attr_value;
-                context_stmt = quote! {
-                    let effective_context_item = {
-                        let context_query = queries.one(#xpath_expr, |documents, item| Ok(item.clone()))?;
-                        context_query.execute_build_context(documents, |builder| {
-                            builder.context_item(context_item.clone());
-                        })?
-                    };
-                };
+                context_stmt_by_extract.insert(
+                    key,
+                    quote! {
+                        let effective_context_item = {
+                            let context_query = queries.one(#xpath_expr, |documents, item| Ok(item.clone()))?;
+                            context_query.execute_build_context(documents, |builder| {
+                                builder.context_item(context_item.clone());
+                            })?
+                        };
+                    },
+                );
             }
 
-            _ => {
-                return Err(syn::Error::new_spanned(
-                    &input.ident,
-                    format!("Unsupported attribute at struct level: {:?}", attr.attr),
-                ));
-            }
+            _ => return Err(syn::Error::new_spanned(&input.ident, format!("Unsupported attribute at struct level: {:?}", attr.attr))),
         }
     }
 
-    let context_var = quote! { effective_context_item };
-
-    // Group field extractions by named_extract
-    let mut group_extractions: HashMap<Option<String>, Vec<proc_macro2::TokenStream>> =
-        HashMap::new();
-    let mut group_fields: HashMap<Option<String>, Vec<(&syn::Ident, proc_macro2::TokenStream)>> =
-        HashMap::new();
+    // Group field extractions by extract_id
+    let mut group_extractions: HashMap<Option<String>, Vec<proc_macro2::TokenStream>> = HashMap::new();
+    let mut group_fields: HashMap<Option<String>, Vec<(&syn::Ident, proc_macro2::TokenStream)>> = HashMap::new();
 
     for field in fields {
         let field_ident = field.ident.as_ref().unwrap();
@@ -171,17 +153,10 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
         for xee_attr in xee_attrs {
             let group_key = xee_attr.named_extract.clone();
-            let extract_code =
-                generate_extract_for_attr(field_ident, &xee_attr, &context_var, &field.ty)?;
+            let extract_code = generate_extract_for_attr(field_ident, &xee_attr, &quote! { effective_context_item }, &field.ty)?;
 
-            group_extractions
-                .entry(group_key.clone())
-                .or_default()
-                .push(extract_code);
-            group_fields
-                .entry(group_key)
-                .or_default()
-                .push((field_ident, quote! { #field_ident }));
+            group_extractions.entry(group_key.clone()).or_default().push(extract_code);
+            group_fields.entry(group_key).or_default().push((field_ident, quote! { #field_ident }));
         }
     }
 
@@ -193,6 +168,13 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         let field_names: Vec<_> = field_inits.iter().map(|(ident, _)| ident).collect();
         let field_values: Vec<_> = field_inits.iter().map(|(_, val)| val).collect();
 
+        let static_setup = static_context_setup.get(key).into_iter().flatten();
+        let context_stmt = context_stmt_by_extract.get(key).cloned().unwrap_or_else(|| {
+            quote! {
+                let effective_context_item = context_item;
+            }
+        });
+
         let key_arm = match key {
             Some(s) => quote! { Some(#s) },
             None => quote! { None },
@@ -200,6 +182,10 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
         match_arms.push(quote! {
             #key_arm => {
+                let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
+                #(#static_setup)*
+                let queries = Queries::new(static_context_builder);
+                #context_stmt
                 #(#stmts)*
                 Ok(Self {
                     #(#field_names: #field_values,)*
@@ -221,14 +207,6 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
 
-                let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
-
-                #(#static_context_setup)*
-
-                let queries = Queries::new(static_context_builder);
-
-                #context_stmt
-
                 match extract_id {
                     #(#match_arms),*
                 }
@@ -238,6 +216,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
     Ok(expanded)
 }
+
 
 fn generate_extract_for_attr(
     field_ident: &syn::Ident,
