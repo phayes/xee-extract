@@ -9,23 +9,23 @@ use xee_extract::{Extractor, Extract};
 /// using named extractions with different namespaces and XPath expressions
 #[derive(Extract, Debug, PartialEq)]
 #[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default namespace
-#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]        // named extraction
-#[xee(ns(atom = "http://www.w3.org/2005/Atom", "context"))]     // for context extraction
-#[xee(context("//atom:entry", "context"))]                       // context for named extraction
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "foo"))]        // named extraction "foo"
+#[xee(ns(atom = "http://www.w3.org/2005/Atom", "bar"))]         // named extraction "bar"
+#[xee(context("//atom:entry", "bar"))]                          // named extraction "bar"
 struct Entry {
     #[xee(xpath("//atom:id/text()"))]                          // default
-    #[xee(xpath("//nlm:id/text()", "nlm"))]                   // named
-    #[xee(xpath("atom:id/text()", "context"))]                 // context-based
+    #[xee(xpath("//nlm:id/text()", "foo"))]                   
+    #[xee(xpath("atom:id/text()", "bar"))]                 
     id: String,
 
     #[xee(xpath("//atom:title/text()"))]                       // default
-    #[xee(xpath("//nlm:title/text()", "nlm"))]                // named
-    #[xee(xpath("atom:title/text()", "context"))]              // context-based
+    #[xee(xpath("//nlm:title/text()", "foo"))]                
+    #[xee(xpath("atom:title/text()", "bar"))]              
     title: String,
 
-    #[xee(xpath("//atom:author/atom:name/text()"))]            // default
-    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name/text()", "nlm"))] // named
-    #[xee(xpath("atom:author/atom:name/text()", "context"))]   // context-based
+    #[xee(xpath("//atom:author/atom:name/text()"))]           
+    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name/text()", "foo"))] 
+    #[xee(xpath("atom:author/atom:name/text()", "bar"))]  
     author: Option<String>,
 }
 
@@ -63,7 +63,7 @@ fn main() {
         </article>
     "#;
 
-    let extractor = Extractor::named("nlm");
+    let extractor = Extractor::named("foo");
     let entry: Entry = extractor.extract_one(nlm_xml).unwrap();
 
     println!("Named NLM extraction:");
@@ -85,7 +85,7 @@ fn main() {
         </feed>
     "#;
 
-    let extractor = Extractor::named("context");
+    let extractor = Extractor::named("bar");
     let entry: Entry = extractor.extract_one(context_xml).unwrap();
 
     println!("Context-based extraction:");
@@ -102,7 +102,7 @@ fn main() {
         </unknown>
     "#;
 
-    let extractor = Extractor::named("nlm");
+    let extractor = Extractor::named("foo");
     let result = extractor.extract_one::<Entry>(wrong_xml);
     
     println!("Error handling for incompatible XML:");
@@ -140,7 +140,7 @@ fn main() {
         </article>
     "#;
 
-    let extractor = Extractor::named("nlm");
+    let extractor = Extractor::named("foo");
     let entry: Entry = extractor.extract_one(nlm_xml_2).unwrap();
 
     println!("Named extraction with missing optional field:");
