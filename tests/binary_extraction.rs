@@ -1,7 +1,7 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
-#[xee(xpath(ns(xs = "http://www.w3.org/2001/XMLSchema")))]
+#[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct BinaryData {
     #[xee(xpath("string(//binary-data/text()) cast as xs:base64Binary"))]
     base64_data: Vec<u8>,
@@ -17,7 +17,7 @@ struct BinaryData {
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[xee(xpath(ns(xs = "http://www.w3.org/2001/XMLSchema")))]
+#[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct BinaryWithOption {
     #[xee(xpath("string(//optional-binary/text()) cast as xs:base64Binary"))]
     optional_binary: Option<Vec<u8>>,

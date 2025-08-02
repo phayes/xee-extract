@@ -33,15 +33,15 @@ impl XeeExtractAttributeTag {
         }
     }
 
-    fn allowed_position(&self) -> &'static [XeeAttrPosition] {
+    fn allowed_position(&self) -> XeeAttrPosition {
         use XeeAttrPosition::*;
         match self {
-            Self::Xpath => &[Field],
-            Self::Ns => &[Struct],
-            Self::Context => &[Field, Struct],
-            Self::DefaultNs => &[Struct],
-            Self::Extract => &[Field],
-            Self::Xml => &[Field],
+            Self::Xpath => Field,
+            Self::Ns => Struct,
+            Self::Context => Struct,
+            Self::DefaultNs => Struct,
+            Self::Extract => Field,
+            Self::Xml => Field,
         }
     }
 }
@@ -82,7 +82,6 @@ pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
         Err(err) => err.to_compile_error().into(),
     }
 }
-
 fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
@@ -109,6 +108,9 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     // Parse struct-level attributes
     let struct_level_attrs = parse_xee_attrs(&input.attrs, XeeAttrPosition::Struct)?;
     let mut static_context_setup = Vec::new();
+    let mut context_stmt = quote! {
+        let effective_context_item = context_item;
+    };
 
     for attr in &struct_level_attrs {
         match attr.attr {
@@ -122,14 +124,26 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                     static_context_builder.add_namespace(#alias, #value);
                 });
             }
-    
+
             XeeExtractAttributeTag::DefaultNs => {
                 let ns_uri = &attr.attr_value;
                 static_context_setup.push(quote! {
-                    static_context_builder.set_default_namespace(#ns_uri);
+                    static_context_builder.default_element_namespace(#ns_uri);
                 });
             }
-    
+
+            XeeExtractAttributeTag::Context => {
+                let xpath_expr = &attr.attr_value;
+                context_stmt = quote! {
+                    let effective_context_item = {
+                        let context_query = queries.one(#xpath_expr, |documents, item| Ok(item.clone()))?;
+                        context_query.execute_build_context(documents, |builder| {
+                            builder.context_item(context_item.clone());
+                        })?
+                    };
+                };
+            }
+
             _ => {
                 return Err(syn::Error::new_spanned(
                     &input.ident,
@@ -139,10 +153,6 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         }
     }
 
-    // Use context_item as the default
-    let context_stmt = quote! {
-        let effective_context_item = context_item;
-    };
     let context_var = quote! { effective_context_item };
 
     let mut field_extractions = Vec::new();
@@ -274,7 +284,7 @@ fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Resul
             let tag = XeeExtractAttributeTag::from_str(&tag_ident)
                 .ok_or_else(|| syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident)))?;
 
-            if !tag.allowed_position().contains(&position) {
+            if tag.allowed_position() != position {
                 return Err(syn::Error::new_spanned(
                     inner_list,
                     format!("attribute {:?} not allowed on {:?}", tag, position),
