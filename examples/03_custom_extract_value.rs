@@ -1,202 +1,281 @@
 //! Example 3: Custom ExtractValue
 //! 
 //! This example demonstrates how to implement custom ExtractValue for custom types
-//! and complex data structures.
+//! that don't implement FromStr or need custom parsing logic.
 
-use std::str::FromStr;
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extractor, Extract, ExtractValue, Error};
+use xee_xpath::{Documents, Item};
 
-/// Custom enum for user status
+/// Custom struct for CSV data that implements ExtractValue
 #[derive(Debug, PartialEq)]
-enum UserStatus {
-    Active,
-    Inactive,
-    Pending,
-    Suspended,
+struct CSV {
+    values: Vec<String>,
 }
 
-impl FromStr for UserStatus {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "active" => Ok(UserStatus::Active),
-            "inactive" => Ok(UserStatus::Inactive),
-            "pending" => Ok(UserStatus::Pending),
-            "suspended" => Ok(UserStatus::Suspended),
-            _ => Err(format!("Unknown status: {}", s)),
-        }
+impl CSV {
+    fn new(values: Vec<String>) -> Self {
+        Self { values }
     }
 }
 
-// UserStatus automatically gets ExtractValue implementation via FromStr
+/// Custom ExtractValue implementation for CSV
+impl ExtractValue for CSV {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+        let s = match item.string_value(documents.xot()) {
+            Ok(s) => s,
+            Err(_) => return Ok(CSV::new(Vec::new())), // Return empty CSV for any string value error
+        };
+        
+        // Handle empty string case
+        if s.trim().is_empty() {
+            return Ok(CSV::new(Vec::new()));
+        }
+        
+        // Parse comma-separated values, trimming whitespace
+        let values: Vec<String> = s
+            .split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty()) // Filter out empty strings
+            .collect();
+        
+        Ok(CSV::new(values))
+    }
+}
 
-/// Custom struct for coordinates
+/// Custom struct for coordinates that implements ExtractValue
 #[derive(Debug, PartialEq)]
 struct Coordinates {
     latitude: f64,
     longitude: f64,
 }
 
-impl FromStr for Coordinates {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(',').collect();
-        if parts.len() != 2 {
-            return Err(format!("Invalid coordinates format: {}", s));
-        }
-        
-        let lat = parts[0].trim().parse::<f64>()
-            .map_err(|_| format!("Invalid latitude: {}", parts[0]))?;
-        let lon = parts[1].trim().parse::<f64>()
-            .map_err(|_| format!("Invalid longitude: {}", parts[1]))?;
-        
-        Ok(Coordinates { latitude: lat, longitude: lon })
+impl Coordinates {
+    fn new(latitude: f64, longitude: f64) -> Self {
+        Self { latitude, longitude }
     }
 }
 
-// Coordinates automatically gets ExtractValue implementation via FromStr
+/// Custom ExtractValue implementation for Coordinates
+impl ExtractValue for Coordinates {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+        let s = item.string_value(documents.xot())?;
+        
+        // Parse "lat,lon" format
+        let parts: Vec<&str> = s.split(',').collect();
+        if parts.len() != 2 {
+            return Err(Error::DeserializationError(
+                format!("Invalid coordinates format: {}", s)
+            ));
+        }
+        
+        let lat = parts[0].trim().parse::<f64>()
+            .map_err(|_| Error::DeserializationError(
+                format!("Invalid latitude: {}", parts[0])
+            ))?;
+        
+        let lon = parts[1].trim().parse::<f64>()
+            .map_err(|_| Error::DeserializationError(
+                format!("Invalid longitude: {}", parts[1])
+            ))?;
+        
+        Ok(Coordinates::new(lat, lon))
+    }
+}
 
-/// Custom struct for date range
+/// Custom struct for date range that implements ExtractValue
 #[derive(Debug, PartialEq)]
 struct DateRange {
     start_date: String,
     end_date: String,
 }
 
-impl FromStr for DateRange {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(" to ").collect();
-        if parts.len() != 2 {
-            return Err(format!("Invalid date range format: {}", s));
-        }
-        
-        Ok(DateRange {
-            start_date: parts[0].trim().to_string(),
-            end_date: parts[1].trim().to_string(),
-        })
+impl DateRange {
+    fn new(start_date: String, end_date: String) -> Self {
+        Self { start_date, end_date }
     }
 }
 
-// DateRange automatically gets ExtractValue implementation via FromStr
+/// Custom ExtractValue implementation for DateRange
+impl ExtractValue for DateRange {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+        let s = item.string_value(documents.xot())?;
+        
+        // Parse "start to end" format
+        let parts: Vec<&str> = s.split(" to ").collect();
+        if parts.len() != 2 {
+            return Err(Error::DeserializationError(
+                format!("Invalid date range format: {}", s)
+            ));
+        }
+        
+        Ok(DateRange::new(
+            parts[0].trim().to_string(),
+            parts[1].trim().to_string()
+        ))
+    }
+}
 
-/// Struct using custom types
+/// Struct using custom ExtractValue implementations
 #[derive(Extract, Debug, PartialEq)]
-struct UserProfile {
+struct Product {
     #[xee(xpath("//name/text()"))]
     name: String,
 
-    #[xee(xpath("//status/text()"))]
-    status: UserStatus,
+    #[xee(xpath("//tags/text()"))]
+    tags: Option<CSV>,
 
     #[xee(xpath("//location/text()"))]
     location: Option<Coordinates>,
 
-    #[xee(xpath("//subscription_period/text()"))]
-    subscription_period: Option<DateRange>,
+    #[xee(xpath("//availability/text()"))]
+    availability: Option<DateRange>,
 
-    #[xee(xpath("//tags/tag/text()"))]
-    tags: Vec<String>,
+    #[xee(xpath("//categories/text()"))]
+    categories: Option<CSV>,
 }
 
-/// Struct for complex user data
+/// Struct for complex data with custom types
 #[derive(Extract, Debug, PartialEq)]
-struct ComplexUser {
-    #[xee(xpath("//user/@id"))]
+struct Store {
+    #[xee(xpath("//store/@id"))]
     id: String,
 
-    #[xee(xpath("//user/status/text()"))]
-    status: UserStatus,
+    #[xee(xpath("//store/name/text()"))]
+    name: String,
 
-    #[xee(xpath("//user/coordinates/text()"))]
+    #[xee(xpath("//store/coordinates/text()"))]
     coordinates: Coordinates,
 
-    #[xee(xpath("//user/active_period/text()"))]
-    active_period: DateRange,
+    #[xee(xpath("//store/hours/text()"))]
+    hours: DateRange,
 }
 
 fn main() {
-    // Example 1: User profile with custom types
-    let profile_xml = r#"
-        <profile>
-            <name>Alice Johnson</name>
-            <status>active</status>
+    // Example 1: Product with CSV tags and categories
+    let product_xml = r#"
+        <product>
+            <name>Laptop Computer</name>
+            <tags>electronics, computer, portable, high-performance</tags>
             <location>37.7749, -122.4194</location>
-            <subscription_period>2023-01-01 to 2023-12-31</subscription_period>
-            <tags>
-                <tag>premium</tag>
-                <tag>verified</tag>
-            </tags>
-        </profile>
+            <availability>2024-01-01 to 2024-12-31</availability>
+            <categories>hardware, computing, mobile</categories>
+        </product>
     "#;
 
     let extractor = Extractor::new();
-    let profile: UserProfile = extractor.extract_one(profile_xml).unwrap();
+    let product: Product = extractor.extract_one(product_xml).unwrap();
 
-    println!("User profile with custom types:");
-    println!("  Name: {}", profile.name);
-    println!("  Status: {:?}", profile.status);
-    println!("  Location: {:?}", profile.location);
-    println!("  Subscription Period: {:?}", profile.subscription_period);
-    println!("  Tags: {:?}", profile.tags);
+    println!("Product with custom ExtractValue types:");
+    println!("  Name: {}", product.name);
+    println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
+    println!("  Location: {:?}", product.location);
+    println!("  Availability: {:?}", product.availability);
+    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
     println!();
 
-    // Example 2: Complex user with all custom types
-    let complex_xml = r#"
-        <user id="U123">
-            <status>pending</status>
+    // Example 2: Store with coordinates and hours
+    let store_xml = r#"
+        <store id="STORE001">
+            <name>Tech Store</name>
             <coordinates>40.7128, -74.0060</coordinates>
-            <active_period>2023-06-01 to 2023-12-31</active_period>
-        </user>
+            <hours>09:00 to 18:00</hours>
+        </store>
     "#;
 
-    let user: ComplexUser = extractor.extract_one(complex_xml).unwrap();
+    let store: Store = extractor.extract_one(store_xml).unwrap();
 
-    println!("Complex user with custom types:");
-    println!("  ID: {}", user.id);
-    println!("  Status: {:?}", user.status);
-    println!("  Coordinates: {:?}", user.coordinates);
-    println!("  Active Period: {:?}", user.active_period);
+    println!("Store with custom ExtractValue types:");
+    println!("  ID: {}", store.id);
+    println!("  Name: {}", store.name);
+    println!("  Coordinates: ({}, {})", store.coordinates.latitude, store.coordinates.longitude);
+    println!("  Hours: {} to {}", store.hours.start_date, store.hours.end_date);
     println!();
 
-    // Example 3: Error handling for invalid custom types
-    let invalid_xml = r#"
-        <profile>
-            <name>Invalid User</name>
-            <status>invalid_status</status>
-            <location>invalid, coordinates</location>
-            <subscription_period>invalid date range</subscription_period>
-        </profile>
+    // Example 3: Product with missing optional fields
+    let minimal_xml = r#"
+        <product>
+            <name>Simple Product</name>
+            <tags>basic, simple</tags>
+            <categories>general</categories>
+        </product>
     "#;
 
-    let result = extractor.extract_one::<UserProfile>(invalid_xml);
+    let product: Product = extractor.extract_one(minimal_xml).unwrap();
+
+    println!("Product with missing optional fields:");
+    println!("  Name: {}", product.name);
+    println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
+    println!("  Location: {:?}", product.location);
+    println!("  Availability: {:?}", product.availability);
+    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
+    println!();
+
+    // Example 4: Error handling for invalid CSV data
+    let invalid_csv_xml = r#"
+        <product>
+            <name>Invalid Product</name>
+            <tags></tags>
+            <categories>valid, category</categories>
+        </product>
+    "#;
+
+    let product: Product = extractor.extract_one(invalid_csv_xml).unwrap();
+
+    println!("Product with empty CSV (filtered out):");
+    println!("  Name: {}", product.name);
+    println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
+    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
+    println!();
+
+    // Example 5: Error handling for invalid coordinates
+    let invalid_coords_xml = r#"
+        <product>
+            <name>Invalid Coordinates</name>
+            <tags>test</tags>
+            <location>invalid, coordinates, format</location>
+            <categories>test</categories>
+        </product>
+    "#;
+
+    let result = extractor.extract_one::<Product>(invalid_coords_xml);
     
-    println!("Error handling for invalid custom types:");
+    println!("Error handling for invalid coordinates:");
     match result {
-        Ok(profile) => println!("  Unexpected success: {:?}", profile),
+        Ok(product) => println!("  Unexpected success: {:?}", product),
         Err(e) => println!("  Expected error: {}", e),
     }
 
-    // Example 4: User profile with missing optional custom types
-    let minimal_xml = r#"
-        <profile>
-            <name>Minimal User</name>
-            <status>inactive</status>
-            <tags>
-                <tag>basic</tag>
-            </tags>
-        </profile>
+    // Example 6: Error handling for invalid date range
+    let invalid_date_xml = r#"
+        <product>
+            <name>Invalid Date</name>
+            <tags>test</tags>
+            <availability>invalid date format</availability>
+            <categories>test</categories>
+        </product>
     "#;
 
-    let profile: UserProfile = extractor.extract_one(minimal_xml).unwrap();
+    let result = extractor.extract_one::<Product>(invalid_date_xml);
+    
+    println!("Error handling for invalid date range:");
+    match result {
+        Ok(product) => println!("  Unexpected success: {:?}", product),
+        Err(e) => println!("  Expected error: {}", e),
+    }
 
-    println!("User profile with missing optional custom types:");
-    println!("  Name: {}", profile.name);
-    println!("  Status: {:?}", profile.status);
-    println!("  Location: {:?}", profile.location);
-    println!("  Subscription Period: {:?}", profile.subscription_period);
-    println!("  Tags: {:?}", profile.tags);
+    // Example 7: Complex CSV with various formats
+    let complex_csv_xml = r#"
+        <product>
+            <name>Complex Product</name>
+            <tags>tag1, tag2 , tag3,  tag4  , tag5</tags>
+            <categories>category1,category2, category3 ,  category4</categories>
+        </product>
+    "#;
+
+    let product: Product = extractor.extract_one(complex_csv_xml).unwrap();
+
+    println!("Complex CSV with various whitespace:");
+    println!("  Name: {}", product.name);
+    println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
+    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
 } 

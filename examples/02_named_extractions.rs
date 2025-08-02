@@ -1,124 +1,150 @@
 //! Example 2: Named Extractions
 //! 
-//! This example demonstrates how to use named extractions to extract data
-//! from different XML structures using different extraction contexts.
+//! This example demonstrates how to use named extractions to extract the same
+//! struct from different XML structures using different extraction configurations.
 
 use xee_extract::{Extractor, Extract};
 
-/// A struct for basic user extraction
+/// A struct that can be extracted from different XML structures
+/// using named extractions with different namespaces and XPath expressions
 #[derive(Extract, Debug, PartialEq)]
-struct BasicUser {
-    #[xee(xpath("//name/text()"))]
-    name: String,
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default namespace
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]        // named extraction
+#[xee(ns(atom = "http://www.w3.org/2005/Atom", "context"))]     // for context extraction
+#[xee(context("//atom:entry", "context"))]                       // context for named extraction
+struct Entry {
+    #[xee(xpath("//atom:id/text()"))]                          // default
+    #[xee(xpath("//nlm:id/text()", "nlm"))]                   // named
+    #[xee(xpath("atom:id/text()", "context"))]                 // context-based
+    id: String,
 
-    #[xee(xpath("//email/text()"))]
-    email: String,
-}
+    #[xee(xpath("//atom:title/text()"))]                       // default
+    #[xee(xpath("//nlm:title/text()", "nlm"))]                // named
+    #[xee(xpath("atom:title/text()", "context"))]              // context-based
+    title: String,
 
-/// A struct for detailed user extraction
-#[derive(Extract, Debug, PartialEq)]
-struct DetailedUser {
-    #[xee(xpath("//user/name/text()"))]
-    name: String,
-
-    #[xee(xpath("//user/email/text()"))]
-    email: String,
-
-    #[xee(xpath("//user/age/text()"))]
-    age: Option<u32>,
-
-    #[xee(xpath("//user/role/text()"))]
-    role: Option<String>,
-}
-
-/// A struct for account-based user extraction
-#[derive(Extract, Debug, PartialEq)]
-struct AccountUser {
-    #[xee(xpath("//account/owner/name/text()"))]
-    name: String,
-
-    #[xee(xpath("//account/owner/email/text()"))]
-    email: String,
-
-    #[xee(xpath("//account/owner/age/text()"))]
-    age: Option<u32>,
-
-    #[xee(xpath("//account/role/text()"))]
-    role: Option<String>,
+    #[xee(xpath("//atom:author/atom:name/text()"))]            // default
+    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name/text()", "nlm"))] // named
+    #[xee(xpath("atom:author/atom:name/text()", "context"))]   // context-based
+    author: Option<String>,
 }
 
 fn main() {
-    // Example 1: Basic user extraction
-    let basic_xml = r#"
-        <user>
-            <name>John Doe</name>
-            <email>john@example.com</email>
-        </user>
+    // Example 1: Default Atom extraction
+    let atom_xml = r#"
+        <entry xmlns="http://www.w3.org/2005/Atom">
+            <id>urn:uuid:12345678-1234-1234-1234-123456789abc</id>
+            <title>Atom Title</title>
+            <author>
+                <name>Alice Johnson</name>
+            </author>
+        </entry>
     "#;
 
-    let extractor = Extractor::new();
-    let user: BasicUser = extractor.extract_one(basic_xml).unwrap();
+    let extractor = Extractor::new(); // or Extractor::default()
+    let entry: Entry = extractor.extract_one(atom_xml).unwrap();
 
-    println!("Basic user extraction:");
-    println!("  Name: {}", user.name);
-    println!("  Email: {}", user.email);
+    println!("Default Atom extraction:");
+    println!("  ID: {}", entry.id);
+    println!("  Title: {}", entry.title);
+    println!("  Author: {:?}", entry.author);
     println!();
 
-    // Example 2: Detailed user extraction
-    let detailed_xml = r#"
-        <user>
-            <name>Jane Smith</name>
-            <email>jane@example.com</email>
-            <age>28</age>
-            <role>developer</role>
-        </user>
+    // Example 2: Named NLM extraction
+    let nlm_xml = r#"
+        <article xmlns:nlm="https://id.nlm.nih.gov/datmm/">
+            <nlm:id>abc123</nlm:id>
+            <nlm:title>NLM Title</nlm:title>
+            <nlm:contrib-group>
+                <nlm:contrib>
+                    <nlm:name>Bob Smith</nlm:name>
+                </nlm:contrib>
+            </nlm:contrib-group>
+        </article>
     "#;
 
-    let user: DetailedUser = extractor.extract_one(detailed_xml).unwrap();
+    let extractor = Extractor::named("nlm");
+    let entry: Entry = extractor.extract_one(nlm_xml).unwrap();
 
-    println!("Detailed user extraction:");
-    println!("  Name: {}", user.name);
-    println!("  Email: {}", user.email);
-    println!("  Age: {:?}", user.age);
-    println!("  Role: {:?}", user.role);
+    println!("Named NLM extraction:");
+    println!("  ID: {}", entry.id);
+    println!("  Title: {}", entry.title);
+    println!("  Author: {:?}", entry.author);
     println!();
 
-    // Example 3: Account-based user extraction
-    let account_xml = r#"
-        <account>
-            <id>ACC001</id>
-            <owner>
-                <name>Bob Wilson</name>
-                <email>bob@example.com</email>
-                <age>35</age>
-            </owner>
-            <role>admin</role>
-            <balance>1000.00</balance>
-        </account>
+    // Example 3: Context-based extraction
+    let context_xml = r#"
+        <feed xmlns:atom="http://www.w3.org/2005/Atom">
+            <atom:entry>
+                <atom:id>c456</atom:id>
+                <atom:title>Context Title</atom:title>
+                <atom:author>
+                    <atom:name>Carol Davis</atom:name>
+                </atom:author>
+            </atom:entry>
+        </feed>
     "#;
 
-    let user: AccountUser = extractor.extract_one(account_xml).unwrap();
+    let extractor = Extractor::named("context");
+    let entry: Entry = extractor.extract_one(context_xml).unwrap();
 
-    println!("Account-based user extraction:");
-    println!("  Name: {}", user.name);
-    println!("  Email: {}", user.email);
-    println!("  Age: {:?}", user.age);
-    println!("  Role: {:?}", user.role);
+    println!("Context-based extraction:");
+    println!("  ID: {}", entry.id);
+    println!("  Title: {}", entry.title);
+    println!("  Author: {:?}", entry.author);
     println!();
 
-    // Example 4: Demonstrating error handling for incompatible XML
-    let incompatible_xml = r#"
+    // Example 4: Demonstrating error handling for wrong extraction
+    let wrong_xml = r#"
         <unknown>
-            <name>Unknown User</name>
-            <email>unknown@example.com</email>
+            <id>wrong-id</id>
+            <title>Wrong Title</title>
         </unknown>
     "#;
 
-    let result = extractor.extract_one::<DetailedUser>(incompatible_xml);
+    let extractor = Extractor::named("nlm");
+    let result = extractor.extract_one::<Entry>(wrong_xml);
     
     println!("Error handling for incompatible XML:");
     match result {
-        Ok(user) => println!("  Unexpected success: {:?}", user),
+        Ok(entry) => println!("  Unexpected success: {:?}", entry),
         Err(e) => println!("  Expected error: {}", e),
     }
+
+    // Example 5: Demonstrating that default extraction works with Atom XML
+    let atom_xml_2 = r#"
+        <entry xmlns="http://www.w3.org/2005/Atom">
+            <id>urn:uuid:87654321-4321-4321-4321-cba987654321</id>
+            <title>Another Atom Title</title>
+            <author>
+                <name>David Wilson</name>
+            </author>
+        </entry>
+    "#;
+
+    let extractor = Extractor::default(); // explicitly use default
+    let entry: Entry = extractor.extract_one(atom_xml_2).unwrap();
+
+    println!("Default extraction (explicit):");
+    println!("  ID: {}", entry.id);
+    println!("  Title: {}", entry.title);
+    println!("  Author: {:?}", entry.author);
+    println!();
+
+    // Example 6: Demonstrating that named extractions can have different structures
+    let nlm_xml_2 = r#"
+        <article xmlns:nlm="https://id.nlm.nih.gov/datmm/">
+            <nlm:id>xyz789</nlm:id>
+            <nlm:title>Another NLM Title</nlm:title>
+            <!-- No author in this example -->
+        </article>
+    "#;
+
+    let extractor = Extractor::named("nlm");
+    let entry: Entry = extractor.extract_one(nlm_xml_2).unwrap();
+
+    println!("Named extraction with missing optional field:");
+    println!("  ID: {}", entry.id);
+    println!("  Title: {}", entry.title);
+    println!("  Author: {:?}", entry.author);
 } 
