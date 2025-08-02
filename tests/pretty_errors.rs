@@ -2,46 +2,46 @@ use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug)]
 struct SimpleStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     _id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     _title: String,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     _category: Option<String>,
 }
 
 #[derive(Extract, Debug)]
 struct Book {
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     _title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     _author: String,
 
-    #[xpath("year/text()")]
+    #[xee(xpath("year/text()"))]
     _year: Option<i32>,
 
-    #[xpath("genre/text()")]
+    #[xee(xpath("genre/text()"))]
     _genres: Vec<String>,
 }
 
 #[derive(Extract, Debug)]
 struct ExtractTestStruct {
-    #[extract("author")]
+    #[xee(extract("author"))]
     _author: Author,
 }
 
 #[derive(Extract, Debug)]
 struct Author {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     _name: String,
 }
 
 #[derive(Extract, Debug)]
 struct XmlTestStruct {
-    #[xml("author")]
+    #[xee(xml("author"))]
     _author_xml: String,
 }
 
@@ -80,11 +80,11 @@ fn test_pretty_error_invalid_xpath() {
     // Create a struct with an invalid XPath expression
     #[derive(Extract, Debug)]
     struct InvalidXPathStruct {
-        #[xpath("//id/text()")]
+        #[xee(xpath("//id/text()"))]
         _id: String,
         
         // This XPath is invalid - it will cause a parsing error
-        #[xpath("invalid xpath expression [")]
+        #[xee(xpath("invalid xpath expression ["))]
         _invalid: String,
     }
 
@@ -175,7 +175,7 @@ fn test_application_error_value_extraction() {
     // but the value extraction fails when trying to parse "not_a_number" as an integer
     #[derive(Extract, Debug)]
     struct ValueTestStruct {
-        #[xpath("//year/text()")]
+        #[xee(xpath("//year/text()"))]
         _year: i32,  // This should fail when trying to parse "not_a_number" as i32
     }
 
@@ -275,9 +275,9 @@ fn test_application_error_namespace() {
 
     // Create a struct that requires a namespace but doesn't have one
     #[derive(Extract, Debug)]
-    #[ns(test = "http://example.com/test")]
+    #[xee(ns(test = "http://example.com/test"))]
     struct NamespaceTestStruct {
-        #[xpath("//test:id/text()")]
+        #[xee(xpath("//test:id/text()"))]
         _id: String,
     }
 

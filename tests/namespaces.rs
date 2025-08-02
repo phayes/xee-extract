@@ -2,152 +2,152 @@ use xee_extract::{Extractor, Extract};
 
 // Test 1: Basic namespace prefixes only
 #[derive(Extract, Debug, PartialEq)]
-#[ns(
+#[xee(ns(
     atom = "http://www.w3.org/2005/Atom",
     dc = "http://purl.org/dc/elements/1.1/"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct NamespaceOnly {
-    #[xpath("atom:id/text()")]
+    #[xee(xpath("atom:id/text()"))]
     id: String,
 
-    #[xpath("atom:title/text()")]
+    #[xee(xpath("atom:title/text()"))]
     title: String,
 
-    #[xpath("dc:creator/text()")]
+    #[xee(xpath("dc:creator/text()"))]
     creator: Option<String>,
 }
 
 // Test 2: Default namespace only
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[context("(//entry)[1]")]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(context("(//entry)[1]"))]
 struct DefaultNamespaceOnly {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/name/text()")]
+    #[xee(xpath("author/name/text()"))]
     author_name: String,
 }
 
 // Test 3: Namespace prefixes + Context
 #[derive(Extract, Debug, PartialEq)]
-#[ns(
+#[xee(ns(
     atom = "http://www.w3.org/2005/Atom",
     dc = "http://purl.org/dc/elements/1.1/"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct NamespaceAndContext {
-    #[xpath("atom:id/text()")]
+    #[xee(xpath("atom:id/text()"))]
     id: String,
 
-    #[xpath("atom:title/text()")]
+    #[xee(xpath("atom:title/text()"))]
     title: String,
 
-    #[xpath("dc:creator/text()")]
+    #[xee(xpath("dc:creator/text()"))]
     creator: Option<String>,
 }
 
 // Test 4: Default namespace + Context
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[context("(//entry)[1]")]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(context("(//entry)[1]"))]
 struct DefaultNamespaceAndContext {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/name/text()")]
+    #[xee(xpath("author/name/text()"))]
     author_name: String,
 }
 
 // Test 5: Default namespace + Namespace prefixes
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[ns(
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(ns(
     dc = "http://purl.org/dc/elements/1.1/"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct DefaultAndPrefixedNamespaces {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("dc:creator/text()")]
+    #[xee(xpath("dc:creator/text()"))]
     creator: Option<String>,
 }
 
 // Test 6: All three combined
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[ns(
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(ns(
     dc = "http://purl.org/dc/elements/1.1/"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct AllCombined {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("dc:creator/text()")]
+    #[xee(xpath("dc:creator/text()"))]
     creator: Option<String>,
 }
 
 // Test 7: Nested structs with different namespace configurations
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[ns(
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(ns(
     dc = "http://purl.org/dc/elements/1.1/"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct ParentWithNamespaces {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[extract("author")]
+    #[xee(extract("author"))]
     author: ChildWithDifferentNamespaces,
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[ns(
+#[xee(ns(
     atom = "http://www.w3.org/2005/Atom"
-)]
+))]
 struct ChildWithDifferentNamespaces {
-    #[xpath("atom:name/text()")]
+    #[xee(xpath("atom:name/text()"))]
     name: String,
 
-    #[xpath("atom:email/text()")]
+    #[xee(xpath("atom:email/text()"))]
     email: Option<String>,
 }
 
 // Test 8: Multiple default namespaces in nested structs
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[context("(//entry)[1]")]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(context("(//entry)[1]"))]
 struct ParentWithDefaultNamespace {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[extract("author")]
+    #[xee(extract("author"))]
     author: ChildWithDefaultNamespace,
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
 struct ChildWithDefaultNamespace {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 
-    #[xpath("email/text()")]
+    #[xee(xpath("email/text()"))]
     email: Option<String>,
 }
 

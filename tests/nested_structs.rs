@@ -1,87 +1,87 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
-#[context("if (self::book) then . else /book")]
+#[xee(context("if (self::book) then . else /book"))]
 struct Book {
-    #[xpath("@id")]
+    #[xee(xpath("@id"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 
-    #[xpath("price/text()")]
+    #[xee(xpath("price/text()"))]
     price: f64,
 
-    #[xpath("@genre")]
+    #[xee(xpath("@genre"))]
     genre: Option<String>,
 
-    #[xpath("tags/tag/text()")]
+    #[xee(xpath("tags/tag/text()"))]
     tags: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Library {
-    #[xpath("//library/@name")]
+    #[xee(xpath("//library/@name"))]
     name: String,
 
-    #[extract("//library/books/book")]
+    #[xee(extract("//library/books/book"))]
     books: Vec<Book>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Person {
-    #[xpath("//person/@id")]
+    #[xee(xpath("//person/@id"))]
     id: String,
 
-    #[xpath("//person/name/first/text()")]
+    #[xee(xpath("//person/name/first/text()"))]
     first_name: String,
 
-    #[xpath("//person/name/last/text()")]
+    #[xee(xpath("//person/name/last/text()"))]
     last_name: String,
 
-    #[xpath("//person/email/text()")]
+    #[xee(xpath("//person/email/text()"))]
     email: Option<String>,
 
-    #[xpath("//person/address/street/text()")]
+    #[xee(xpath("//person/address/street/text()"))]
     street: Option<String>,
 
-    #[xpath("//person/address/city/text()")]
+    #[xee(xpath("//person/address/city/text()"))]
     city: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Company {
-    #[xpath("//company/@id")]
+    #[xee(xpath("//company/@id"))]
     id: String,
 
-    #[xpath("//company/name/text()")]
+    #[xee(xpath("//company/name/text()"))]
     name: String,
 
-    #[xpath("//company/employees/person/name/first/text()")]
+    #[xee(xpath("//company/employees/person/name/first/text()"))]
     employee_first_names: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[extract("//nested")]
+    #[xee(extract("//nested"))]
     nested: NestedStruct,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct NestedStruct {
-    #[xpath("value/text()")]
+    #[xee(xpath("value/text()"))]
     value: String,
 
-    #[xpath("optional/text()")]
+    #[xee(xpath("optional/text()"))]
     optional: Option<String>,
 }
 

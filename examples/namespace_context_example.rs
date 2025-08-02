@@ -1,37 +1,37 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
-#[ns(
+#[xee(ns(
     atom = "http://www.w3.org/2005/Atom",
     nlm = "https://id.nlm.nih.gov/datmm/",
     meta = "http://example.org/Meta"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct Entry {
-    #[xpath("atom:id/text()")]
+    #[xee(xpath("atom:id/text()"))]
     id: String,
 
-    #[xpath("atom:title/text()")]
+    #[xee(xpath("atom:title/text()"))]
     title: String,
 
-    #[xpath("atom:category/@term")]
+    #[xee(xpath("atom:category/@term"))]
     category: Option<String>,
 
-    #[extract("atom:author")]
+    #[xee(extract("atom:author"))]
     author: Author,
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[ns(
+#[xee(ns(
     atom = "http://www.w3.org/2005/Atom",
     nlm = "https://id.nlm.nih.gov/datmm/",
     meta = "http://example.org/Meta"
-)]
+))]
 struct Author {
-    #[xpath("atom:name/text()")]
+    #[xee(xpath("atom:name/text()"))]
     name: String,
 
-    #[xpath("atom:email/text()")]
+    #[xee(xpath("atom:email/text()"))]
     email: Option<String>,
 }
 

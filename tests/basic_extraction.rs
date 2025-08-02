@@ -2,43 +2,43 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct ComplexStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//subtitle/text()")]
+    #[xee(xpath("//subtitle/text()"))]
     subtitle: Option<String>,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 
-    #[xpath("//tags/tag/text()")]
+    #[xee(xpath("//tags/tag/text()"))]
     tags: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct NestedStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//author/name/text()")]
+    #[xee(xpath("//author/name/text()"))]
     author_name: String,
 
-    #[xpath("//author/email/text()")]
+    #[xee(xpath("//author/email/text()"))]
     author_email: Option<String>,
 }
 

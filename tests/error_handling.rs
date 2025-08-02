@@ -2,49 +2,49 @@ use xee_extract::{Extractor, Extract, ExtractError};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Book {
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 
-    #[xpath("year/text()")]
+    #[xee(xpath("year/text()"))]
     year: Option<i32>,
 
-    #[xpath("genre/text()")]
+    #[xee(xpath("genre/text()"))]
     genres: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStructWithNested {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[extract("//nested")]
+    #[xee(extract("//nested"))]
     nested: NestedStruct,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct NestedStruct {
-    #[xpath("value/text()")]
+    #[xee(xpath("value/text()"))]
     value: String,
 
-    #[xpath("optional/text()")]
+    #[xee(xpath("optional/text()"))]
     optional: Option<String>,
 }
 

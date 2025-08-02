@@ -2,55 +2,55 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct ComplexStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//subtitle/text()")]
+    #[xee(xpath("//subtitle/text()"))]
     subtitle: Option<String>,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 
-    #[xpath("//tags/tag/text()")]
+    #[xee(xpath("//tags/tag/text()"))]
     tags: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Book {
-    #[xpath("/book/title/text()")]
+    #[xee(xpath("/book/title/text()"))]
     title: String,
 
-    #[xpath("/book/author/text()")]
+    #[xee(xpath("/book/author/text()"))]
     author: String,
 
-    #[xpath("/book/year/text()")]
+    #[xee(xpath("/book/year/text()"))]
     year: Option<i32>,
 
-    #[xpath("/book/genre/text()")]
+    #[xee(xpath("/book/genre/text()"))]
     genres: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Library {
-    #[xpath("//library/@name")]
+    #[xee(xpath("//library/@name"))]
     name: String,
 
-    #[extract("//library/books/book")]
+    #[xee(extract("//library/books/book"))]
     books: Vec<Book>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Company {
-    #[xpath("//company/@id")]
+    #[xee(xpath("//company/@id"))]
     id: String,
 
-    #[xpath("//company/name/text()")]
+    #[xee(xpath("//company/name/text()"))]
     name: String,
 
-    #[xpath("//company/employees/person/name/first/text()")]
+    #[xee(xpath("//company/employees/person/name/first/text()"))]
     employee_first_names: Vec<String>,
 }
 

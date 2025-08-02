@@ -1,35 +1,35 @@
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[ns(
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(ns(
     dc = "http://purl.org/dc/elements/1.1/"
-)]
-#[context("(//entry)[1]")]
+))]
+#[xee(context("(//entry)[1]"))]
 struct Entry {
-    #[xpath("id/text()")]
+    #[xee(xpath("id/text()"))]
     id: String,
 
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("dc:creator/text()")]
+    #[xee(xpath("dc:creator/text()"))]
     creator: Option<String>,
 
-    #[extract("author")]
+    #[xee(extract("author"))]
     author: Author,
 }
 
 #[derive(Extract, Debug, PartialEq)]
-#[default_ns("http://www.w3.org/2005/Atom")]
-#[ns(
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
+#[xee(ns(
     dc = "http://purl.org/dc/elements/1.1/"
-)]
+))]
 struct Author {
-    #[xpath("name/text()")]
+    #[xee(xpath("name/text()"))]
     name: String,
 
-    #[xpath("dc:email/text()")]
+    #[xee(xpath("dc:email/text()"))]
     email: Option<String>,
 }
 

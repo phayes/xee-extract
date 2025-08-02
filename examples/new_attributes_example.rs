@@ -2,34 +2,34 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct Library {
-    #[xpath("//library/@name")]
+    #[xee(xpath("//library/@name"))]
     name: String,
 
-    #[extract("//library/books/book")]
+    #[xee(extract("//library/books/book"))]
     books: Vec<Book>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Book {
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 
-    #[xpath("year/text()")]
+    #[xee(xpath("year/text()"))]
     year: Option<i32>,
 
-    #[xpath("genre/text()")]
+    #[xee(xpath("genre/text()"))]
     genres: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleBook {
-    #[xpath("title/text()")]
+    #[xee(xpath("title/text()"))]
     title: String,
 
-    #[xpath("author/text()")]
+    #[xee(xpath("author/text()"))]
     author: String,
 }
 

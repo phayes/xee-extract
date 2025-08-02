@@ -2,43 +2,43 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct DocumentWithXml {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xml("//content")]
+    #[xee(xml("//content"))]
     content: String,
 
-    #[xml("//metadata")]
+    #[xee(xml("//metadata"))]
     metadata: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct ComplexDocument {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xml("//section")]
+    #[xee(xml("//section"))]
     sections: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct XmlWithAttributes {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xml("//element[@type='special']")]
+    #[xee(xml("//element[@type='special']"))]
     special_content: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleXmlTest {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xml("//content")]
+    #[xee(xml("//content"))]
     content: String,
 }
 

@@ -2,58 +2,58 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct ComplexStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//title/text()")]
+    #[xee(xpath("//title/text()"))]
     title: String,
 
-    #[xpath("//subtitle/text()")]
+    #[xee(xpath("//subtitle/text()"))]
     subtitle: Option<String>,
 
-    #[xpath("//category/@term")]
+    #[xee(xpath("//category/@term"))]
     category: Option<String>,
 
-    #[xpath("//tags/tag/text()")]
+    #[xee(xpath("//tags/tag/text()"))]
     tags: Vec<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct NestedStruct {
-    #[xpath("//id/text()")]
+    #[xee(xpath("//id/text()"))]
     id: String,
 
-    #[xpath("//author/name/text()")]
+    #[xee(xpath("//author/name/text()"))]
     author_name: String,
 
-    #[xpath("//author/email/text()")]
+    #[xee(xpath("//author/email/text()"))]
     author_email: Option<String>,
 }
 
 #[derive(Extract, Debug, PartialEq)]
 struct Book {
-    #[xpath("/book/title/text()")]
+    #[xee(xpath("/book/title/text()"))]
     title: String,
 
-    #[xpath("/book/author/text()")]
+    #[xee(xpath("/book/author/text()"))]
     author: String,
 
-    #[xpath("/book/year/text()")]
+    #[xee(xpath("/book/year/text()"))]
     year: Option<i32>,
 
-    #[xpath("/book/genre/text()")]
+    #[xee(xpath("/book/genre/text()"))]
     genres: Vec<String>,
 }
 
@@ -136,22 +136,22 @@ fn test_person_without_optional_fields() {
 
 #[derive(Extract, Debug, PartialEq)]
 struct Person {
-    #[xpath("//person/@id")]
+    #[xee(xpath("//person/@id"))]
     id: String,
 
-    #[xpath("//person/name/first/text()")]
+    #[xee(xpath("//person/name/first/text()"))]
     first_name: String,
 
-    #[xpath("//person/name/last/text()")]
+    #[xee(xpath("//person/name/last/text()"))]
     last_name: String,
 
-    #[xpath("//person/email/text()")]
+    #[xee(xpath("//person/email/text()"))]
     email: Option<String>,
 
-    #[xpath("//person/address/street/text()")]
+    #[xee(xpath("//person/address/street/text()"))]
     street: Option<String>,
 
-    #[xpath("//person/address/city/text()")]
+    #[xee(xpath("//person/address/city/text()"))]
     city: Option<String>,
 }
 
