@@ -6,11 +6,9 @@
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use quote::quote;
-use syn::{DeriveInput, Attribute, Meta, MetaList, MetaNameValue, NestedMeta, Lit};
+use syn::{Attribute, DeriveInput, Lit, Meta, MetaList, MetaNameValue, NestedMeta};
 
-
-#[derive(Debug)]
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum XeeExtractAttributeTag {
     Ns,
     Xpath,
@@ -82,7 +80,10 @@ pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
         Err(err) => err.to_compile_error().into(),
     }
 }
+
 fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
+    use std::collections::HashMap;
+
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
@@ -116,7 +117,10 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         match attr.attr {
             XeeExtractAttributeTag::Ns => {
                 let key = attr.attr_key.as_ref().ok_or_else(|| {
-                    syn::Error::new_spanned(&input.ident, "ns(...) attribute must have a key=value pair like atom = \"uri\"")
+                    syn::Error::new_spanned(
+                        &input.ident,
+                        "ns(...) attribute must have a key=value pair like atom = \"uri\"",
+                    )
                 })?;
                 let alias = attr.named_extract.as_deref().unwrap_or(key);
                 let value = &attr.attr_value;
@@ -155,22 +159,58 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
     let context_var = quote! { effective_context_item };
 
-    let mut field_extractions = Vec::new();
-    let mut field_names = Vec::new();
-    let mut field_values = Vec::new();
+    // Group field extractions by named_extract
+    let mut group_extractions: HashMap<Option<String>, Vec<proc_macro2::TokenStream>> =
+        HashMap::new();
+    let mut group_fields: HashMap<Option<String>, Vec<(&syn::Ident, proc_macro2::TokenStream)>> =
+        HashMap::new();
 
     for field in fields {
         let field_ident = field.ident.as_ref().unwrap();
         let xee_attrs = parse_xee_attrs(&field.attrs, XeeAttrPosition::Field)?;
 
         for xee_attr in xee_attrs {
-            let extract_code = generate_extract_for_attr(field_ident, &xee_attr, &context_var, &field.ty)?;
-            field_extractions.push(extract_code);
-        }
+            let group_key = xee_attr.named_extract.clone();
+            let extract_code =
+                generate_extract_for_attr(field_ident, &xee_attr, &context_var, &field.ty)?;
 
-        field_names.push(field_ident);
-        field_values.push(quote! { #field_ident });
+            group_extractions
+                .entry(group_key.clone())
+                .or_default()
+                .push(extract_code);
+            group_fields
+                .entry(group_key)
+                .or_default()
+                .push((field_ident, quote! { #field_ident }));
+        }
     }
+
+    // Build match arms for extract_id
+    let mut match_arms = Vec::new();
+
+    for (key, stmts) in &group_extractions {
+        let field_inits = &group_fields[key];
+        let field_names: Vec<_> = field_inits.iter().map(|(ident, _)| ident).collect();
+        let field_values: Vec<_> = field_inits.iter().map(|(_, val)| val).collect();
+
+        let key_arm = match key {
+            Some(s) => quote! { Some(#s) },
+            None => quote! { None },
+        };
+
+        match_arms.push(quote! {
+            #key_arm => {
+                #(#stmts)*
+                Ok(Self {
+                    #(#field_names: #field_values,)*
+                })
+            }
+        });
+    }
+
+    match_arms.push(quote! {
+        Some(other) => Err(xee_extract::Error::UnknownExtractId(other.to_string()))
+    });
 
     let expanded = quote! {
         impl #impl_generics xee_extract::Extract for #name #ty_generics #where_clause {
@@ -189,11 +229,9 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
                 #context_stmt
 
-                #(#field_extractions)*
-
-                Ok(Self {
-                    #(#field_names: #field_values,)*
-                })
+                match extract_id {
+                    #(#match_arms),*
+                }
             }
         }
     };
@@ -259,7 +297,10 @@ fn extract_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
     extract_option_inner_type(ty).or_else(|| extract_vec_inner_type(ty))
 }
 
-fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Result<Vec<XeeExtractAttribute>> {
+fn parse_xee_attrs(
+    attrs: &[Attribute],
+    position: XeeAttrPosition,
+) -> syn::Result<Vec<XeeExtractAttribute>> {
     let mut results = Vec::new();
 
     for attr in attrs {
@@ -275,15 +316,23 @@ fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Resul
         for nested_meta in nested {
             let inner_list = match &nested_meta {
                 NestedMeta::Meta(Meta::List(list)) => list,
-                _ => return Err(syn::Error::new_spanned(&nested_meta, "expected #[xee(tag(...))]")),
+                _ => {
+                    return Err(syn::Error::new_spanned(
+                        &nested_meta,
+                        "expected #[xee(tag(...))]",
+                    ))
+                }
             };
 
-            let tag_ident = inner_list.path.get_ident()
+            let tag_ident = inner_list
+                .path
+                .get_ident()
                 .ok_or_else(|| syn::Error::new_spanned(&inner_list.path, "expected tag ident"))?
                 .to_string();
 
-            let tag = XeeExtractAttributeTag::from_str(&tag_ident)
-                .ok_or_else(|| syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident)))?;
+            let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
+                syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident))
+            })?;
 
             if tag.allowed_position() != position {
                 return Err(syn::Error::new_spanned(
@@ -300,9 +349,16 @@ fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Resul
 
                     for item in &inner_list.nested {
                         match item {
-                            NestedMeta::Meta(Meta::NameValue(MetaNameValue { path, lit: Lit::Str(s), .. })) => {
-                                let key = path.get_ident()
-                                    .ok_or_else(|| syn::Error::new_spanned(path, "expected identifier key"))?
+                            NestedMeta::Meta(Meta::NameValue(MetaNameValue {
+                                path,
+                                lit: Lit::Str(s),
+                                ..
+                            })) => {
+                                let key = path
+                                    .get_ident()
+                                    .ok_or_else(|| {
+                                        syn::Error::new_spanned(path, "expected identifier key")
+                                    })?
                                     .to_string();
                                 attr_key = Some(key);
                                 attr_value = Some(s.value());
@@ -310,14 +366,21 @@ fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Resul
                             NestedMeta::Lit(Lit::Str(s)) => {
                                 named_extract = Some(s.value());
                             }
-                            _ => return Err(syn::Error::new_spanned(item, "unexpected item in ns(...)")),
+                            _ => {
+                                return Err(syn::Error::new_spanned(
+                                    item,
+                                    "unexpected item in ns(...)",
+                                ))
+                            }
                         }
                     }
 
                     let attr = XeeExtractAttribute {
                         attr: tag,
                         attr_key,
-                        attr_value: attr_value.ok_or_else(|| syn::Error::new_spanned(&inner_list, "missing ns value"))?,
+                        attr_value: attr_value.ok_or_else(|| {
+                            syn::Error::new_spanned(&inner_list, "missing ns value")
+                        })?,
                         named_extract,
                     };
 
@@ -329,13 +392,19 @@ fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Resul
 
                     let first = match args.next() {
                         Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
-                        Some(other) => return Err(syn::Error::new_spanned(other, "expected string literal")),
-                        None => return Err(syn::Error::new_spanned(&inner_list, "missing argument")),
+                        Some(other) => {
+                            return Err(syn::Error::new_spanned(other, "expected string literal"))
+                        }
+                        None => {
+                            return Err(syn::Error::new_spanned(&inner_list, "missing argument"))
+                        }
                     };
 
                     let second = match args.next() {
                         Some(NestedMeta::Lit(Lit::Str(s))) => Some(s.value()),
-                        Some(other) => return Err(syn::Error::new_spanned(other, "expected string literal")),
+                        Some(other) => {
+                            return Err(syn::Error::new_spanned(other, "expected string literal"))
+                        }
                         None => None,
                     };
 
@@ -352,7 +421,6 @@ fn parse_xee_attrs(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Resul
 
     Ok(results)
 }
-
 
 fn is_option_type(ty: &syn::Type) -> bool {
     if let syn::Type::Path(type_path) = ty {
@@ -430,20 +498,19 @@ fn generate_unified_query(
     extract_id: Option<&str>,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
-    let extract_id_str = extract_id
-        .map(|id| format!(" using named extract '{}'", id))
-        .unwrap_or_default();
+    let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
+    let extract_id_lit = extract_id.map(proc_macro2::Literal::string);
 
-    let combined_msg_prefix = format!(
-        "Error extracting value for field '{}'{extract_id_str}: ",
-        field_name_str
-    );
+    let extract_id_match = match extract_id_lit {
+        Some(lit) => quote! { Some(#lit) },
+        None => quote! { None },
+    };
 
-    let combined_msg_lit = proc_macro2::Literal::string(&combined_msg_prefix);
-
-    let body = match tag {
+    let extractor = match tag {
         XeeExtractAttributeTag::Extract => {
-            let extract_id_expr = extract_id.map(|id| quote! { Some(#id) }).unwrap_or_else(|| quote! { None });
+            let extract_id_expr = extract_id
+                .map(|id| quote! { Some(#id) })
+                .unwrap_or_else(|| quote! { None });
             quote! {
                 use xee_extract::Extract;
                 <#field_type>::extract(documents, item, #extract_id_expr).map_err(|e| {
@@ -455,19 +522,19 @@ fn generate_unified_query(
                                     "http://github.com/Paligo/xee/errors".to_string(),
                                     "".to_string(),
                                 ),
-                                format!("{}{}", #combined_msg_lit, e)
+                                format!("{}", e)
                             )
                         ))
                     )
                 })
             }
-        },
+        }
 
         XeeExtractAttributeTag::Xml => quote! {
             match item {
                 xee_xpath::Item::Node(node) => {
                     let xml_str = documents.xot().serialize_xml_string(Default::default(), *node)
-                        .map_err(|e| xee_interpreter::error::SpannedError::from(
+                    .map_err(|e| xee_interpreter::error::SpannedError::from(
                             xee_interpreter::error::Error::Application(Box::new(
                                 xee_interpreter::error::ApplicationError::new(
                                     xot::xmlname::OwnedName::new(
@@ -475,7 +542,7 @@ fn generate_unified_query(
                                         "http://github.com/Paligo/xee/errors".to_string(),
                                         "".to_string(),
                                     ),
-                                    format!("{}{}", #combined_msg_lit, e)
+                                    format!("{}", e)
                                 )
                             ))
                         ))?;
@@ -485,7 +552,7 @@ fn generate_unified_query(
             }
         },
 
-        _ => quote! {
+        XeeExtractAttributeTag::Xpath => quote! {
             use xee_extract::ExtractValue;
             <#field_type>::extract_value(documents, item).map_err(|e| {
                 xee_interpreter::error::SpannedError::from(
@@ -496,22 +563,37 @@ fn generate_unified_query(
                                 "http://github.com/Paligo/xee/errors".to_string(),
                                 "".to_string(),
                             ),
-                            format!("{}{}", #combined_msg_lit, e)
+                            format!("{}", e)
                         )
                     ))
                 )
             })
         },
+
+        _ => {
+            panic!("Unsupported attribute at field level: {:?}. This should never happen and is a bug in xee-extract", tag);
+        }
     };
 
     Ok(quote! {
         let #field_name = {
             let query = queries.#query_method(#xpath_expr, |documents, item| {
-                #body
+                #extractor
             })?;
-            query.execute_build_context(documents, |builder| {
+
+            match query.execute_build_context(documents, |builder| {
                 builder.context_item(#context_var.clone());
-            })?
+            }) {
+                Ok(value) => value,
+                Err(inner) => {
+                    return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
+                        field: #field_name_str,
+                        xpath: #xpath_expr_lit,
+                        extract_id: #extract_id_match,
+                        source: Box::new(inner),
+                    }));
+                }
+            }
         };
     })
 }
@@ -524,8 +606,12 @@ fn generate_vec_u8_query(
 ) -> syn::Result<proc_macro2::TokenStream> {
     // Check if this is Option<Vec<u8>>
     let is_option = is_option_vec_u8_type(field_type);
-    
-    let query_method = if is_option { quote! { option } } else { quote! { one } };
+
+    let query_method = if is_option {
+        quote! { option }
+    } else {
+        quote! { one }
+    };
 
     let query_code = quote! {
         let query = queries.#query_method(#xpath_expr, |documents, item| {
@@ -555,7 +641,6 @@ fn generate_vec_u8_query(
     })
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -567,9 +652,7 @@ mod tests {
 
     #[test]
     fn test_xpath_single_arg() {
-        let attrs = vec![
-            attr(quote!(xpath("foo/bar"))),
-        ];
+        let attrs = vec![attr(quote!(xpath("foo/bar")))];
 
         let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Field).unwrap();
         assert_eq!(parsed.len(), 1);
@@ -581,9 +664,7 @@ mod tests {
 
     #[test]
     fn test_xpath_with_alias() {
-        let attrs = vec![
-            attr(quote!(xpath("foo/bar", "my_alias"))),
-        ];
+        let attrs = vec![attr(quote!(xpath("foo/bar", "my_alias")))];
 
         let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Field).unwrap();
         assert_eq!(parsed.len(), 1);
@@ -594,9 +675,7 @@ mod tests {
 
     #[test]
     fn test_ns_with_key_value() {
-        let attrs = vec![
-            attr(quote!(ns(atom = "http://www.w3.org/2005/Atom"))),
-        ];
+        let attrs = vec![attr(quote!(ns(atom = "http://www.w3.org/2005/Atom")))];
 
         let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
@@ -609,9 +688,10 @@ mod tests {
 
     #[test]
     fn test_ns_with_key_value_and_alias() {
-        let attrs = vec![
-            attr(quote!(ns(atom = "http://www.w3.org/2005/Atom", "ns_alias"))),
-        ];
+        let attrs = vec![attr(quote!(ns(
+            atom = "http://www.w3.org/2005/Atom",
+            "ns_alias"
+        )))];
 
         let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
@@ -637,9 +717,7 @@ mod tests {
 
     #[test]
     fn test_invalid_tag() {
-        let attrs = vec![
-            attr(quote!(nonsense("abc"))),
-        ];
+        let attrs = vec![attr(quote!(nonsense("abc")))];
 
         let result = parse_xee_attrs(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());
@@ -647,9 +725,7 @@ mod tests {
 
     #[test]
     fn test_invalid_ns_missing_value() {
-        let attrs = vec![
-            attr(quote!(ns(atom = 123))),
-        ];
+        let attrs = vec![attr(quote!(ns(atom = 123)))];
 
         let result = parse_xee_attrs(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());

@@ -5,6 +5,8 @@ use xee_xpath;
 pub enum Error {
     InvalidXPath(String),
     DeserializationError(String),
+    UnknownExtractId(String),
+    FieldExtract(FieldExtractionError),
     SpannedError(xee_interpreter::error::SpannedError),
     XeeInterpreterError(xee_interpreter::error::Error),
     DocumentsError(xee_xpath::error::DocumentsError),
@@ -42,10 +44,47 @@ impl std::fmt::Display for Error {
         match self {
             Error::InvalidXPath(msg) => write!(f, "Invalid XPath: {}", msg),
             Error::DeserializationError(msg) => write!(f, "Deserialization error: {}", msg),
+            Error::UnknownExtractId(msg) => write!(f, "Unknown extract named: {}", msg),
+            Error::FieldExtract(err) => write!(f, "Field extraction error: {}", err),
             Error::SpannedError(err) => write!(f, "Spanned error: {}", err),
             Error::XeeInterpreterError(err) => write!(f, "Xee interpreter error: {}", err),
             Error::DocumentsError(err) => write!(f, "Documents error: {}", err),
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct FieldExtractionError {
+    pub field: &'static str,
+    pub xpath: &'static str,
+    pub extract_id: Option<&'static str>,
+    pub source: Box<dyn std::error::Error + Send + Sync>,
+}
+
+impl std::fmt::Display for FieldExtractionError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.extract_id {
+            Some(id) => write!(
+                f,
+                "Error extracting field '{}' with XPath '{}' using extract '{}': {}",
+                self.field, self.xpath, id, self.source
+            ),
+            None => write!(
+                f,
+                "Error extracting field '{}' with XPath '{}': {}",
+                self.field, self.xpath, self.source
+            ),
+        }?;
+        if let Some(e) = self.source.downcast_ref::<xee_interpreter::error::SpannedError>() {
+            write!(f, " (Xpath {}) \n{}", e.error.message(), e.error.note())?;
+        }
+        Ok(())
+    }
+}
+
+impl std::error::Error for FieldExtractionError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(self.source.as_ref())
     }
 }
 
@@ -156,6 +195,12 @@ impl ExtractError {
             }
             Error::DeserializationError(msg) => {
                 message.push_str(&format!("Deserialization error: {}\n", msg));
+            }
+            Error::UnknownExtractId(msg) => {
+                message.push_str(&format!("Unknown extract named: {}\n", msg));
+            }
+            Error::FieldExtract(err) => {
+                message.push_str(&format!("Field extraction error: {}\n", err));
             }
             Error::SpannedError(spanned_err) => {
                 message.push_str(&format!("XPath error: {}\n", spanned_err.error.message()));

@@ -13,7 +13,7 @@ pub use xee_extract_macros::Extract;
 pub mod error;
 
 // Re-export error types
-pub use error::{Error, ExtractError};
+pub use error::{Error, ExtractError, FieldExtractionError};
 
 pub trait Extract: Sized {
     /// Extract from an XML node (for recursive extraction)
@@ -52,10 +52,6 @@ where
             .map_err(|e| Error::DeserializationError(e.to_string()))
     }
 }
-
-
-
-
 
 /// Extractor for XML documents using XPath expressions
 pub struct Extractor {

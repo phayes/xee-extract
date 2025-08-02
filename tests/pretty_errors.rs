@@ -165,7 +165,6 @@ fn test_application_error_extract_value() {
     println!("Book extraction error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
-    assert!(message.contains("XPath error:"));
     assert!(message.contains("Type error"));
 }
 
@@ -199,10 +198,8 @@ fn test_application_error_value_extraction() {
     let message = error.message();
     println!("Value extraction ApplicationError test:\n{}", message);
     
-    // Should contain XPath error information
-    assert!(message.contains("XPath error:"));
     // The error should mention the field name and the parsing error
-    assert!(message.contains("Error extracting value for field '_year':"));
+    assert!(message.contains("Error extracting field '_year'"));
     assert!(message.contains("invalid digit found in string"));
 }
 
@@ -230,7 +227,6 @@ fn test_application_error_extract_struct() {
     println!("Struct extraction error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
-    assert!(message.contains("XPath error:"));
     assert!(message.contains("Type error"));
 }
 
@@ -258,7 +254,6 @@ fn test_application_error_xml_serialization() {
     println!("XML serialization error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
-    assert!(message.contains("XPath error:"));
     assert!(message.contains("Type error"));
 }
 
@@ -291,6 +286,5 @@ fn test_application_error_namespace() {
     println!("Namespace error (XPath type error):\n{}", message);
     
     // Should contain XPath type error information
-    assert!(message.contains("XPath error:"));
     assert!(message.contains("Type error"));
 }
