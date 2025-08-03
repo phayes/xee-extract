@@ -8,7 +8,6 @@ Declarative data extraction from large XML documents using Xpath.
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
-#[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct SimpleEntry {
     #[xee(xpath("//id"))]
     id: String,
@@ -30,9 +29,6 @@ struct Author {
 
     #[xee(xpath("email"))]
     email: Option<String>,
-
-    #[xee(xpath("xs:base64Binary(avatar)"))]
-    avatar_picture: Vec<u8>
 }
 
 let xml = r#"
@@ -43,7 +39,6 @@ let xml = r#"
         <author>
             <name>John Doe</name>
             <email>john@example.com</email>
-            <avatar>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=</avatar>
         </author>
     </entry>
 "#;
@@ -280,4 +275,36 @@ let laptop_data: ProductData = Extractor::default()
 let paperclip_data: ProductData = Extractor::default()
     .bind_value("product_id", "P002")
     .extract_from_docs(&mut documents, &doc_handle).unwrap();
+```
+
+
+## Binary Data Handling
+
+We also support extracting binary data from XML using both base64 and hex encoding.
+
+```rust
+use xee_extract::{Extract, Extractor};
+
+#[derive(Extract)]
+#[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
+struct BinaryDocument {
+    #[xee(xpath("xs:base64Binary(//base64-data)"))]
+    base64_data: Vec<u8>,
+
+    #[xee(xpath("xs:hexBinary(//hex-data)"))]
+    hex_data: Vec<u8>,
+}
+
+let xml = r#"
+    <root>
+        <base64-data>SGVsbG8gV29ybGQ=</base64-data>
+        <hex-data>48656C6C6F20576F726C64</hex-data>
+    </root>
+"#;
+
+let document: BinaryDocument = Extractor::default().extract_from_str(xml).unwrap();
+
+// "Hello World" in both base64 and hex
+assert_eq!(document.base64_data, b"Hello World");
+assert_eq!(document.hex_data, b"Hello World");
 ```
