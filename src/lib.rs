@@ -148,7 +148,25 @@ impl Extractor {
         self.bind_item(name, atomic)
     }
 
-    /// Extract a single struct from an XML string
+    /// Extract a single struct from an XML string.
+    ///
+    /// # Example
+    /// ```
+    /// use xee_extract::{Extract, Extractor};
+    ///
+    /// #[derive(Extract)]
+    /// struct Entry {
+    ///     #[xee(xpath("//id"))]
+    ///     id: String,
+    ///     #[xee(xpath("//title"))]
+    ///     title: String,
+    /// }
+    ///
+    /// let xml = r#"<entry><id>123</id><title>Example</title></entry>"#;
+    /// let entry: Entry = Extractor::default().extract_from_str(xml).unwrap();
+    /// assert_eq!(entry.id, "123");
+    /// assert_eq!(entry.title, "Example");
+    /// ```
     pub fn extract_from_str<T>(&self, xml: &str) -> Result<T, ExtractError>
     where
         T: Extract,
@@ -184,7 +202,31 @@ impl Extractor {
         }
     }
 
-    /// Extract a single struct from a documents store
+    /// Extract a single struct from a documents store. 
+    /// This can be useful to avoid parsing XML twice for different extractions, or to do a multi-document extraction
+    /// where a single extraction uses the `doc()` function to reference other documents.
+    ///
+    /// # Example
+    /// ```
+    /// use xee_extract::{Extract, Extractor};
+    /// 
+    /// let mut docs = xee_xpath::Documents::new();
+    /// let doc1 = docs.add_string_without_uri("<root><foo>bar</foo></root>").unwrap();
+    /// let doc2 = docs.add_string("http://example.com/baz.xml".try_into().unwrap(), "<root><baz>qux</baz></root>").unwrap();
+    ///
+    /// #[derive(Extract)]
+    /// struct MyStruct {
+    ///     #[xee(xpath("//foo"))]
+    ///     foo: String,
+    ///
+    ///     #[xee(xpath("doc('http://example.com/baz.xml')//baz"))]
+    ///     baz: String,
+    /// }
+    ///
+    /// let result: MyStruct = Extractor::default().extract_from_docs(&mut docs, &doc1).unwrap();
+    /// assert_eq!(result.foo, "bar");
+    /// assert_eq!(result.baz, "qux");
+    /// ```
     pub fn extract_from_docs<T>(
         &self,
         documents: &mut xee_xpath::Documents,
