@@ -73,7 +73,6 @@ fn main() {
         <root data="VGVzdCBkYXRh">
             <base64-data>SGVsbG8gV29ybGQ=</base64-data>
             <optional-base64>U29tZSBkYXRh</optional-base64>
-            <base64-node>VGVzdCBkYXRh</base64-node>
         </root>
     "#;
 
