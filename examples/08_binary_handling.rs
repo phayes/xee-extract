@@ -77,7 +77,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let data: Base64Data = extractor.extract_one(base64_xml).unwrap();
+    let data: Base64Data = extractor.extract_from_str(base64_xml).unwrap();
 
     println!("Base64 encoded binary data:");
     println!("  Data: {:?}", data.data);
@@ -99,7 +99,7 @@ fn main() {
         </root>
     "#;
 
-    let data: HexData = extractor.extract_one(hex_xml).unwrap();
+    let data: HexData = extractor.extract_from_str(hex_xml).unwrap();
 
     println!("Hex encoded binary data:");
     println!("  Data: {:?}", data.data);
@@ -121,7 +121,7 @@ fn main() {
         </root>
     "#;
 
-    let data: MixedBinaryData = extractor.extract_one(mixed_xml).unwrap();
+    let data: MixedBinaryData = extractor.extract_from_str(mixed_xml).unwrap();
 
     println!("Mixed binary data types:");
     println!("  Base64 field: {:?}", data.base64_field);
@@ -145,7 +145,7 @@ fn main() {
         </root>
     "#;
 
-    let data: BinaryWithMetadata = extractor.extract_one(metadata_xml).unwrap();
+    let data: BinaryWithMetadata = extractor.extract_from_str(metadata_xml).unwrap();
 
     println!("Binary data with metadata:");
     println!("  Name: {}", data.name);

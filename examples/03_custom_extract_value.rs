@@ -160,7 +160,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let product: Product = extractor.extract_one(product_xml).unwrap();
+    let product: Product = extractor.extract_from_str(product_xml).unwrap();
 
     println!("Product with custom ExtractValue types:");
     println!("  Name: {}", product.name);
@@ -179,7 +179,7 @@ fn main() {
         </store>
     "#;
 
-    let store: Store = extractor.extract_one(store_xml).unwrap();
+    let store: Store = extractor.extract_from_str(store_xml).unwrap();
 
     println!("Store with custom ExtractValue types:");
     println!("  ID: {}", store.id);
@@ -197,7 +197,7 @@ fn main() {
         </product>
     "#;
 
-    let product: Product = extractor.extract_one(minimal_xml).unwrap();
+    let product: Product = extractor.extract_from_str(minimal_xml).unwrap();
 
     println!("Product with missing optional fields:");
     println!("  Name: {}", product.name);
@@ -216,7 +216,7 @@ fn main() {
         </product>
     "#;
 
-    let product: Product = extractor.extract_one(invalid_csv_xml).unwrap();
+    let product: Product = extractor.extract_from_str(invalid_csv_xml).unwrap();
 
     println!("Product with empty CSV (filtered out):");
     println!("  Name: {}", product.name);
@@ -234,7 +234,7 @@ fn main() {
         </product>
     "#;
 
-    let result = extractor.extract_one::<Product>(invalid_coords_xml);
+    let result = extractor.extract_from_str::<Product>(invalid_coords_xml);
     
     println!("Error handling for invalid coordinates:");
     match result {
@@ -252,7 +252,7 @@ fn main() {
         </product>
     "#;
 
-    let result = extractor.extract_one::<Product>(invalid_date_xml);
+    let result = extractor.extract_from_str::<Product>(invalid_date_xml);
     
     println!("Error handling for invalid date range:");
     match result {
@@ -269,7 +269,7 @@ fn main() {
         </product>
     "#;
 
-    let product: Product = extractor.extract_one(complex_csv_xml).unwrap();
+    let product: Product = extractor.extract_from_str(complex_csv_xml).unwrap();
 
     println!("Complex CSV with various whitespace:");
     println!("  Name: {}", product.name);

@@ -147,7 +147,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(book_xml).unwrap();
+    let book: Book = extractor.extract_from_str(book_xml).unwrap();
 
     println!("Book with nested structs:");
     println!("  ID: {}", book.id);
@@ -200,7 +200,7 @@ fn main() {
         </company>
     "#;
 
-    let company: Company = extractor.extract_one(company_xml).unwrap();
+    let company: Company = extractor.extract_from_str(company_xml).unwrap();
 
     println!("Company with nested departments:");
     println!("  ID: {}", company.id);
@@ -244,7 +244,7 @@ fn main() {
         </order>
     "#;
 
-    let order: Order = extractor.extract_one(order_xml).unwrap();
+    let order: Order = extractor.extract_from_str(order_xml).unwrap();
 
     println!("Order with nested items and customer:");
     println!("  Order ID: {}", order.order_id);

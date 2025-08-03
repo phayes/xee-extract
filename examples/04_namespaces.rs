@@ -84,7 +84,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let feed: AtomFeed = extractor.extract_one(atom_xml).unwrap();
+    let feed: AtomFeed = extractor.extract_from_str(atom_xml).unwrap();
 
     println!("Atom feed with namespaces:");
     println!("  Title: {}", feed.title);
@@ -112,7 +112,7 @@ fn main() {
         </rss>
     "#;
 
-    let feed: RSSFeed = extractor.extract_one(rss_xml).unwrap();
+    let feed: RSSFeed = extractor.extract_from_str(rss_xml).unwrap();
 
     println!("RSS feed with namespaces:");
     println!("  Title: {}", feed.title);
@@ -134,7 +134,7 @@ fn main() {
         </soap:Envelope>
     "#;
 
-    let message: SOAPMessage = extractor.extract_one(soap_xml).unwrap();
+    let message: SOAPMessage = extractor.extract_from_str(soap_xml).unwrap();
 
     println!("SOAP message with multiple namespaces:");
     println!("  Action: {}", message.action);
@@ -154,7 +154,7 @@ fn main() {
         </root>
     "#;
 
-    let data: DefaultNamespaceData = extractor.extract_one(default_ns_xml).unwrap();
+    let data: DefaultNamespaceData = extractor.extract_from_str(default_ns_xml).unwrap();
 
     println!("Data with default namespace:");
     println!("  Title: {}", data.title);
@@ -171,7 +171,7 @@ fn main() {
         </feed>
     "#;
 
-    let result = extractor.extract_one::<AtomFeed>(no_namespace_xml);
+    let result = extractor.extract_from_str::<AtomFeed>(no_namespace_xml);
     
     println!("Error handling for missing namespace:");
     match result {

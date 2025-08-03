@@ -153,7 +153,7 @@ fn test_namespace_only() {
     "#;
 
     let extractor = Extractor::new();
-    let result: NamespaceOnly = extractor.extract_one(xml).unwrap();
+    let result: NamespaceOnly = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -175,7 +175,7 @@ fn test_default_namespace_only() {
     "#;
 
     let extractor = Extractor::new();
-    let result: DefaultNamespaceOnly = extractor.extract_one(xml).unwrap();
+    let result: DefaultNamespaceOnly = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -196,7 +196,7 @@ fn test_namespace_and_context() {
     "#;
 
     let extractor = Extractor::new();
-    let result: NamespaceAndContext = extractor.extract_one(xml).unwrap();
+    let result: NamespaceAndContext = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -218,7 +218,7 @@ fn test_default_namespace_and_context() {
     "#;
 
     let extractor = Extractor::new();
-    let result: DefaultNamespaceAndContext = extractor.extract_one(xml).unwrap();
+    let result: DefaultNamespaceAndContext = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -239,7 +239,7 @@ fn test_default_and_prefixed_namespaces() {
     "#;
 
     let extractor = Extractor::new();
-    let result: DefaultAndPrefixedNamespaces = extractor.extract_one(xml).unwrap();
+    let result: DefaultAndPrefixedNamespaces = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -260,7 +260,7 @@ fn test_all_combined() {
     "#;
 
     let extractor = Extractor::new();
-    let result: AllCombined = extractor.extract_one(xml).unwrap();
+    let result: AllCombined = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -284,7 +284,7 @@ fn test_nested_structs_with_different_namespaces() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ParentWithNamespaces = extractor.extract_one(xml).unwrap();
+    let result: ParentWithNamespaces = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.author.name, "Test Author");
@@ -306,7 +306,7 @@ fn test_nested_structs_with_default_namespaces() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ParentWithDefaultNamespace = extractor.extract_one(xml).unwrap();
+    let result: ParentWithDefaultNamespace = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.author.name, "Test Author");
@@ -325,7 +325,7 @@ fn test_error_handling_missing_namespace() {
     "#;
 
     let extractor = Extractor::new();
-    let result = extractor.extract_one::<DefaultNamespaceOnly>(xml);
+    let result = extractor.extract_from_str::<DefaultNamespaceOnly>(xml);
     
     // This should fail because the XML doesn't have the default namespace
     assert!(result.is_err());

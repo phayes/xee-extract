@@ -53,7 +53,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let person: Person = extractor.extract_one(person_xml).unwrap();
+    let person: Person = extractor.extract_from_str(person_xml).unwrap();
 
     println!("Person extracted:");
     println!("  Name: {}", person.name);
@@ -83,7 +83,7 @@ fn main() {
         </company>
     "#;
 
-    let company: Company = extractor.extract_one(company_xml).unwrap();
+    let company: Company = extractor.extract_from_str(company_xml).unwrap();
 
     println!("Company extracted:");
     println!("  ID: {}", company.id);
@@ -103,7 +103,7 @@ fn main() {
         </person>
     "#;
 
-    let person2: Person = extractor.extract_one(person_without_email).unwrap();
+    let person2: Person = extractor.extract_from_str(person_without_email).unwrap();
 
     println!("Person without email:");
     println!("  Name: {}", person2.name);
