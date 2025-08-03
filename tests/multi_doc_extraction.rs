@@ -51,6 +51,19 @@ struct CrossDocumentUser {
 }
 
 #[derive(Extract, Debug, PartialEq)]
+struct SimpleCrossDocument {
+    #[xee(xpath("//user/@id"))]
+    user_id: String,
+
+    #[xee(xpath("//user/name/text()"))]
+    name: String,
+
+    // Simple cross-document extraction without variables
+    #[xee(xpath("doc('http://example.com/extra.xml')/extra/value/text()"))]
+    extra_value: String,
+}
+
+#[derive(Extract, Debug, PartialEq)]
 struct ProductCatalog {
     #[xee(xpath("//catalog/@id"))]
     catalog_id: String,
@@ -185,6 +198,40 @@ fn test_simple_cross_document_extraction() {
     assert_eq!(result.role, "developer");
     assert_eq!(result.access_level, "admin");
     assert_eq!(result.permissions_roles, vec!["developer", "admin", "reviewer"]);
+}
+
+#[test]
+fn test_simple_direct_cross_document_extraction() {
+    let mut documents = Documents::new();
+    
+    // Add user document
+    let user_doc = documents
+        .add_string(
+            "http://example.com/users.xml".try_into().unwrap(),
+            r#"<users>
+                <user id="user123">
+                    <name>John Doe</name>
+                </user>
+            </users>"#,
+        )
+        .unwrap();
+
+    // Add extra document with simple value
+    documents
+        .add_string(
+            "http://example.com/extra.xml".try_into().unwrap(),
+            r#"<extra>
+                <value>additional information</value>
+            </extra>"#,
+        )
+        .unwrap();
+
+    let extractor = Extractor::new();
+    let result: SimpleCrossDocument = extractor.extract_from_docs(&mut documents, &user_doc).unwrap();
+
+    assert_eq!(result.user_id, "user123");
+    assert_eq!(result.name, "John Doe");
+    assert_eq!(result.extra_value, "additional information");
 }
 
 #[test]
