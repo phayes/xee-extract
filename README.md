@@ -9,10 +9,10 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
 struct SimpleEntry {
-    #[xee(xpath("//id/text()"))]
+    #[xee(xpath("//id"))]
     id: String,
 
-    #[xee(xpath("//title/text()"))]
+    #[xee(xpath("//title"))]
     title: String,
 
     #[xee(xpath("//category/@term"))]
@@ -24,10 +24,10 @@ struct SimpleEntry {
 
 #[derive(Extract)]
 struct Author {
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("email/text()"))]
+    #[xee(xpath("email"))]
     email: Option<String>,
 }
 
@@ -44,8 +44,7 @@ let xml = r#"
     </entry>
 "#;
 
-let extractor = Extractor::default();
-let entry: SimpleEntry = extractor.extract_from_str(xml).unwrap();
+let entry: SimpleEntry = Extractor::default().extract_from_str(xml).unwrap();
 ```
 
 ## Field Attributes
@@ -191,13 +190,9 @@ struct TaggedEntry {
     tags: CsvTags,
 }
 
-
 let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
-let extractor = Extractor::default();
-let entry: TaggedEntry = extractor.extract_from_str(xml).unwrap();
+let entry: TaggedEntry = Extractor::default().extract_from_str(xml).unwrap();
 assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
-
-
 ```
 
 Note that if your type already implements `FromStr` you cannot also implement `ExtractValue`. This is a known limitation and will be resolved when [Specialization](https://std-dev-guide.rust-lang.org/policy/specialization.html) lands. 
