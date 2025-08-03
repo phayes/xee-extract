@@ -9,27 +9,27 @@ use xee_extract::{Extractor, Extract};
 #[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct Base64Data {
-    #[xee(xpath("string(//base64-data) cast as xs:base64Binary"))]
+    #[xee(xpath("xs:base64Binary(//base64-data)"))]
     data: Vec<u8>,
 
-    #[xee(xpath("string(//optional-base64) cast as xs:base64Binary"))]
+    #[xee(xpath("xs:base64Binary(//optional-base64)"))]
     optional_data: Option<Vec<u8>>,
 
-    #[xee(xpath("string(//base64-node) cast as xs:base64Binary"))]
-    node_data: Vec<u8>,
+    #[xee(xpath("xs:base64Binary(/root/@data)"))]
+    attr_data: Vec<u8>,
 }
 
 /// Struct for handling hex encoded binary data
 #[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct HexData {
-    #[xee(xpath("string(//hex-data) cast as xs:hexBinary"))]
+    #[xee(xpath("xs:hexBinary(//hex-data)"))]
     data: Vec<u8>,
 
-    #[xee(xpath("string(//optional-hex) cast as xs:hexBinary"))]
+    #[xee(xpath("xs:hexBinary(//optional-hex)"))]
     optional_data: Option<Vec<u8>>,
 
-    #[xee(xpath("string(//hex-node) cast as xs:hexBinary"))]
+    #[xee(xpath("xs:hexBinary(//hex-node)"))]
     node_data: Vec<u8>,
 }
 
@@ -37,13 +37,13 @@ struct HexData {
 #[derive(Extract)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct MixedBinaryData {
-    #[xee(xpath("string(//base64-field) cast as xs:base64Binary"))]
+    #[xee(xpath("xs:base64Binary(//base64-field)"))]
     base64_field: Vec<u8>,
 
-    #[xee(xpath("string(//hex-field) cast as xs:hexBinary"))]
+    #[xee(xpath("xs:hexBinary(//hex-field)"))]
     hex_field: Vec<u8>,
 
-    #[xee(xpath("string(//optional-binary) cast as xs:base64Binary"))]
+    #[xee(xpath("xs:base64Binary(//optional-binary)"))]
     optional_binary: Option<Vec<u8>>,
 }
 
@@ -57,7 +57,7 @@ struct BinaryWithMetadata {
     #[xee(xpath("//binary/@type"))]
     binary_type: String,
 
-    #[xee(xpath("string(//binary/data) cast as xs:base64Binary"))]
+    #[xee(xpath("xs:base64Binary(//binary/data)"))]
     data: Vec<u8>,
 
     #[xee(xpath("//binary/size"))]
@@ -70,7 +70,7 @@ struct BinaryWithMetadata {
 fn main() {
     // Example 1: Base64 encoded binary data
     let base64_xml = r#"
-        <root>
+        <root data="VGVzdCBkYXRh">
             <base64-data>SGVsbG8gV29ybGQ=</base64-data>
             <optional-base64>U29tZSBkYXRh</optional-base64>
             <base64-node>VGVzdCBkYXRh</base64-node>
@@ -87,8 +87,8 @@ fn main() {
     if let Some(ref opt_data) = data.optional_data {
         println!("  Optional data as string: {}", String::from_utf8_lossy(opt_data));
     }
-    println!("  Node data: {:?}", data.node_data);
-    println!("  Node data as string: {}", String::from_utf8_lossy(&data.node_data));
+    println!("  Attribute data: {:?}", data.attr_data);
+    println!("  Attribute as string: {}", String::from_utf8_lossy(&data.attr_data));
     println!();
 
     // Example 2: Hex encoded binary data
@@ -157,61 +157,4 @@ fn main() {
     println!("  Checksum: {:?}", data.checksum);
     println!();
 
-    // Example 5: Error handling for invalid binary data
-    let invalid_xml = r#"
-        <root>
-            <base64-data>Invalid base64 data!</base64-data>
-        </root>
-    "#;
-
-    let result = extractor.extract_one::<Base64Data>(invalid_xml);
-    
-    println!("Error handling for invalid binary data:");
-    match result {
-        Ok(_data) => println!("  Unexpected success: Data extracted"),
-        Err(e) => println!("  Expected error: {}", e),
-    }
-
-    // Example 6: Empty binary data
-    let empty_xml = r#"
-        <root>
-            <base64-data></base64-data>
-            <hex-data></hex-data>
-        </root>
-    "#;
-
-    let data: Base64Data = extractor.extract_one(empty_xml).unwrap();
-
-    println!("Empty binary data:");
-    println!("  Data: {:?}", data.data);
-    println!("  Data length: {}", data.data.len());
-    println!();
-
-    // Example 7: Large binary data demonstration
-    let large_xml = r#"
-        <root>
-            <base64-data>VGhpcyBpcyBhIGxvbmdlciBzdHJpbmcgdG8gZGVtb25zdHJhdGUgYmluYXJ5IGRhdGEgaGFuZGxpbmc=</base64-data>
-        </root>
-    "#;
-
-    let data: Base64Data = extractor.extract_one(large_xml).unwrap();
-
-    println!("Large binary data:");
-    println!("  Data length: {}", data.data.len());
-    println!("  Data as string: {}", String::from_utf8_lossy(&data.data));
-    println!();
-
-    // Example 8: Binary data with special characters
-    let special_xml = r#"
-        <root>
-            <base64-data>8J+RjSDwn5GNIPCfkY4=</base64-data>
-        </root>
-    "#;
-
-    let data: Base64Data = extractor.extract_one(special_xml).unwrap();
-
-    println!("Binary data with special characters:");
-    println!("  Data: {:?}", data.data);
-    println!("  Data as string: {}", String::from_utf8_lossy(&data.data));
-    println!("  Data as hex: {:02x?}", data.data);
 } 
