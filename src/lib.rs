@@ -14,23 +14,6 @@ mod error;
 pub use error::{Error, ExtractError, FieldExtractionError};
 
 pub trait Extract: Sized {
-    /// Extract from an XML node (for recursive extraction)
-    fn extract_from_node(
-        documents: &mut Documents,
-        item: &Item,
-        extract_id: Option<&str>,
-        variables: &ahash::AHashMap<OwnedName, Sequence>,
-    ) -> Result<Self, Error> {
-        match item {
-            Item::Node(_) => Self::extract(documents, item, extract_id, variables),
-            _ => {
-                return Result::Err(Error::InvalidXPath(
-                    "extract targets non-node items".to_string(),
-                ));
-            }
-        }
-    }
-
     /// Extract from a context item using XPath expressions relative to that item
     fn extract(
         documents: &mut Documents,
