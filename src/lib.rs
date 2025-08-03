@@ -80,6 +80,40 @@ impl Extractor {
         Self::default()
     }
 
+    /// Create a new extractor with a named extraction
+    /// 
+    /// Sometimes a single struct needs to support multiple XML formats.  Each
+    /// `#[xee(...)]` attribute can take an optional second string argument that
+    /// associates it with a named extraction.  When using
+    /// `Extractor::named("nlm")`, only the attributes tagged with that name are
+    /// applied; attributes without a name form the default extraction used by
+    ///  `Extractor::default()`.
+    ///
+    /// ```rust
+    /// use xee_extract::{Extractor, Extract};
+    ///
+    /// #[derive(Extract)]
+    /// #[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default
+    /// #[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]        // named
+    /// struct Entry {
+    ///     #[xee(xpath("//atom:id/text()"))]                          // default
+    ///     #[xee(xpath("//nlm:id/text()", "nlm"))]                    // named
+    ///     id: String,
+    ///
+    ///     #[xee(xpath("//atom:title/text()"))]                       // default
+    ///     #[xee(xpath("//nlm:title/text()", "nlm"))]                 // named
+    ///     title: String,
+    /// }
+    ///
+    /// let atom_xml = r#"<entry xmlns:atom="http://www.w3.org/2005/Atom"><atom:id>123</atom:id><atom:title>Atom Title</atom:title></entry>"#;
+    /// let nlm_xml = r#"<entry xmlns:nlm="https://id.nlm.nih.gov/datmm/"><nlm:id>456</nlm:id><nlm:title>NLM Title</nlm:title></entry>"#;
+    ///
+    /// // Parse Atom
+    /// let atom: Entry = Extractor::default().extract_from_str(atom_xml).unwrap();
+    ///
+    /// // Parse NLM using the named extraction
+    /// let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
+    /// ```
     pub fn named(name: &str) -> Self {
         Self {
             variables: std::collections::HashMap::new(),
