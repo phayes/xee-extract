@@ -76,7 +76,21 @@ struct Foo {
 Extract a nested struct or vector of structs.
 
 ```rust
-#[derive(xee_extract::Extract)]
+use xee_extract::Extract;
+
+#[derive(Extract)]
+struct Author {
+    #[xee(xpath("name/text()"))]
+    name: String,
+}
+
+#[derive(Extract)]
+struct Book {
+    #[xee(xpath("title/text()"))]
+    title: String,
+}
+
+#[derive(Extract)]
 struct Foo {
     #[xee(extract("//author"))]
     author: Author,
@@ -91,7 +105,9 @@ struct Foo {
 Extract raw XML content.
 
 ```rust
-#[derive(xee_extract::Extract)]
+use xee_extract::Extract;
+
+#[derive(Extract)]
 struct Foo {
     #[xee(xml("//content"))]
     content: String,
@@ -110,6 +126,9 @@ Provide a custom context for the xpath expressions in this struct. By default to
 This can be useful when you have a struct that might be extracted as a child-node that is part of a larger structure, but also might be extracted on it's own.
 
 ```rust
+use xee_extract::Extract;
+
+#[derive(Extract)]
 #[xee(context("(if self::entry then . else /entry)"))]
 struct Entry {
     #[xee(xpath("id/text()"))]
@@ -122,8 +141,11 @@ struct Entry {
 Add namespaces for all xpath expressions. This has no effect if placed on a child struct (child structs inherit their parents namespaces when extracting via the parent). 
 
 ```rust
-#[xee(ns(atom = "http://www.w3.org/2005/Atom")]
-#[xee(ns(meta = "http://example.org/Meta")]
+use xee_extract::Extract;
+
+#[derive(Extract)]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
+#[xee(ns(meta = "http://example.org/Meta"))]
 struct Foo {
     #[xee(xpath("atom:name/text()"))]
     name: String,
@@ -135,7 +157,10 @@ struct Foo {
 Set the default namespace for xpath queries.
 
 ```rust
-#[xee(default_ns(atom = "http://www.w3.org/2005/Atom"))]
+use xee_extract::Extract;
+
+#[derive(Extract)]
+#[xee(default_ns("http://www.w3.org/2005/Atom"))]
 struct Foo {
     #[xee(xpath("name/text()"))]
     name: String,
@@ -210,10 +235,17 @@ struct Entry {
     title: String,
 }
 
-// Parse Atom
-let atom: Entry = Extractor::default().extract_from_str(atom_xml)?;
-// Parse NLM using the named extraction
-let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml)?;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let atom_xml = r#"<entry xmlns:atom="http://www.w3.org/2005/Atom"><atom:id>123</atom:id><atom:title>Atom Title</atom:title></entry>"#;
+    let nlm_xml = r#"<entry xmlns:nlm="https://id.nlm.nih.gov/datmm/"><nlm:id>456</nlm:id><nlm:title>NLM Title</nlm:title></entry>"#;
+
+    // Parse Atom
+    let atom: Entry = Extractor::default().extract_from_str(atom_xml)?;
+    // Parse NLM using the named extraction
+    let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml)?;
+
+    Ok(())
+}
 ```
 
 This mechanism works for other struct-level attributes like `context` and
@@ -254,16 +286,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut documents = xee_xpath::Documents::new();
     let doc_handle = documents.add_string_without_uri(xml)?;
 
-    // Create extractor and reuse it
-    let mut extractor = Extractor::new();
-
     // Extract laptop data
-    let laptop_data: ProductData = extractor
+    let laptop_data: ProductData = Extractor::new()
         .bind_value("product_id", "P001")
         .extract_from_docs(&mut documents, &doc_handle)?;
 
     // Extract paperclip data
-    let paperclip_data: ProductData = extractor
+    let paperclip_data: ProductData = Extractor::new()
         .bind_value("product_id", "P002")
         .extract_from_docs(&mut documents, &doc_handle)?;
 
