@@ -76,7 +76,7 @@ fn main() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let data: Base64Data = extractor.extract_from_str(base64_xml).unwrap();
 
     println!("Base64 encoded binary data:");

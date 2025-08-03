@@ -55,7 +55,7 @@ fn test_pretty_error_invalid_xml() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -88,7 +88,7 @@ fn test_pretty_error_invalid_xpath() {
         _invalid: String,
     }
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<InvalidXPathStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -112,7 +112,7 @@ fn test_pretty_error_with_span() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -130,7 +130,7 @@ fn test_pretty_error_with_span() {
 fn test_pretty_error_empty_xml() {
     let xml = "";
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -155,7 +155,7 @@ fn test_application_error_extract_value() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<Book, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -186,7 +186,7 @@ fn test_application_error_value_extraction() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<ValueTestStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -217,7 +217,7 @@ fn test_application_error_extract_struct() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<ExtractTestStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -244,7 +244,7 @@ fn test_application_error_xml_serialization() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<XmlTestStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -276,7 +276,7 @@ fn test_application_error_namespace() {
         _id: String,
     }
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<NamespaceTestStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());

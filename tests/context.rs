@@ -50,7 +50,7 @@ fn test_context_only() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ContextOnly = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -73,7 +73,7 @@ fn test_book_with_context_conditional() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
@@ -94,7 +94,7 @@ fn test_book_without_optional_fields_in_context() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B002");
@@ -115,7 +115,7 @@ fn test_error_handling_invalid_xpath() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result = extractor.extract_from_str::<ContextOnly>(xml);
 
     // This should fail because the XML doesn't have title and author elements

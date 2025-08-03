@@ -92,7 +92,7 @@ fn main() {
         </article>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let data: RawXMLData = extractor.extract_from_str(basic_xml).unwrap();
 
     println!("Basic raw XML extraction:");

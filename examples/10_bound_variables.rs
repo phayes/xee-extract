@@ -56,8 +56,8 @@ struct ConditionalData {
 fn main() {
     // Example 1: Basic variable binding
     println!("=== Example 1: Basic Variable Binding ===");
-    
-    let extractor1 = Extractor::new()
+
+    let extractor1 = Extractor::default()
         .bind_value("user_name", "Alice Johnson")
         .bind_value("user_age", 28)
         .bind_value("is_active", true)
@@ -74,7 +74,7 @@ fn main() {
 
     // Example 2: Variable binding with partial XPath expressions
     println!("=== Example 2: Partial XPath with Variables ===");
-    
+
     let product_xml = r#"
         <catalog>
             <product id="P001" category="electronics">
@@ -97,7 +97,7 @@ fn main() {
         </catalog>
     "#;
 
-    let extractor2 = Extractor::new()
+    let extractor2 = Extractor::default()
         .bind_value("product_id", "P001")
         .bind_value("spec_type", "cpu");
 
@@ -112,8 +112,8 @@ fn main() {
 
     // Example 3: Conditional logic with variables
     println!("=== Example 3: Conditional Logic with Variables ===");
-    
-    let extractor3 = Extractor::new()
+
+    let extractor3 = Extractor::default()
         .bind_value("user_id", "U123")
         .bind_value("is_admin", true)
         .bind_value("has_permission", false)
@@ -126,4 +126,4 @@ fn main() {
     println!("  Role: {}", conditional_data.role);
     println!("  Permission: {}", conditional_data.permission);
     println!("  Language: {}", conditional_data.default_language);
-} 
+}

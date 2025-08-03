@@ -66,7 +66,7 @@ fn test_extraction_with_missing_optional_field() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: SimpleStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -85,7 +85,7 @@ fn test_nested_extraction_with_missing_optional() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: NestedStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "789");
@@ -103,7 +103,7 @@ fn test_book_without_optional_fields() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.title, "Programming Rust");
@@ -123,7 +123,7 @@ fn test_person_without_optional_fields() {
         </person>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let person: Person = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(person.id, "P002");
@@ -171,7 +171,7 @@ fn test_person_with_optional_fields() {
         </person>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let person: Person = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(person.id, "P001");

@@ -107,7 +107,7 @@ fn main() {
         </library>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(book_xml).unwrap();
 
     println!("Book with simple context:");
