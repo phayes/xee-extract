@@ -9,10 +9,10 @@ use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
 struct SimpleEntry {
-    #[xee(xpath("//id/text()"))]
+    #[xee(xpath("//id"))]
     id: String,
 
-    #[xee(xpath("//title/text()"))]
+    #[xee(xpath("//title"))]
     title: String,
 
     #[xee(xpath("//category/@term"))]
@@ -24,10 +24,10 @@ struct SimpleEntry {
 
 #[derive(Extract)]
 struct Author {
-    #[xee(xpath("name/text()"))]
+    #[xee(xpath("name"))]
     name: String,
 
-    #[xee(xpath("email/text()"))]
+    #[xee(xpath("email"))]
     email: Option<String>,
 }
 
@@ -44,8 +44,7 @@ let xml = r#"
     </entry>
 "#;
 
-let extractor = Extractor::new();
-let entry: SimpleEntry = extractor.extract_from_str(xml).unwrap();
+let entry: SimpleEntry = Extractor::default().extract_from_str(xml).unwrap();
 ```
 
 ## Field Attributes
@@ -191,10 +190,8 @@ struct TaggedEntry {
     tags: CsvTags,
 }
 
-
 let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
-let extractor = Extractor::new();
-let entry: TaggedEntry = extractor.extract_from_str(xml).unwrap();
+let entry: TaggedEntry = Extractor::default().extract_from_str(xml).unwrap();
 assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
 
 
@@ -276,12 +273,12 @@ let mut documents = xee_xpath::Documents::new();
 let doc_handle = documents.add_string_without_uri(xml).unwrap();
 
 // Extract laptop data
-let laptop_data: ProductData = Extractor::new()
+let laptop_data: ProductData = Extractor::default()
     .bind_value("product_id", "P001")
     .extract_from_docs(&mut documents, &doc_handle).unwrap();
 
 // Extract paperclip data
-let paperclip_data: ProductData = Extractor::new()
+let paperclip_data: ProductData = Extractor::default()
     .bind_value("product_id", "P002")
     .extract_from_docs(&mut documents, &doc_handle).unwrap();
 ```
