@@ -107,7 +107,7 @@ impl Extractor {
         }
     }
 
-    /// Extract a single struct from an XML string
+    /// Extract a single struct from a documents store
     pub fn extract_from_docs<T>(&self, documents: &mut xee_xpath::Documents, root_doc: &xee_xpath::DocumentHandle) -> Result<T, ExtractError>
     where
         T: Extract,
