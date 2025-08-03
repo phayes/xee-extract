@@ -1,7 +1,4 @@
-//! XPath-driven deserialization crate using Xee as the underlying engine.
-//!
-//! This crate provides a procedural macro `Extract` that allows you to
-//! deserialize XML documents into Rust structs using XPath expressions.
+#![doc = include_str!("../README.md")]
 
 use std::str::FromStr;
 use xee_xpath::{Atomic, Documents, Item, Sequence};

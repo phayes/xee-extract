@@ -250,10 +250,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         </catalog>
     "#;
 
-    let extractor = Extractor::new().bind_value("product_id", "P001");
-    let laptop_data: ProductData = extractor.extract_from_str(xml)?;
+    // Parse XML once and reuse the document
+    let mut documents = xee_xpath::Documents::new();
+    let doc_handle = documents.add_string_without_uri(xml)?;
 
-    let extractor = extractor.bind_value("product_id", "P002");
-    let paperclip_data: ProductData = extractor.extract_from_str(xml)?;
+    // Create extractor and reuse it
+    let mut extractor = Extractor::new();
+
+    // Extract laptop data
+    let laptop_data: ProductData = extractor
+        .bind_value("product_id", "P001")
+        .extract_from_docs(&mut documents, &doc_handle)?;
+
+    // Extract paperclip data
+    let paperclip_data: ProductData = extractor
+        .bind_value("product_id", "P002")
+        .extract_from_docs(&mut documents, &doc_handle)?;
+
+    Ok(())
 }
 ```
