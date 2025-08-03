@@ -168,8 +168,7 @@ provide custom parsing by implementing this trait yourself.
 ### Example: parsing a comma separated list
 
 ```rust
-use xee_extract::{Extract, Extractor, ExtractValue, Error};
-use xee_xpath::{Documents, Item};
+use xee_extract::{Extract, Extractor, ExtractValue, Error, Documents, Item};
 
 struct CsvTags(Vec<String>);
 
@@ -242,7 +241,7 @@ configurations.
 We also support binding xpath variables with with `Extractor::bind_value` to inject dynamic values into XPath expressions at runtime.
 
 ```rust
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extractor, Extract, Documents};
 
 #[derive(Extract)]
 struct ProductData {
@@ -267,7 +266,7 @@ let xml = r#"
 "#;
 
 // Parse XML once and reuse the document
-let mut documents = xee_xpath::Documents::new();
+let mut documents = Documents::new();
 let doc_handle = documents.add_string_without_uri(xml).unwrap();
 
 // Extract laptop data

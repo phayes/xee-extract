@@ -3,8 +3,7 @@
 //! This example demonstrates how to implement custom ExtractValue for custom types
 //! that don't implement FromStr or need custom parsing logic.
 
-use xee_extract::{Error, Extract, ExtractValue, Extractor};
-use xee_xpath::{Documents, Item};
+use xee_extract::{Error, Extract, ExtractValue, Extractor, Documents, Item};
 
 /// Custom struct for CSV data that implements ExtractValue
 struct CSV {

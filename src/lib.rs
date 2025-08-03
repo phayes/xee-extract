@@ -1,7 +1,6 @@
 #![doc = include_str!("../README.md")]
 
 use std::str::FromStr;
-use xee_xpath::{Atomic, Documents, Item, Sequence};
 use xot::xmlname::OwnedName;
 
 // Re-export the macro
@@ -13,6 +12,22 @@ mod error;
 // Re-export error types
 pub use error::{Error, ExtractError, FieldExtractionError};
 
+// Re-export commong xee-xpath types
+pub use xee_xpath::{Atomic, Documents, Item, Sequence};
+
+/// Trait for extracting a type from an XPath item.
+/// Don't implement this trait directly. Instead, derive it using the `#[derive(Extract)]` attribute.
+/// 
+/// # Example
+/// ```
+/// use xee_extract::Extract;
+/// 
+/// #[derive(Extract)]
+/// struct MyStruct {
+///     #[xee(xpath("//id"))]
+///     id: String,
+/// }
+/// ```
 pub trait Extract: Sized {
     /// Extract from a context item using XPath expressions relative to that item
     fn extract(
@@ -23,7 +38,45 @@ pub trait Extract: Sized {
     ) -> Result<Self, Error>;
 }
 
-/// Trait for deserializing a type from an XPath item
+/// Trait for deserializing a type from an XPath item. 
+/// By default, this trait is implemented for all types that implement FromStr.
+/// 
+/// There is a known issue where any type that implements FromStr cannot implement ExtractValue.
+/// This will be resolved when the Specialization feature is stabilized.
+/// 
+/// Example:
+/// 
+/// ```rust
+/// use xee_extract::{ExtractValue, Error, Documents, Item};
+/// 
+/// struct Coordinates {
+///     latitude: f64,
+///     longitude: f64,
+/// }
+/// 
+/// impl ExtractValue for Coordinates {
+///     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+///         let s = item.string_value(documents.xot())?;
+///         // Parse "lat,lon" format
+///         let parts: Vec<&str> = s.split(',').collect();
+///         if parts.len() != 2 {
+///             return Err(Error::DeserializationError(format!(
+///                 "Invalid coordinates format: {}",
+///                 s
+///             )));
+///         }
+///         let lat = parts[0]
+///             .trim()
+///             .parse::<f64>()
+///             .map_err(|_| Error::DeserializationError(format!("Invalid latitude: {}", parts[0])))?;
+///         let lon = parts[1]
+///             .trim()
+///             .parse::<f64>()
+///             .map_err(|_| Error::DeserializationError(format!("Invalid longitude: {}", parts[1])))?;
+///         Ok(Coordinates { latitude: lat, longitude: lon })
+///     }
+/// }
+/// ```
 pub trait ExtractValue: Sized {
     /// Deserialize a value from an XPath item
     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error>;
@@ -99,7 +152,7 @@ impl Extractor {
         }
     }
 
-    /// Bind a sequence to a variable, sequence can be anything that can be converted to an xee_xpath::Sequence.
+    /// Bind a sequence to a variable, sequence can be anything that can be converted to an `Sequence``.
     ///  
     /// This method is safe to call multiple times with the same name (the previous value will be replaced).
     pub fn bind_sequence<S: Into<String>, V: Into<Sequence>>(mut self, name: S, val: V) -> Self {
@@ -107,8 +160,8 @@ impl Extractor {
         self
     }
 
-    /// Bind an item to a variable, item can be anything that can be converted to an xee_xpath::Item.
-    /// For example a reference to an existing xee_xpath::Item or node.
+    /// Bind an item to a variable, item can be anything that can be converted to an `Item`.
+    /// For example a reference to an existing item or node.
     ///
     /// This method is safe to call multiple times with the same name (the previous value will be replaced).
     pub fn bind_item<S: Into<String>, V: Into<Item>>(self, name: S, val: V) -> Self {
@@ -116,8 +169,8 @@ impl Extractor {
         self.bind_sequence(name, item)
     }
 
-    /// Bind a value to a variable, value can be anything that can be converted to an Atomic.
-    /// This includes String, &str, f64, f32, i64, i32, u64, u32, bool, and other types that can be converted to an xee_xpath::Atomic.
+    /// Bind a value to a variable, value can be anything that can be converted to an `Atomic`.
+    /// This includes String, &str, f64, f32, i64, i32, u64, u32, bool, and other types that can be converted to an Atomic.
     ///
     /// This method is safe to call multiple times with the same name (the previous value will be replaced).
     ///
@@ -191,9 +244,9 @@ impl Extractor {
     ///
     /// # Example
     /// ```
-    /// use xee_extract::{Extract, Extractor};
+    /// use xee_extract::{Extract, Extractor, Documents};
     /// 
-    /// let mut docs = xee_xpath::Documents::new();
+    /// let mut docs = Documents::new();
     /// let doc1 = docs.add_string_without_uri("<root><foo>bar</foo></root>").unwrap();
     /// let doc2 = docs.add_string("http://example.com/baz.xml".try_into().unwrap(), "<root><baz>qux</baz></root>").unwrap();
     ///
@@ -212,7 +265,7 @@ impl Extractor {
     /// ```
     pub fn extract_from_docs<T>(
         &self,
-        documents: &mut xee_xpath::Documents,
+        documents: &mut Documents,
         root_doc: &xee_xpath::DocumentHandle,
     ) -> Result<T, ExtractError>
     where
