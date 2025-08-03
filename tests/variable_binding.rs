@@ -148,7 +148,7 @@ struct OptionalVariableStruct {
 fn test_basic_variable_binding() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("user_name", "John Doe")
         .bind_value("user_age", 30)
         .bind_value("is_active", true)
@@ -187,7 +187,7 @@ fn test_partial_xpath_variable_binding() {
         </root>
     "#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("user_id", "123")
         .bind_value("score_type", "math");
 
@@ -203,7 +203,7 @@ fn test_partial_xpath_variable_binding() {
 fn test_complex_variable_binding() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("company_name", "Tech Corp")
         .bind_value("employee_count", 500)
         .bind_value("revenue", 1000000.0)
@@ -249,7 +249,7 @@ fn test_complex_partial_xpath_variable_binding() {
         </root>
     "#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("company_id", "C001")
         .bind_value("department", "engineering")
         .bind_value("fiscal_year", "2023")
@@ -268,7 +268,7 @@ fn test_complex_partial_xpath_variable_binding() {
 fn test_nested_variable_binding() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("api_base_url", "https://api.example.com")
         .bind_value("api_version", "v1.0")
         .bind_value("db_name", "production_db")
@@ -286,7 +286,7 @@ fn test_nested_variable_binding() {
 fn test_conditional_variable_binding() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("user_id", "user123")
         .bind_value("is_admin", true)
         .bind_value("has_permission", false)
@@ -324,7 +324,7 @@ fn test_conditional_partial_xpath_variable_binding() {
         </root>
     "#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("user_id", "user123")
         .bind_value("permission_type", "read")
         .bind_value("default_language", "en")
@@ -342,7 +342,7 @@ fn test_conditional_partial_xpath_variable_binding() {
 fn test_optional_variable_binding() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("required_field", "always present")
         .bind_value("optional_field", "present")
         .bind_value("optional_number", 42)
@@ -360,7 +360,7 @@ fn test_optional_variable_binding() {
 fn test_different_data_types() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("user_name", "John Doe")
         .bind_value("user_age", 30i32)
         .bind_value("user_age_long", 30i64)
@@ -385,7 +385,7 @@ fn test_variable_binding_with_named_extraction() {
         </root>
     "#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("prefix", "test_")
         .bind_value("suffix", "_value");
 
@@ -403,7 +403,7 @@ fn test_variable_binding_with_named_extraction() {
 fn test_variable_binding_error_handling() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new().bind_value("user_name", "John Doe");
+    let extractor = Extractor::default().bind_value("user_name", "John Doe");
     // Missing required variables
 
     let result = extractor.extract_from_str::<SimpleVariableStruct>(xml);
@@ -430,7 +430,7 @@ fn test_variable_binding_with_complex_xpath() {
         </root>
     "#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("min_id", 2)
         .bind_value("max_id", 3)
         .bind_value("search_name", "Bob");
@@ -486,7 +486,7 @@ fn test_variable_binding_with_functions_and_partial_xpath() {
         </root>
     "#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("product_id", "P001")
         .bind_value("spec_type", "cpu")
         .bind_value("min_rating", 4)
@@ -524,7 +524,7 @@ fn test_variable_binding_with_functions_and_partial_xpath() {
 fn test_variable_binding_with_string_operations() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("first_name", "John")
         .bind_value("last_name", "Doe")
         .bind_value("separator", " ")
@@ -552,7 +552,7 @@ fn test_variable_binding_with_string_operations() {
 fn test_variable_binding_with_numeric_operations() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
+    let extractor = Extractor::default()
         .bind_value("base_price", 100.0)
         .bind_value("tax_rate", 0.08)
         .bind_value("discount", 0.10)

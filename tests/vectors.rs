@@ -65,7 +65,7 @@ fn test_empty_vector_extraction() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ComplexStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -89,7 +89,7 @@ fn test_vector_with_multiple_items() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ComplexStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "456");
@@ -111,7 +111,7 @@ fn test_book_with_multiple_genres() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.title, "The Rust Programming Language");
@@ -131,7 +131,7 @@ fn test_book_with_single_genre() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.title, "Programming Rust");
@@ -150,7 +150,7 @@ fn test_empty_library() {
         </library>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Library = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.name, "Empty Library");
@@ -188,7 +188,7 @@ fn test_company_with_multiple_employees() {
         </company>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let company: Company = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(company.id, "C001");

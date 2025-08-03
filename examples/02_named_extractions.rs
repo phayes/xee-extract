@@ -41,7 +41,7 @@ fn main() {
         </entry>
     "#;
 
-    let extractor = Extractor::new(); // or Extractor::default()
+    let extractor = Extractor::default();
     let entry: Entry = extractor.extract_from_str(atom_xml).unwrap();
 
     println!("Default Atom extraction:");

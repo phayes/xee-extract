@@ -44,7 +44,7 @@ let xml = r#"
     </entry>
 "#;
 
-let extractor = Extractor::new();
+let extractor = Extractor::default();
 let entry: SimpleEntry = extractor.extract_from_str(xml).unwrap();
 ```
 
@@ -193,7 +193,7 @@ struct TaggedEntry {
 
 
 let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
-let extractor = Extractor::new();
+let extractor = Extractor::default();
 let entry: TaggedEntry = extractor.extract_from_str(xml).unwrap();
 assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
 
@@ -276,12 +276,12 @@ let mut documents = xee_xpath::Documents::new();
 let doc_handle = documents.add_string_without_uri(xml).unwrap();
 
 // Extract laptop data
-let laptop_data: ProductData = Extractor::new()
+let laptop_data: ProductData = Extractor::default()
     .bind_value("product_id", "P001")
     .extract_from_docs(&mut documents, &doc_handle).unwrap();
 
 // Extract paperclip data
-let paperclip_data: ProductData = Extractor::new()
+let paperclip_data: ProductData = Extractor::default()
     .bind_value("product_id", "P002")
     .extract_from_docs(&mut documents, &doc_handle).unwrap();
 ```

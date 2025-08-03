@@ -152,7 +152,7 @@ fn test_namespace_only() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: NamespaceOnly = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -174,7 +174,7 @@ fn test_default_namespace_only() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: DefaultNamespaceOnly = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -195,7 +195,7 @@ fn test_namespace_and_context() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: NamespaceAndContext = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -217,7 +217,7 @@ fn test_default_namespace_and_context() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: DefaultNamespaceAndContext = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -238,7 +238,7 @@ fn test_default_and_prefixed_namespaces() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: DefaultAndPrefixedNamespaces = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -259,7 +259,7 @@ fn test_all_combined() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: AllCombined = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -283,7 +283,7 @@ fn test_nested_structs_with_different_namespaces() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ParentWithNamespaces = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -305,7 +305,7 @@ fn test_nested_structs_with_default_namespaces() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ParentWithDefaultNamespace = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -324,7 +324,7 @@ fn test_error_handling_missing_namespace() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result = extractor.extract_from_str::<DefaultNamespaceOnly>(xml);
 
     // This should fail because the XML doesn't have the default namespace

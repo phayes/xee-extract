@@ -167,7 +167,7 @@ fn main() {
         </product>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let product: Product = extractor.extract_from_str(product_xml).unwrap();
 
     println!("Product with custom ExtractValue types:");

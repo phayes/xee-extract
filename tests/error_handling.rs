@@ -57,7 +57,7 @@ fn test_missing_required_field_error() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -73,7 +73,7 @@ fn test_invalid_xml_error() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -88,7 +88,7 @@ fn test_missing_required_field_error_with_nested() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStructWithNested, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -104,7 +104,7 @@ fn test_missing_nested_struct_error() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStructWithNested, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -123,7 +123,7 @@ fn test_missing_required_field_in_nested_struct() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStructWithNested, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -138,7 +138,7 @@ fn test_invalid_xpath_expression() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     // This would fail if we had an invalid XPath expression
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
@@ -150,7 +150,7 @@ fn test_invalid_xpath_expression() {
 fn test_empty_xml_document() {
     let xml = "";
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -160,7 +160,7 @@ fn test_empty_xml_document() {
 fn test_xml_with_only_whitespace() {
     let xml = "   \n   \t   ";
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -176,7 +176,7 @@ fn test_xml_with_malformed_tags() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     assert!(result.is_err());
@@ -191,7 +191,7 @@ fn test_xml_with_invalid_characters() {
         </entry>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<SimpleStruct, ExtractError> = extractor.extract_from_str(xml);
 
     // This should fail due to invalid XML characters

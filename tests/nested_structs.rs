@@ -100,7 +100,7 @@ fn test_book_extraction() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
@@ -121,7 +121,7 @@ fn test_book_without_optional_fields() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B002");
@@ -148,7 +148,7 @@ fn test_person_extraction() {
         </person>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let person: Person = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(person.id, "P001");
@@ -170,7 +170,7 @@ fn test_person_without_optional_fields() {
         </person>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let person: Person = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(person.id, "P002");
@@ -212,7 +212,7 @@ fn test_complex_nested_extraction() {
         </company>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let company: Company = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(company.id, "C001");
@@ -235,7 +235,7 @@ fn test_standalone_book_extraction() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
@@ -265,7 +265,7 @@ fn test_child_book_in_library_context() {
         </library>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let library: Library = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(library.name, "My Library");
@@ -289,7 +289,7 @@ fn test_nested_extraction_with_new_attributes() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: SimpleStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -310,7 +310,7 @@ fn test_nested_extraction_with_missing_optional() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: SimpleStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
