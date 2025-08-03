@@ -119,7 +119,7 @@ fn test_complex_book_with_metadata() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(xml).unwrap();
+    let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
     assert_eq!(book.title, "The Rust Programming Language");
@@ -170,7 +170,7 @@ fn test_library_with_complex_books() {
     "#;
 
     let extractor = Extractor::new();
-    let library: LibraryWithComplexBooks = extractor.extract_one(xml).unwrap();
+    let library: LibraryWithComplexBooks = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(library.name, "Tech Library");
     assert_eq!(library.location, Some("San Francisco".to_string()));
@@ -226,7 +226,7 @@ fn test_company_with_departments() {
     "#;
 
     let extractor = Extractor::new();
-    let company: CompanyWithDepartments = extractor.extract_one(xml).unwrap();
+    let company: CompanyWithDepartments = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(company.id, "C001");
     assert_eq!(company.name, "Tech Corp");
@@ -263,7 +263,7 @@ fn test_complex_scenario_without_variables() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ConfigStruct = extractor.extract_one(xml).unwrap();
+    let result: ConfigStruct = extractor.extract_from_str(xml).unwrap();
     
     assert_eq!(result.base_url, "https://api.example.com");
     assert_eq!(result.version, "v1");

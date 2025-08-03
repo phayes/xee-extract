@@ -53,7 +53,7 @@ fn test_simple_extraction() {
     "#;
 
     let extractor = Extractor::new();
-    let result: SimpleStruct = extractor.extract_one(xml).unwrap();
+    let result: SimpleStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Sample Title");
@@ -77,7 +77,7 @@ fn test_complex_extraction_with_vectors() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ComplexStruct = extractor.extract_one(xml).unwrap();
+    let result: ComplexStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "456");
     assert_eq!(result.title, "Complex Title");
@@ -99,7 +99,7 @@ fn test_nested_extraction() {
     "#;
 
     let extractor = Extractor::new();
-    let result: NestedStruct = extractor.extract_one(xml).unwrap();
+    let result: NestedStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "789");
     assert_eq!(result.author_name, "John Doe");

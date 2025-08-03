@@ -51,7 +51,7 @@ fn test_context_only() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ContextOnly = extractor.extract_one(xml).unwrap();
+    let result: ContextOnly = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -74,7 +74,7 @@ fn test_book_with_context_conditional() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(xml).unwrap();
+    let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
     assert_eq!(book.title, "The Rust Programming Language");
@@ -95,7 +95,7 @@ fn test_book_without_optional_fields_in_context() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(xml).unwrap();
+    let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B002");
     assert_eq!(book.title, "Programming Rust");
@@ -116,7 +116,7 @@ fn test_error_handling_invalid_xpath() {
     "#;
 
     let extractor = Extractor::new();
-    let result = extractor.extract_one::<ContextOnly>(xml);
+    let result = extractor.extract_from_str::<ContextOnly>(xml);
     
     // This should fail because the XML doesn't have title and author elements
     assert!(result.is_err());

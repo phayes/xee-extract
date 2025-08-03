@@ -42,7 +42,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new(); // or Extractor::default()
-    let entry: Entry = extractor.extract_one(atom_xml).unwrap();
+    let entry: Entry = extractor.extract_from_str(atom_xml).unwrap();
 
     println!("Default Atom extraction:");
     println!("  ID: {}", entry.id);
@@ -64,7 +64,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::named("foo");
-    let entry: Entry = extractor.extract_one(nlm_xml).unwrap();
+    let entry: Entry = extractor.extract_from_str(nlm_xml).unwrap();
 
     println!("Named NLM extraction:");
     println!("  ID: {}", entry.id);
@@ -86,7 +86,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::named("bar");
-    let entry: Entry = extractor.extract_one(context_xml).unwrap();
+    let entry: Entry = extractor.extract_from_str(context_xml).unwrap();
 
     println!("Context-based extraction:");
     println!("  ID: {}", entry.id);
@@ -103,7 +103,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::named("foo");
-    let result = extractor.extract_one::<Entry>(wrong_xml);
+    let result = extractor.extract_from_str::<Entry>(wrong_xml);
     
     println!("Error handling for incompatible XML:");
     match result {
@@ -123,7 +123,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::default(); // explicitly use default
-    let entry: Entry = extractor.extract_one(atom_xml_2).unwrap();
+    let entry: Entry = extractor.extract_from_str(atom_xml_2).unwrap();
 
     println!("Default extraction (explicit):");
     println!("  ID: {}", entry.id);
@@ -141,7 +141,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::named("foo");
-    let entry: Entry = extractor.extract_one(nlm_xml_2).unwrap();
+    let entry: Entry = extractor.extract_from_str(nlm_xml_2).unwrap();
 
     println!("Named extraction with missing optional field:");
     println!("  ID: {}", entry.id);

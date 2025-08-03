@@ -60,7 +60,7 @@ fn test_xml_attribute_basic() {
     "#;
 
     let extractor = Extractor::new();
-    let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
+    let result: DocumentWithXml = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Document");
@@ -89,7 +89,7 @@ fn test_xml_attribute_with_vectors() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ComplexDocument = extractor.extract_one(xml).unwrap();
+    let result: ComplexDocument = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "456");
     assert_eq!(result.sections.len(), 2);
@@ -111,7 +111,7 @@ fn test_xml_attribute_with_optional() {
     "#;
 
     let extractor = Extractor::new();
-    let result: XmlWithAttributes = extractor.extract_one(xml).unwrap();
+    let result: XmlWithAttributes = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "789");
     assert!(result
@@ -130,7 +130,7 @@ fn test_xml_attribute_missing_optional() {
     "#;
 
     let extractor = Extractor::new();
-    let result: XmlWithAttributes = extractor.extract_one(xml).unwrap();
+    let result: XmlWithAttributes = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "789");
     assert_eq!(result.special_content, None);
@@ -146,7 +146,7 @@ fn test_xml_attribute_empty_vector() {
     "#;
 
     let extractor = Extractor::new();
-    let result: ComplexDocument = extractor.extract_one(xml).unwrap();
+    let result: ComplexDocument = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "999");
     assert_eq!(result.sections.len(), 0);
@@ -165,7 +165,7 @@ fn test_xml_attribute_simple() {
     "#;
 
     let extractor = Extractor::new();
-    let result: DocumentWithXml = extractor.extract_one(xml).unwrap();
+    let result: DocumentWithXml = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Document");
@@ -184,7 +184,7 @@ fn test_xml_attribute_simple_xpath() {
     "#;
 
     let extractor = Extractor::new();
-    let result: SimpleXmlTest = extractor.extract_one(xml).unwrap();
+    let result: SimpleXmlTest = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert!(result.content.contains("<p>This is some content</p>"));

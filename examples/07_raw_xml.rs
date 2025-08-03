@@ -93,7 +93,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let data: RawXMLData = extractor.extract_one(basic_xml).unwrap();
+    let data: RawXMLData = extractor.extract_from_str(basic_xml).unwrap();
 
     println!("Basic raw XML extraction:");
     println!("  Title: {}", data.title);
@@ -131,7 +131,7 @@ fn main() {
         </page>
     "#;
 
-    let html_data: HTMLContent = extractor.extract_one(html_xml).unwrap();
+    let html_data: HTMLContent = extractor.extract_from_str(html_xml).unwrap();
 
     println!("HTML content extraction:");
     println!("  Title: {}", html_data.title);
@@ -172,7 +172,7 @@ fn main() {
         </config>
     "#;
 
-    let config: ConfigWithXML = extractor.extract_one(config_xml).unwrap();
+    let config: ConfigWithXML = extractor.extract_from_str(config_xml).unwrap();
 
     println!("Configuration with raw XML:");
     println!("  Name: {}", config.name);
@@ -222,7 +222,7 @@ fn main() {
         </document>
     "#;
 
-    let document: DocumentWithMixedContent = extractor.extract_one(document_xml).unwrap();
+    let document: DocumentWithMixedContent = extractor.extract_from_str(document_xml).unwrap();
 
     println!("Document with mixed content:");
     println!("  ID: {}", document.id);
@@ -243,7 +243,7 @@ fn main() {
         </article>
     "#;
 
-    let result = extractor.extract_one::<RawXMLData>(incomplete_xml);
+    let result = extractor.extract_from_str::<RawXMLData>(incomplete_xml);
     
     println!("Error handling for missing XML elements:");
     match result {

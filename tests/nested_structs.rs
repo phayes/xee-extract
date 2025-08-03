@@ -101,7 +101,7 @@ fn test_book_extraction() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(xml).unwrap();
+    let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
     assert_eq!(book.title, "The Rust Programming Language");
@@ -122,7 +122,7 @@ fn test_book_without_optional_fields() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(xml).unwrap();
+    let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B002");
     assert_eq!(book.title, "Programming Rust");
@@ -149,7 +149,7 @@ fn test_person_extraction() {
     "#;
 
     let extractor = Extractor::new();
-    let person: Person = extractor.extract_one(xml).unwrap();
+    let person: Person = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(person.id, "P001");
     assert_eq!(person.first_name, "John");
@@ -171,7 +171,7 @@ fn test_person_without_optional_fields() {
     "#;
 
     let extractor = Extractor::new();
-    let person: Person = extractor.extract_one(xml).unwrap();
+    let person: Person = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(person.id, "P002");
     assert_eq!(person.first_name, "Jane");
@@ -213,7 +213,7 @@ fn test_complex_nested_extraction() {
     "#;
 
     let extractor = Extractor::new();
-    let company: Company = extractor.extract_one(xml).unwrap();
+    let company: Company = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(company.id, "C001");
     assert_eq!(company.name, "Tech Corp");
@@ -236,7 +236,7 @@ fn test_standalone_book_extraction() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(xml).unwrap();
+    let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
     assert_eq!(book.title, "The Rust Programming Language");
@@ -266,7 +266,7 @@ fn test_child_book_in_library_context() {
     "#;
 
     let extractor = Extractor::new();
-    let library: Library = extractor.extract_one(xml).unwrap();
+    let library: Library = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(library.name, "My Library");
     assert_eq!(library.books.len(), 2);
@@ -290,7 +290,7 @@ fn test_nested_extraction_with_new_attributes() {
     "#;
 
     let extractor = Extractor::new();
-    let result: SimpleStruct = extractor.extract_one(xml).unwrap();
+    let result: SimpleStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");
@@ -311,7 +311,7 @@ fn test_nested_extraction_with_missing_optional() {
     "#;
 
     let extractor = Extractor::new();
-    let result: SimpleStruct = extractor.extract_one(xml).unwrap();
+    let result: SimpleStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
     assert_eq!(result.title, "Test Title");

@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
 
     let extractor = Extractor::new();
-    let entry: SimpleEntry = extractor.extract_one(xml)?;
+    let entry: SimpleEntry = extractor.extract_from_str(xml)?;
 
     println!("ID: {}", entry.id);
     println!("Title: {}", entry.title);
@@ -177,7 +177,7 @@ struct TaggedEntry {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
     let extractor = Extractor::new();
-    let entry: TaggedEntry = extractor.extract_one(xml)?;
+    let entry: TaggedEntry = extractor.extract_from_str(xml)?;
     assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
     Ok(())
 }
@@ -211,9 +211,9 @@ struct Entry {
 }
 
 // Parse Atom
-let atom: Entry = Extractor::default().extract_one(atom_xml)?;
+let atom: Entry = Extractor::default().extract_from_str(atom_xml)?;
 // Parse NLM using the named extraction
-let nlm: Entry = Extractor::named("nlm").extract_one(nlm_xml)?;
+let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml)?;
 ```
 
 This mechanism works for other struct-level attributes like `context` and

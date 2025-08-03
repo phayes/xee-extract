@@ -108,7 +108,7 @@ fn main() {
     "#;
 
     let extractor = Extractor::new();
-    let book: Book = extractor.extract_one(book_xml).unwrap();
+    let book: Book = extractor.extract_from_str(book_xml).unwrap();
 
     println!("Book with simple context:");
     println!("  ID: {}", book.id);
@@ -127,7 +127,7 @@ fn main() {
         </book>
     "#;
 
-    let book: FlexibleBook = extractor.extract_one(direct_book_xml).unwrap();
+    let book: FlexibleBook = extractor.extract_from_str(direct_book_xml).unwrap();
 
     println!("Flexible book (direct structure):");
     println!("  ID: {}", book.id);
@@ -146,7 +146,7 @@ fn main() {
         </library>
     "#;
 
-    let book: FlexibleBook = extractor.extract_one(library_book_xml).unwrap();
+    let book: FlexibleBook = extractor.extract_from_str(library_book_xml).unwrap();
 
     println!("Flexible book (library structure):");
     println!("  ID: {}", book.id);
@@ -173,7 +173,7 @@ fn main() {
         </feed>
     "#;
 
-    let entry: FirstEntry = extractor.extract_one(entries_xml).unwrap();
+    let entry: FirstEntry = extractor.extract_from_str(entries_xml).unwrap();
 
     println!("First entry with context:");
     println!("  ID: {}", entry.id);
@@ -199,7 +199,7 @@ fn main() {
         </catalog>
     "#;
 
-    let product: FirstProduct = extractor.extract_one(products_xml).unwrap();
+    let product: FirstProduct = extractor.extract_from_str(products_xml).unwrap();
 
     println!("First product with position context:");
     println!("  SKU: {}", product.sku);
@@ -230,7 +230,7 @@ fn main() {
         </users>
     "#;
 
-    let admin: AdminUser = extractor.extract_one(users_xml).unwrap();
+    let admin: AdminUser = extractor.extract_from_str(users_xml).unwrap();
 
     println!("Admin user with conditional context:");
     println!("  ID: {}", admin.id);

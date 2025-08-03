@@ -35,7 +35,7 @@ fn test_default_atom_extraction() {
         "#;
 
     let extractor = Extractor::default();
-    let entry: Entry = extractor.extract_one(xml).unwrap();
+    let entry: Entry = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(entry.id, "urn:uuid:12345678-1234-1234-1234-123456789abc");
     assert_eq!(entry.title, "Atom Title");
@@ -57,7 +57,7 @@ fn test_named_extraction_nlm() {
         "#;
 
     let extractor = Extractor::named("extract1");
-    let entry: Entry = extractor.extract_one(xml).unwrap();
+    let entry: Entry = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(entry.id, "abc123");
     assert_eq!(entry.title, "NLM Title");
@@ -79,7 +79,7 @@ fn test_context_extraction() {
         "#;
 
     let extractor = Extractor::named("extract2");
-    let entry: Entry = extractor.extract_one(xml).unwrap();
+    let entry: Entry = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(entry.id, "c456");
     assert_eq!(entry.title, "Context Title");
