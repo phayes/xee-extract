@@ -102,6 +102,17 @@ pub struct ExtractError {
 }
 
 impl ExtractError {
+
+    /// Create a new ExtractorError from a core Error without span information
+    pub fn no_span(error: Error) -> Self {
+        Self {
+            error,
+            span: None,
+            lines: None,
+            context: None,
+        }
+    }
+
     /// Create a new ExtractorError from a core Error
     pub fn new(error: Error, xml: &str) -> Self {
 

@@ -87,8 +87,8 @@ impl Extractor {
         self
     }
 
-    /// Extract a single struct from an XML document
-    pub fn extract_one<T>(&self, xml: &str) -> Result<T, ExtractError>
+    /// Extract a single struct from an XML string
+    pub fn extract_from_str<T>(&self, xml: &str) -> Result<T, ExtractError>
     where
         T: Extract,
     {
@@ -103,7 +103,24 @@ impl Extractor {
 
         match res {
             Ok(value) => Ok(value),
-            Err(error) => Err(ExtractError::new(error, &xml)),
+            Err(error) => Err(ExtractError::new(error, &xml))?,
+        }
+    }
+
+    /// Extract a single struct from an XML string
+    pub fn extract_from_docs<T>(&self, documents: &mut xee_xpath::Documents, root_doc: &xee_xpath::DocumentHandle) -> Result<T, ExtractError>
+    where
+        T: Extract,
+    {
+        use xee_xpath::Itemable;
+        let item = root_doc.to_item(documents).map_err(|e| ExtractError::no_span(Error::SpannedError(e)))?;
+
+        // Use the trait's deserialize method
+        let res = T::extract(documents, &item, self.extract_name.as_deref());
+
+        match res {
+            Ok(value) => Ok(value),
+            Err(error) => Err(ExtractError::no_span(error))?,
         }
     }
 }
