@@ -1,9 +1,9 @@
 //! Example 9: Multi-Document Extraction
-//! 
+//!
 //! This example demonstrates how to extract data that spans multiple XML documents
 //! using the doc() function to cross-reference information between documents.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 use xee_xpath::Documents;
 
 /// A struct that combines user profile data with permissions from a separate document
@@ -63,7 +63,7 @@ struct SimpleCrossDocument {
 fn main() {
     // Create a documents collection to hold multiple XML documents
     let mut documents = Documents::new();
-    
+
     // Add user profile document
     let user_doc = documents
         .add_string(
@@ -96,7 +96,9 @@ fn main() {
 
     // Extract user data with cross-document permissions
     let extractor = Extractor::new();
-    let user: UserWithPermissions = extractor.extract_from_docs(&mut documents, &user_doc).unwrap();
+    let user: UserWithPermissions = extractor
+        .extract_from_docs(&mut documents, &user_doc)
+        .unwrap();
 
     println!("User with permissions:");
     println!("  ID: {}", user.user_id);
@@ -133,7 +135,9 @@ fn main() {
         .unwrap();
 
     // Extract product with inventory data
-    let product: ProductWithInventory = extractor.extract_from_docs(&mut documents, &catalog_doc).unwrap();
+    let product: ProductWithInventory = extractor
+        .extract_from_docs(&mut documents, &catalog_doc)
+        .unwrap();
 
     println!("Product with inventory:");
     println!("  ID: {}", product.product_id);
@@ -166,10 +170,12 @@ fn main() {
         .unwrap();
 
     // Extract simple cross-document data
-    let simple: SimpleCrossDocument = extractor.extract_from_docs(&mut documents, &simple_doc).unwrap();
+    let simple: SimpleCrossDocument = extractor
+        .extract_from_docs(&mut documents, &simple_doc)
+        .unwrap();
 
     println!("Simple cross-document extraction:");
     println!("  User ID: {}", simple.user_id);
     println!("  Name: {}", simple.name);
     println!("  Extra Value: {}", simple.extra_value);
-} 
+}

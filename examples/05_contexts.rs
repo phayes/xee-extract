@@ -1,9 +1,9 @@
 //! Example 5: Contexts
-//! 
+//!
 //! This example demonstrates how to use context in xee-extract to set the
 //! starting point for XPath expressions and handle conditional logic.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// Struct with simple context - extracts from a specific element
 #[derive(Extract)]
@@ -238,4 +238,4 @@ fn main() {
     println!("  Email: {}", admin.email);
     println!("  Permissions: {:?}", admin.permissions);
     println!();
-} 
+}

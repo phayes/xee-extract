@@ -1,9 +1,9 @@
 //! Example 4: Namespaces
-//! 
+//!
 //! This example demonstrates how to handle XML namespaces in xee-extract,
 //! including default namespaces and prefixed namespaces.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// Struct for extracting Atom feed data with namespaces
 #[derive(Extract)]
@@ -160,4 +160,4 @@ fn main() {
     println!("  Title: {}", data.title);
     println!("  Items: {:?}", data.items);
     println!();
-} 
+}

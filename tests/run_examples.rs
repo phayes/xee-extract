@@ -1,12 +1,12 @@
-use std::process::Command;
 use std::path::Path;
+use std::process::Command;
 
 /// Test that runs all examples and verifies they execute successfully
 #[test]
 fn test_run_all_examples() {
     let examples = vec![
         "01_basic_extraction",
-        "02_named_extractions", 
+        "02_named_extractions",
         "03_custom_extract_value",
         "04_namespaces",
         "05_contexts",
@@ -17,7 +17,7 @@ fn test_run_all_examples() {
 
     for example in examples {
         println!("Running example: {}", example);
-        
+
         let output = Command::new("cargo")
             .args(&["run", "--example", example])
             .current_dir(Path::new("."))
@@ -27,11 +27,11 @@ fn test_run_all_examples() {
             Ok(output) => {
                 if output.status.success() {
                     println!("✅ Example {} ran successfully", example);
-                    
+
                     // Print the output for debugging
                     let stdout = String::from_utf8_lossy(&output.stdout);
                     let stderr = String::from_utf8_lossy(&output.stderr);
-                    
+
                     if !stdout.is_empty() {
                         println!("  stdout: {}", stdout);
                     }
@@ -41,7 +41,7 @@ fn test_run_all_examples() {
                 } else {
                     let stdout = String::from_utf8_lossy(&output.stdout);
                     let stderr = String::from_utf8_lossy(&output.stderr);
-                    
+
                     panic!(
                         "❌ Example {} failed with status {}\nstdout: {}\nstderr: {}",
                         example, output.status, stdout, stderr
@@ -61,7 +61,7 @@ fn test_all_example_files_exist() {
     let examples = vec![
         "examples/01_basic_extraction.rs",
         "examples/02_named_extractions.rs",
-        "examples/03_custom_extract_value.rs", 
+        "examples/03_custom_extract_value.rs",
         "examples/04_namespaces.rs",
         "examples/05_contexts.rs",
         "examples/06_nested_structs.rs",
@@ -87,7 +87,7 @@ fn test_compile_all_examples() {
         "01_basic_extraction",
         "02_named_extractions",
         "03_custom_extract_value",
-        "04_namespaces", 
+        "04_namespaces",
         "05_contexts",
         "06_nested_structs",
         "07_raw_xml",
@@ -96,7 +96,7 @@ fn test_compile_all_examples() {
 
     for example in examples {
         println!("Compiling example: {}", example);
-        
+
         let output = Command::new("cargo")
             .args(&["check", "--example", example])
             .current_dir(Path::new("."))
@@ -109,7 +109,7 @@ fn test_compile_all_examples() {
                 } else {
                     let stdout = String::from_utf8_lossy(&output.stdout);
                     let stderr = String::from_utf8_lossy(&output.stderr);
-                    
+
                     panic!(
                         "❌ Example {} failed to compile\nstdout: {}\nstderr: {}",
                         example, stdout, stderr
@@ -121,4 +121,4 @@ fn test_compile_all_examples() {
             }
         }
     }
-} 
+}

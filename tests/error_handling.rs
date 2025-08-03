@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract, ExtractError};
+use xee_extract::{Extract, ExtractError, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
@@ -196,4 +196,4 @@ fn test_xml_with_invalid_characters() {
 
     // This should fail due to invalid XML characters
     assert!(result.is_err());
-} 
+}

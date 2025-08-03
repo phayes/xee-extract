@@ -1,9 +1,9 @@
 //! Example 1: Basic Extraction
-//! 
+//!
 //! This example demonstrates the fundamental usage of xee-extract for extracting
 //! data from XML using XPath expressions.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// A simple struct demonstrating basic field extraction
 #[derive(Extract)]
@@ -110,4 +110,4 @@ fn main() {
     println!("  Age: {}", person2.age);
     println!("  Email: {:?}", person2.email);
     println!("  Hobbies: {:?}", person2.hobbies);
-} 
+}

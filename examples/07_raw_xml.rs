@@ -1,9 +1,9 @@
 //! Example 7: Raw XML Extraction
-//! 
+//!
 //! This example demonstrates how to extract raw XML content using the xml attribute,
 //! which allows you to capture the complete XML structure of elements.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// Struct for extracting raw XML content
 #[derive(Extract)]
@@ -234,4 +234,4 @@ fn main() {
         println!("    Footnote {}: {}", i + 1, footnote);
     }
     println!();
-} 
+}

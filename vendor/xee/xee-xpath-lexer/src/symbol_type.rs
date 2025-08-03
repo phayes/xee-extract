@@ -1,4 +1,3 @@
-
 use crate::lexer::Token;
 
 pub(crate) enum SymbolType {

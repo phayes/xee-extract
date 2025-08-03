@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 use xee_xpath::Documents;
 
 #[derive(Extract, Debug, PartialEq)]
@@ -109,8 +109,6 @@ struct ProductWithInventory {
     price: f64,
 }
 
-
-
 #[derive(Extract, Debug, PartialEq)]
 struct OrderWithCustomer {
     #[xee(xpath("//order/@id"))]
@@ -152,12 +150,10 @@ struct LibraryBook {
     location: String,
 }
 
-
-
 #[test]
 fn test_simple_cross_document_extraction() {
     let mut documents = Documents::new();
-    
+
     // Add user profile document
     let user_doc = documents
         .add_string(
@@ -190,20 +186,25 @@ fn test_simple_cross_document_extraction() {
         .unwrap();
 
     let extractor = Extractor::new();
-    let result: CrossDocumentUser = extractor.extract_from_docs(&mut documents, &user_doc).unwrap();
+    let result: CrossDocumentUser = extractor
+        .extract_from_docs(&mut documents, &user_doc)
+        .unwrap();
 
     assert_eq!(result.user_id, "user123");
     assert_eq!(result.name, "John Doe");
     assert_eq!(result.email, "john@example.com");
     assert_eq!(result.role, "developer");
     assert_eq!(result.access_level, "admin");
-    assert_eq!(result.permissions_roles, vec!["developer", "admin", "reviewer"]);
+    assert_eq!(
+        result.permissions_roles,
+        vec!["developer", "admin", "reviewer"]
+    );
 }
 
 #[test]
 fn test_simple_direct_cross_document_extraction() {
     let mut documents = Documents::new();
-    
+
     // Add user document
     let user_doc = documents
         .add_string(
@@ -227,7 +228,9 @@ fn test_simple_direct_cross_document_extraction() {
         .unwrap();
 
     let extractor = Extractor::new();
-    let result: SimpleCrossDocument = extractor.extract_from_docs(&mut documents, &user_doc).unwrap();
+    let result: SimpleCrossDocument = extractor
+        .extract_from_docs(&mut documents, &user_doc)
+        .unwrap();
 
     assert_eq!(result.user_id, "user123");
     assert_eq!(result.name, "John Doe");
@@ -237,7 +240,7 @@ fn test_simple_direct_cross_document_extraction() {
 #[test]
 fn test_product_catalog_with_inventory() {
     let mut documents = Documents::new();
-    
+
     // Add product catalog document
     let catalog_doc = documents
         .add_string(
@@ -275,7 +278,9 @@ fn test_product_catalog_with_inventory() {
         .unwrap();
 
     let extractor = Extractor::new();
-    let result: ProductWithInventory = extractor.extract_from_docs(&mut documents, &catalog_doc).unwrap();
+    let result: ProductWithInventory = extractor
+        .extract_from_docs(&mut documents, &catalog_doc)
+        .unwrap();
 
     assert_eq!(result.product_id, "prod001");
     assert_eq!(result.name, "Laptop Computer");
@@ -288,7 +293,7 @@ fn test_product_catalog_with_inventory() {
 #[test]
 fn test_order_with_customer_info() {
     let mut documents = Documents::new();
-    
+
     // Add order document
     let order_doc = documents
         .add_string(
@@ -318,7 +323,9 @@ fn test_order_with_customer_info() {
         .unwrap();
 
     let extractor = Extractor::new();
-    let result: OrderWithCustomer = extractor.extract_from_docs(&mut documents, &order_doc).unwrap();
+    let result: OrderWithCustomer = extractor
+        .extract_from_docs(&mut documents, &order_doc)
+        .unwrap();
 
     assert_eq!(result.order_id, "order456");
     assert_eq!(result.total, 149.99);
@@ -330,7 +337,7 @@ fn test_order_with_customer_info() {
 #[test]
 fn test_library_book_with_availability() {
     let mut documents = Documents::new();
-    
+
     // Add books document
     let books_doc = documents
         .add_string(
@@ -368,7 +375,9 @@ fn test_library_book_with_availability() {
         .unwrap();
 
     let extractor = Extractor::new();
-    let result: LibraryBook = extractor.extract_from_docs(&mut documents, &books_doc).unwrap();
+    let result: LibraryBook = extractor
+        .extract_from_docs(&mut documents, &books_doc)
+        .unwrap();
 
     assert_eq!(result.book_id, "book001");
     assert_eq!(result.title, "The Rust Programming Language");
@@ -381,7 +390,7 @@ fn test_library_book_with_availability() {
 #[test]
 fn test_multiple_documents_with_complex_relationships() {
     let mut documents = Documents::new();
-    
+
     // Add departments document
     let dept_doc = documents
         .add_string(
@@ -464,7 +473,9 @@ fn test_multiple_documents_with_complex_relationships() {
     }
 
     let extractor = Extractor::new();
-    let result: DepartmentWithDetails = extractor.extract_from_docs(&mut documents, &dept_doc).unwrap();
+    let result: DepartmentWithDetails = extractor
+        .extract_from_docs(&mut documents, &dept_doc)
+        .unwrap();
 
     assert_eq!(result.dept_id, "dept001");
     assert_eq!(result.name, "Engineering");
@@ -477,7 +488,7 @@ fn test_multiple_documents_with_complex_relationships() {
 #[test]
 fn test_error_handling_for_missing_document() {
     let mut documents = Documents::new();
-    
+
     // Add only the user document, but try to reference a non-existent permissions document
     let user_doc = documents
         .add_string(
@@ -493,7 +504,8 @@ fn test_error_handling_for_missing_document() {
         .unwrap();
 
     let extractor = Extractor::new();
-    let result: Result<CrossDocumentUser, _> = extractor.extract_from_docs(&mut documents, &user_doc);
+    let result: Result<CrossDocumentUser, _> =
+        extractor.extract_from_docs(&mut documents, &user_doc);
 
     // Should fail because the permissions document doesn't exist
     assert!(result.is_err());
@@ -502,7 +514,7 @@ fn test_error_handling_for_missing_document() {
 #[test]
 fn test_document_without_uri_cannot_be_accessed_via_doc() {
     let mut documents = Documents::new();
-    
+
     // Add a document without URI
     let user_doc = documents
         .add_string_without_uri(
@@ -543,8 +555,9 @@ fn test_document_without_uri_cannot_be_accessed_via_doc() {
     }
 
     let extractor = Extractor::new();
-    let result: Result<UserWithPermissions, _> = extractor.extract_from_docs(&mut documents, &user_doc);
+    let result: Result<UserWithPermissions, _> =
+        extractor.extract_from_docs(&mut documents, &user_doc);
 
     // Should fail because the user document has no URI and can't be accessed via doc()
     assert!(result.is_err());
-} 
+}

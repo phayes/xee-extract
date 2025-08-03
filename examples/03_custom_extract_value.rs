@@ -1,9 +1,9 @@
 //! Example 3: Custom ExtractValue
-//! 
+//!
 //! This example demonstrates how to implement custom ExtractValue for custom types
 //! that don't implement FromStr or need custom parsing logic.
 
-use xee_extract::{Extractor, Extract, ExtractValue, Error};
+use xee_extract::{Error, Extract, ExtractValue, Extractor};
 use xee_xpath::{Documents, Item};
 
 /// Custom struct for CSV data that implements ExtractValue
@@ -24,19 +24,19 @@ impl ExtractValue for CSV {
             Ok(s) => s,
             Err(_) => return Ok(CSV::new(Vec::new())), // Return empty CSV for any string value error
         };
-        
+
         // Handle empty string case
         if s.trim().is_empty() {
             return Ok(CSV::new(Vec::new()));
         }
-        
+
         // Parse comma-separated values, trimming whitespace
         let values: Vec<String> = s
             .split(',')
             .map(|s| s.trim().to_string())
             .filter(|s| !s.is_empty()) // Filter out empty strings
             .collect();
-        
+
         Ok(CSV::new(values))
     }
 }
@@ -49,7 +49,10 @@ struct Coordinates {
 
 impl Coordinates {
     fn new(latitude: f64, longitude: f64) -> Self {
-        Self { latitude, longitude }
+        Self {
+            latitude,
+            longitude,
+        }
     }
 }
 
@@ -57,25 +60,26 @@ impl Coordinates {
 impl ExtractValue for Coordinates {
     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
         let s = item.string_value(documents.xot())?;
-        
+
         // Parse "lat,lon" format
         let parts: Vec<&str> = s.split(',').collect();
         if parts.len() != 2 {
-            return Err(Error::DeserializationError(
-                format!("Invalid coordinates format: {}", s)
-            ));
+            return Err(Error::DeserializationError(format!(
+                "Invalid coordinates format: {}",
+                s
+            )));
         }
-        
-        let lat = parts[0].trim().parse::<f64>()
-            .map_err(|_| Error::DeserializationError(
-                format!("Invalid latitude: {}", parts[0])
-            ))?;
-        
-        let lon = parts[1].trim().parse::<f64>()
-            .map_err(|_| Error::DeserializationError(
-                format!("Invalid longitude: {}", parts[1])
-            ))?;
-        
+
+        let lat = parts[0]
+            .trim()
+            .parse::<f64>()
+            .map_err(|_| Error::DeserializationError(format!("Invalid latitude: {}", parts[0])))?;
+
+        let lon = parts[1]
+            .trim()
+            .parse::<f64>()
+            .map_err(|_| Error::DeserializationError(format!("Invalid longitude: {}", parts[1])))?;
+
         Ok(Coordinates::new(lat, lon))
     }
 }
@@ -88,7 +92,10 @@ struct DateRange {
 
 impl DateRange {
     fn new(start_date: String, end_date: String) -> Self {
-        Self { start_date, end_date }
+        Self {
+            start_date,
+            end_date,
+        }
     }
 }
 
@@ -96,18 +103,19 @@ impl DateRange {
 impl ExtractValue for DateRange {
     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
         let s = item.string_value(documents.xot())?;
-        
+
         // Parse "start to end" format
         let parts: Vec<&str> = s.split(" to ").collect();
         if parts.len() != 2 {
-            return Err(Error::DeserializationError(
-                format!("Invalid date range format: {}", s)
-            ));
+            return Err(Error::DeserializationError(format!(
+                "Invalid date range format: {}",
+                s
+            )));
         }
-        
+
         Ok(DateRange::new(
             parts[0].trim().to_string(),
-            parts[1].trim().to_string()
+            parts[1].trim().to_string(),
         ))
     }
 }
@@ -165,9 +173,24 @@ fn main() {
     println!("Product with custom ExtractValue types:");
     println!("  Name: {}", product.name);
     println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
-    println!("  Location: {:?}", product.location.as_ref().map(|c| format!("({}, {})", c.latitude, c.longitude)));
-    println!("  Availability: {:?}", product.availability.as_ref().map(|d| format!("{} to {}", d.start_date, d.end_date)));
-    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
+    println!(
+        "  Location: {:?}",
+        product
+            .location
+            .as_ref()
+            .map(|c| format!("({}, {})", c.latitude, c.longitude))
+    );
+    println!(
+        "  Availability: {:?}",
+        product
+            .availability
+            .as_ref()
+            .map(|d| format!("{} to {}", d.start_date, d.end_date))
+    );
+    println!(
+        "  Categories: {:?}",
+        product.categories.as_ref().map(|csv| &csv.values)
+    );
     println!();
 
     // Example 2: Store with coordinates and hours
@@ -184,8 +207,14 @@ fn main() {
     println!("Store with custom ExtractValue types:");
     println!("  ID: {}", store.id);
     println!("  Name: {}", store.name);
-    println!("  Coordinates: ({}, {})", store.coordinates.latitude, store.coordinates.longitude);
-    println!("  Hours: {} to {}", store.hours.start_date, store.hours.end_date);
+    println!(
+        "  Coordinates: ({}, {})",
+        store.coordinates.latitude, store.coordinates.longitude
+    );
+    println!(
+        "  Hours: {} to {}",
+        store.hours.start_date, store.hours.end_date
+    );
     println!();
 
     // Example 3: Product with missing optional fields
@@ -202,9 +231,24 @@ fn main() {
     println!("Product with missing optional fields:");
     println!("  Name: {}", product.name);
     println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
-    println!("  Location: {:?}", product.location.as_ref().map(|c| format!("({}, {})", c.latitude, c.longitude)));
-    println!("  Availability: {:?}", product.availability.as_ref().map(|d| format!("{} to {}", d.start_date, d.end_date)));
-    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
+    println!(
+        "  Location: {:?}",
+        product
+            .location
+            .as_ref()
+            .map(|c| format!("({}, {})", c.latitude, c.longitude))
+    );
+    println!(
+        "  Availability: {:?}",
+        product
+            .availability
+            .as_ref()
+            .map(|d| format!("{} to {}", d.start_date, d.end_date))
+    );
+    println!(
+        "  Categories: {:?}",
+        product.categories.as_ref().map(|csv| &csv.values)
+    );
     println!();
 
     // Example 4: Error handling for invalid CSV data
@@ -221,7 +265,10 @@ fn main() {
     println!("Product with empty CSV (filtered out):");
     println!("  Name: {}", product.name);
     println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
-    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
+    println!(
+        "  Categories: {:?}",
+        product.categories.as_ref().map(|csv| &csv.values)
+    );
     println!();
 
     // Example 5: Error handling for invalid coordinates
@@ -235,7 +282,7 @@ fn main() {
     "#;
 
     let result = extractor.extract_from_str::<Product>(invalid_coords_xml);
-    
+
     println!("Error handling for invalid coordinates:");
     match result {
         Ok(_product) => println!("  Unexpected success: Product extracted"),
@@ -253,7 +300,7 @@ fn main() {
     "#;
 
     let result = extractor.extract_from_str::<Product>(invalid_date_xml);
-    
+
     println!("Error handling for invalid date range:");
     match result {
         Ok(_product) => println!("  Unexpected success: Product extracted"),
@@ -274,5 +321,8 @@ fn main() {
     println!("Complex CSV with various whitespace:");
     println!("  Name: {}", product.name);
     println!("  Tags: {:?}", product.tags.as_ref().map(|csv| &csv.values));
-    println!("  Categories: {:?}", product.categories.as_ref().map(|csv| &csv.values));
-} 
+    println!(
+        "  Categories: {:?}",
+        product.categories.as_ref().map(|csv| &csv.values)
+    );
+}

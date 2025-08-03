@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 #[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
@@ -121,4 +121,4 @@ fn test_binary_extraction_empty_data() {
     // Empty data should result in empty Vec<u8>
     assert_eq!(result.base64_data, Vec::<u8>::new());
     assert_eq!(result.hex_data, Vec::<u8>::new());
-} 
+}

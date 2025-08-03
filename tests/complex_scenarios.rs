@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 #[xee(context("if (self::book) then . else /book"))]
@@ -130,8 +130,14 @@ fn test_complex_book_with_metadata() {
 
     assert_eq!(book.metadata.isbn, "978-1492052590");
     assert_eq!(book.metadata.publisher, Some("No Starch Press".to_string()));
-    assert_eq!(book.metadata.publication_date, Some("2018-08-01".to_string()));
-    assert_eq!(book.metadata.reviews, Some("Excellent book for learning Rust".to_string()));
+    assert_eq!(
+        book.metadata.publication_date,
+        Some("2018-08-01".to_string())
+    );
+    assert_eq!(
+        book.metadata.reviews,
+        Some("Excellent book for learning Rust".to_string())
+    );
 }
 
 #[test]
@@ -180,7 +186,10 @@ fn test_library_with_complex_books() {
     assert_eq!(first_book.id, "B001");
     assert_eq!(first_book.title, "The Rust Programming Language");
     assert_eq!(first_book.metadata.isbn, "978-1492052590");
-    assert_eq!(first_book.metadata.publisher, Some("No Starch Press".to_string()));
+    assert_eq!(
+        first_book.metadata.publisher,
+        Some("No Starch Press".to_string())
+    );
 
     let second_book = &library.books[1];
     assert_eq!(second_book.id, "B002");
@@ -236,8 +245,14 @@ fn test_company_with_departments() {
     assert_eq!(engineering.id, "D001");
     assert_eq!(engineering.name, "Engineering");
     assert_eq!(engineering.manager_name, "Alice Johnson");
-    assert_eq!(engineering.manager_email, Some("alice@techcorp.com".to_string()));
-    assert_eq!(engineering.employee_names, vec!["Bob Wilson", "Carol Davis"]);
+    assert_eq!(
+        engineering.manager_email,
+        Some("alice@techcorp.com".to_string())
+    );
+    assert_eq!(
+        engineering.employee_names,
+        vec!["Bob Wilson", "Carol Davis"]
+    );
 
     let marketing = &company.departments[1];
     assert_eq!(marketing.id, "D002");
@@ -264,9 +279,9 @@ fn test_complex_scenario_without_variables() {
 
     let extractor = Extractor::new();
     let result: ConfigStruct = extractor.extract_from_str(xml).unwrap();
-    
+
     assert_eq!(result.base_url, "https://api.example.com");
     assert_eq!(result.version, "v1");
     assert_eq!(result.user_id, "U123");
     assert_eq!(result.user_name, "Test User");
-} 
+}

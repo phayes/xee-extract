@@ -1,10 +1,10 @@
 use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug)]
-#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                   // for default
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))] // for default
 #[xee(default_ns("http://www.w3.org/2005/Atom"))]
-#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "extract1"))]     // for extract1
-#[xee(ns(atom = "http://www.w3.org/2005/Atom", "extract2"))]      // required for context in extract2
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "extract1"))] // for extract1
+#[xee(ns(atom = "http://www.w3.org/2005/Atom", "extract2"))] // required for context in extract2
 #[xee(context("//atom:entry", "extract2"))]
 struct Entry {
     #[xee(xpath("//atom:id/text()"))]
@@ -16,7 +16,7 @@ struct Entry {
     #[xee(xpath("//nlm:title/text()", "extract1"))]
     #[xee(xpath("atom:title/text()", "extract2"))]
     title: String,
-    
+
     #[xee(xpath("//atom:author/atom:name/text()"))]
     #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name/text()", "extract1"))]
     #[xee(xpath("atom:author/atom:name/text()", "extract2"))]

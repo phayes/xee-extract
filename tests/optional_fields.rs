@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
@@ -180,4 +180,4 @@ fn test_person_with_optional_fields() {
     assert_eq!(person.email, Some("john.doe@example.com".to_string()));
     assert_eq!(person.street, Some("123 Main St".to_string()));
     assert_eq!(person.city, Some("Anytown".to_string()));
-} 
+}

@@ -1,9 +1,9 @@
 //! Example 8: Binary Handling
-//! 
+//!
 //! This example demonstrates how to handle binary data in xee-extract,
 //! including hex and base64 encoded binary data.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// Struct for handling base64 encoded binary data
 #[derive(Extract)]
@@ -84,10 +84,16 @@ fn main() {
     println!("  Data as string: {}", String::from_utf8_lossy(&data.data));
     println!("  Optional data: {:?}", data.optional_data);
     if let Some(ref opt_data) = data.optional_data {
-        println!("  Optional data as string: {}", String::from_utf8_lossy(opt_data));
+        println!(
+            "  Optional data as string: {}",
+            String::from_utf8_lossy(opt_data)
+        );
     }
     println!("  Attribute data: {:?}", data.attr_data);
-    println!("  Attribute as string: {}", String::from_utf8_lossy(&data.attr_data));
+    println!(
+        "  Attribute as string: {}",
+        String::from_utf8_lossy(&data.attr_data)
+    );
     println!();
 
     // Example 2: Hex encoded binary data
@@ -106,10 +112,16 @@ fn main() {
     println!("  Data as string: {}", String::from_utf8_lossy(&data.data));
     println!("  Optional data: {:?}", data.optional_data);
     if let Some(ref opt_data) = data.optional_data {
-        println!("  Optional data as string: {}", String::from_utf8_lossy(opt_data));
+        println!(
+            "  Optional data as string: {}",
+            String::from_utf8_lossy(opt_data)
+        );
     }
     println!("  Node data: {:?}", data.node_data);
-    println!("  Node data as string: {}", String::from_utf8_lossy(&data.node_data));
+    println!(
+        "  Node data as string: {}",
+        String::from_utf8_lossy(&data.node_data)
+    );
     println!();
 
     // Example 3: Mixed binary data types
@@ -125,12 +137,21 @@ fn main() {
 
     println!("Mixed binary data types:");
     println!("  Base64 field: {:?}", data.base64_field);
-    println!("  Base64 as string: {}", String::from_utf8_lossy(&data.base64_field));
+    println!(
+        "  Base64 as string: {}",
+        String::from_utf8_lossy(&data.base64_field)
+    );
     println!("  Hex field: {:?}", data.hex_field);
-    println!("  Hex as string: {}", String::from_utf8_lossy(&data.hex_field));
+    println!(
+        "  Hex as string: {}",
+        String::from_utf8_lossy(&data.hex_field)
+    );
     println!("  Optional binary: {:?}", data.optional_binary);
     if let Some(ref opt_binary) = data.optional_binary {
-        println!("  Optional binary as string: {}", String::from_utf8_lossy(opt_binary));
+        println!(
+            "  Optional binary as string: {}",
+            String::from_utf8_lossy(opt_binary)
+        );
     }
     println!();
 
@@ -155,5 +176,4 @@ fn main() {
     println!("  Size: {}", data.size);
     println!("  Checksum: {:?}", data.checksum);
     println!();
-
-} 
+}

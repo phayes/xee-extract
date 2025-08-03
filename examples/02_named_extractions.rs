@@ -1,31 +1,31 @@
 //! Example 2: Named Extractions
-//! 
+//!
 //! This example demonstrates how to use named extractions to extract the same
 //! struct from different XML structures using different extraction configurations.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// A struct that can be extracted from different XML structures
 /// using named extractions with different namespaces and XPath expressions
 #[derive(Extract)]
-#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default namespace
-#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "foo"))]        // named extraction "foo"
-#[xee(ns(atom = "http://www.w3.org/2005/Atom", "bar"))]         // named extraction "bar"
-#[xee(context("//atom:entry", "bar"))]                          // named extraction "bar"
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))] // default namespace
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "foo"))] // named extraction "foo"
+#[xee(ns(atom = "http://www.w3.org/2005/Atom", "bar"))] // named extraction "bar"
+#[xee(context("//atom:entry", "bar"))] // named extraction "bar"
 struct Entry {
-    #[xee(xpath("//atom:id"))]                          // default
-    #[xee(xpath("//nlm:id", "foo"))]                   
-    #[xee(xpath("atom:id", "bar"))]                 
+    #[xee(xpath("//atom:id"))] // default
+    #[xee(xpath("//nlm:id", "foo"))]
+    #[xee(xpath("atom:id", "bar"))]
     id: String,
 
-    #[xee(xpath("//atom:title"))]                       // default
-    #[xee(xpath("//nlm:title", "foo"))]                
-    #[xee(xpath("atom:title", "bar"))]              
+    #[xee(xpath("//atom:title"))] // default
+    #[xee(xpath("//nlm:title", "foo"))]
+    #[xee(xpath("atom:title", "bar"))]
     title: String,
 
-    #[xee(xpath("//atom:author/atom:name"))]           
-    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name", "foo"))] 
-    #[xee(xpath("atom:author/atom:name", "bar"))]  
+    #[xee(xpath("//atom:author/atom:name"))]
+    #[xee(xpath("//nlm:contrib-group/nlm:contrib/nlm:name", "foo"))]
+    #[xee(xpath("atom:author/atom:name", "bar"))]
     author: Option<String>,
 }
 
@@ -93,4 +93,4 @@ fn main() {
     println!("  Title: {}", entry.title);
     println!("  Author: {:?}", entry.author);
     println!();
-} 
+}

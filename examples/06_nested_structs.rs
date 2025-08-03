@@ -1,9 +1,9 @@
 //! Example 6: Nested Structs
-//! 
+//!
 //! This example demonstrates how to use nested structs with the extract attribute
 //! to handle complex XML structures with multiple levels of data.
 
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 /// Nested struct for book metadata
 #[derive(Extract)]
@@ -154,7 +154,11 @@ fn main() {
     println!("  Title: {}", book.title);
     println!("  Price: {}", book.price);
     println!("  Genre: {:?}", book.genre);
-    println!("  Author: {} ({})", book.author.name, book.author.email.as_deref().unwrap_or("No email"));
+    println!(
+        "  Author: {} ({})",
+        book.author.name,
+        book.author.email.as_deref().unwrap_or("No email")
+    );
     println!("  Author Bio: {:?}", book.author.bio);
     println!("  ISBN: {}", book.metadata.isbn);
     println!("  Publisher: {:?}", book.metadata.publisher);
@@ -209,7 +213,11 @@ fn main() {
     println!("  Departments:");
     for dept in &company.departments {
         println!("    - {} (ID: {})", dept.name, dept.id);
-        println!("      Manager: {} ({})", dept.manager.name, dept.manager.email.as_deref().unwrap_or("No email"));
+        println!(
+            "      Manager: {} ({})",
+            dept.manager.name,
+            dept.manager.email.as_deref().unwrap_or("No email")
+        );
         println!("      Employees: {:?}", dept.employee_names);
     }
     println!();
@@ -249,12 +257,18 @@ fn main() {
     println!("Order with nested items and customer:");
     println!("  Order ID: {}", order.order_id);
     println!("  Order Date: {}", order.order_date);
-    println!("  Customer: {} ({})", order.customer.name, order.customer.email.as_deref().unwrap_or("No email"));
+    println!(
+        "  Customer: {} ({})",
+        order.customer.name,
+        order.customer.email.as_deref().unwrap_or("No email")
+    );
     println!("  Items:");
     for item in &order.items {
-        println!("    - {} (SKU: {}) x{} @ ${:.2}", item.name, item.sku, item.quantity, item.price);
+        println!(
+            "    - {} (SKU: {}) x{} @ ${:.2}",
+            item.name, item.sku, item.quantity, item.price
+        );
     }
     println!("  Total: ${:.2}", order.total);
     println!();
-
-} 
+}

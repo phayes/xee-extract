@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleStruct {
@@ -105,5 +105,3 @@ fn test_nested_extraction() {
     assert_eq!(result.author_name, "John Doe");
     assert_eq!(result.author_email, Some("john@example.com".to_string()));
 }
-
- 

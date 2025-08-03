@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract, ExtractError};
+use xee_extract::{Extract, ExtractError, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 struct SimpleVariableStruct {
@@ -218,7 +218,10 @@ fn test_complex_variable_binding() {
     assert_eq!(result.revenue, 1000000.0);
     assert_eq!(result.is_public, false);
     assert_eq!(result.metadata_name, "Tech Corp");
-    assert_eq!(result.metadata_description, Some("Leading technology company".to_string()));
+    assert_eq!(
+        result.metadata_description,
+        Some("Leading technology company".to_string())
+    );
 }
 
 #[test]
@@ -335,8 +338,6 @@ fn test_conditional_partial_xpath_variable_binding() {
     assert_eq!(result.access_granted, true);
 }
 
-
-
 #[test]
 fn test_optional_variable_binding() {
     let xml = r#"<root></root>"#;
@@ -354,10 +355,6 @@ fn test_optional_variable_binding() {
     assert_eq!(result.optional_number, Some(42));
     assert_eq!(result.optional_bool, Some(true));
 }
-
-
-
-
 
 #[test]
 fn test_different_data_types() {
@@ -406,8 +403,7 @@ fn test_variable_binding_with_named_extraction() {
 fn test_variable_binding_error_handling() {
     let xml = r#"<root></root>"#;
 
-    let extractor = Extractor::new()
-        .bind_value("user_name", "John Doe");
+    let extractor = Extractor::new().bind_value("user_name", "John Doe");
     // Missing required variables
 
     let result = extractor.extract_from_str::<SimpleVariableStruct>(xml);
@@ -415,13 +411,12 @@ fn test_variable_binding_error_handling() {
 
     if let Err(ExtractError { error, .. }) = result {
         // Should be a field extraction error for missing variables
-        assert!(matches!(error, xee_extract::Error::FieldExtract(_) | xee_extract::Error::SpannedError(_)));
+        assert!(matches!(
+            error,
+            xee_extract::Error::FieldExtract(_) | xee_extract::Error::SpannedError(_)
+        ));
     }
 }
-
-
-
-
 
 #[test]
 fn test_variable_binding_with_complex_xpath() {
@@ -505,7 +500,9 @@ fn test_variable_binding_with_functions_and_partial_xpath() {
         #[xee(xpath("//product[@id = $product_id]/specs/spec[@type = $spec_type]/text()"))]
         spec_value: String,
 
-        #[xee(xpath("count(//product[@id = $product_id]/reviews/review[@rating >= $min_rating])"))]
+        #[xee(xpath(
+            "count(//product[@id = $product_id]/reviews/review[@rating >= $min_rating])"
+        ))]
         high_rating_count: i32,
 
         #[xee(xpath("//product[@id = $product_id]/@price"))]
@@ -581,4 +578,4 @@ fn test_variable_binding_with_numeric_operations() {
     assert_eq!(result.tax_amount, 24.0);
     assert_eq!(result.discounted_total, 270.0);
     assert_eq!(result.total_with_tax, 324.0);
-} 
+}

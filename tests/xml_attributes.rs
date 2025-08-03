@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 struct DocumentWithXml {
@@ -188,4 +188,4 @@ fn test_xml_attribute_simple_xpath() {
 
     assert_eq!(result.id, "123");
     assert!(result.content.contains("<p>This is some content</p>"));
-} 
+}

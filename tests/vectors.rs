@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 struct ComplexStruct {
@@ -194,4 +194,4 @@ fn test_company_with_multiple_employees() {
     assert_eq!(company.id, "C001");
     assert_eq!(company.name, "Tech Corp");
     assert_eq!(company.employee_first_names, vec!["Alice", "Bob"]);
-} 
+}

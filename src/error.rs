@@ -75,7 +75,10 @@ impl std::fmt::Display for FieldExtractionError {
                 self.field, self.xpath, self.source
             ),
         }?;
-        if let Some(e) = self.source.downcast_ref::<xee_interpreter::error::SpannedError>() {
+        if let Some(e) = self
+            .source
+            .downcast_ref::<xee_interpreter::error::SpannedError>()
+        {
             write!(f, " (Xpath {}) \n{}", e.error.message(), e.error.note())?;
         }
         Ok(())
@@ -102,7 +105,6 @@ pub struct ExtractError {
 }
 
 impl ExtractError {
-
     /// Create a new ExtractorError from a core Error without span information
     pub fn no_span(error: Error) -> Self {
         Self {
@@ -115,7 +117,6 @@ impl ExtractError {
 
     /// Create a new ExtractorError from a core Error
     pub fn new(error: Error, xml: &str) -> Self {
-
         // Extract the span from the error
         let span: Option<std::ops::Range<usize>> = match &error {
             Error::SpannedError(ref e) => e.span.map(|s| s.range()),
@@ -156,7 +157,7 @@ impl ExtractError {
         // Clamp the start and end to the length of the XML
         let start = start.clamp(0, xml_bytes.len());
         let end = end.clamp(0, xml_bytes.len());
-        
+
         // Extract the XML snippet
         if start < end && end <= xml_bytes.len() {
             let snippet = &xml_bytes[start..end];
@@ -168,27 +169,30 @@ impl ExtractError {
     }
 
     /// Extract the lines that the error occurred on - zero-indexed
-    pub fn extract_lines(xml: &str, span: &core::ops::Range<usize>) -> Option<core::ops::Range<usize>> {
+    pub fn extract_lines(
+        xml: &str,
+        span: &core::ops::Range<usize>,
+    ) -> Option<core::ops::Range<usize>> {
         let mut byte_pos = 0;
         let mut start_line = None;
         let mut end_line = None;
-    
+
         for (i, line) in xml.lines().enumerate() {
             let line_len = line.len() + 1; // +1 for '\n'
             let next_byte_pos = byte_pos + line_len;
-    
+
             if start_line.is_none() && span.start < next_byte_pos {
                 start_line = Some(i);
             }
-    
+
             if span.end <= next_byte_pos {
                 end_line = Some(i + 1);
                 break;
             }
-    
+
             byte_pos = next_byte_pos;
         }
-    
+
         match (start_line, end_line) {
             (Some(start), Some(end)) => Some(start..end),
             _ => None,
@@ -198,7 +202,7 @@ impl ExtractError {
     /// Generate a full error message
     pub fn message(&self) -> String {
         let mut message = String::new();
-        
+
         // Add the main error message
         match &self.error {
             Error::InvalidXPath(msg) => {
@@ -240,12 +244,12 @@ impl ExtractError {
                 message.push_str(&format!("Lines: {}-{}\n", lines.start + 1, lines.end + 1));
             }
         }
-        
+
         // Add context if available
         if let Some(context) = &self.context {
             message.push_str(&format!("Context: {}\n", context));
         }
-        
+
         message
     }
 }
@@ -256,4 +260,4 @@ impl std::fmt::Display for ExtractError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.message())
     }
-} 
+}

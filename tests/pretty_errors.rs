@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract, ExtractError};
+use xee_extract::{Extract, ExtractError, Extractor};
 
 #[derive(Extract, Debug)]
 struct SimpleStruct {
@@ -60,9 +60,9 @@ fn test_pretty_error_invalid_xml() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
-    
+
     // Should contain XML context
     assert!(message.contains("Context:"));
     assert!(message.contains("<unclosed>"));
@@ -82,7 +82,7 @@ fn test_pretty_error_invalid_xpath() {
     struct InvalidXPathStruct {
         #[xee(xpath("//id/text()"))]
         _id: String,
-        
+
         // This XPath is invalid - it will cause a parsing error
         #[xee(xpath("invalid xpath expression ["))]
         _invalid: String,
@@ -93,10 +93,10 @@ fn test_pretty_error_invalid_xpath() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
     println!("Error message:\n{}", message);
-    
+
     // Should contain XPath error information
     assert!(message.contains("XPath error:"));
     assert!(message.contains("Context:"));
@@ -120,7 +120,7 @@ fn test_pretty_error_with_span() {
 
     let message = error.message();
     println!("Error message:\n{}", message);
-    
+
     // Should contain XML context and line information
     assert!(message.contains("Context"));
     assert!(message.contains("<malformed>No closing tag"));
@@ -135,10 +135,10 @@ fn test_pretty_error_empty_xml() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
     println!("Error message:\n{}", message);
-    
+
     // Should contain document error information
     assert!(message.contains("XML document error:"));
 }
@@ -160,10 +160,10 @@ fn test_application_error_extract_value() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
     println!("Book extraction error (XPath type error):\n{}", message);
-    
+
     // Should contain XPath type error information
     assert!(message.contains("Type error"));
 }
@@ -175,7 +175,7 @@ fn test_application_error_value_extraction() {
     #[derive(Extract, Debug)]
     struct ValueTestStruct {
         #[xee(xpath("//year/text()"))]
-        _year: i32,  // This should fail when trying to parse "not_a_number" as i32
+        _year: i32, // This should fail when trying to parse "not_a_number" as i32
     }
 
     let xml = r#"
@@ -191,13 +191,13 @@ fn test_application_error_value_extraction() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     // Debug: Print the actual error type
     println!("Error type: {:?}", error.error);
-    
+
     let message = error.message();
     println!("Value extraction ApplicationError test:\n{}", message);
-    
+
     // The error should mention the field name and the parsing error
     assert!(message.contains("Error extracting field '_year'"));
     assert!(message.contains("invalid digit found in string"));
@@ -222,10 +222,10 @@ fn test_application_error_extract_struct() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
     println!("Struct extraction error (XPath type error):\n{}", message);
-    
+
     // Should contain XPath type error information
     assert!(message.contains("Type error"));
 }
@@ -249,10 +249,10 @@ fn test_application_error_xml_serialization() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
     println!("XML serialization error (XPath type error):\n{}", message);
-    
+
     // Should contain XPath type error information
     assert!(message.contains("Type error"));
 }
@@ -281,10 +281,10 @@ fn test_application_error_namespace() {
 
     assert!(result.is_err());
     let error = result.unwrap_err();
-    
+
     let message = error.message();
     println!("Namespace error (XPath type error):\n{}", message);
-    
+
     // Should contain XPath type error information
     assert!(message.contains("Type error"));
 }

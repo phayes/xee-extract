@@ -4,7 +4,7 @@
 //! deserialize XML documents into Rust structs using XPath expressions.
 
 use std::str::FromStr;
-use xee_xpath::{Documents, Item, Sequence, Atomic};
+use xee_xpath::{Atomic, Documents, Item, Sequence};
 use xot::xmlname::OwnedName;
 
 // Re-export the macro
@@ -98,9 +98,9 @@ impl Extractor {
         self
     }
 
-    /// Bind an item to a variable, item can be anything that can be converted to an xee_xpath::Item. 
+    /// Bind an item to a variable, item can be anything that can be converted to an xee_xpath::Item.
     /// For example a reference to an existing xee_xpath::Item or node.
-    /// 
+    ///
     /// This method is safe to call multiple times with the same name (the previous value will be replaced).
     pub fn bind_item<S: Into<String>, V: Into<Item>>(self, name: S, val: V) -> Self {
         let item: Item = val.into();
@@ -109,9 +109,9 @@ impl Extractor {
 
     /// Bind a value to a variable, value can be anything that can be converted to an Atomic.
     /// This includes String, &str, f64, f32, i64, i32, u64, u32, bool, and other types that can be converted to an xee_xpath::Atomic.
-    /// 
+    ///
     /// This method is safe to call multiple times with the same name (the previous value will be replaced).
-    /// 
+    ///
     /// Example:
     /// ```rust
     /// use xee_extract::Extractor;
@@ -137,14 +137,20 @@ impl Extractor {
             .to_item(&mut documents)
             .map_err(|e| ExtractError::new(Error::SpannedError(e), &xml))?;
 
-        // Bind the variables. 
-        let mut variables: ahash::AHashMap<OwnedName, Sequence> = ahash::AHashMap::with_capacity(self.variables.len());
+        // Bind the variables.
+        let mut variables: ahash::AHashMap<OwnedName, Sequence> =
+            ahash::AHashMap::with_capacity(self.variables.len());
         for (name, sequence) in self.variables.iter() {
             variables.insert(OwnedName::name(name), sequence.clone());
         }
 
         // Use the trait's deserialize method
-        let res = T::extract(&mut documents, &item, self.extract_name.as_deref(), &variables);
+        let res = T::extract(
+            &mut documents,
+            &item,
+            self.extract_name.as_deref(),
+            &variables,
+        );
 
         match res {
             Ok(value) => Ok(value),
@@ -166,8 +172,9 @@ impl Extractor {
             .to_item(documents)
             .map_err(|e| ExtractError::no_span(Error::SpannedError(e)))?;
 
-        // Bind the variables. 
-        let mut variables: ahash::AHashMap<OwnedName, Sequence> = ahash::AHashMap::with_capacity(self.variables.len());
+        // Bind the variables.
+        let mut variables: ahash::AHashMap<OwnedName, Sequence> =
+            ahash::AHashMap::with_capacity(self.variables.len());
         for (name, sequence) in self.variables.iter() {
             variables.insert(OwnedName::name(name), sequence.clone());
         }

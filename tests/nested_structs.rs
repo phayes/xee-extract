@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 #[derive(Extract, Debug, PartialEq)]
 #[xee(context("if (self::book) then . else /book"))]
@@ -317,4 +317,4 @@ fn test_nested_extraction_with_missing_optional() {
     assert_eq!(result.title, "Test Title");
     assert_eq!(result.nested.value, "Nested Value");
     assert_eq!(result.nested.optional, None);
-} 
+}

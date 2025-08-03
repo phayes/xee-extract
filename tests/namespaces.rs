@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 // Test 1: Basic namespace prefixes only
 #[derive(Extract, Debug, PartialEq)]
@@ -326,7 +326,7 @@ fn test_error_handling_missing_namespace() {
 
     let extractor = Extractor::new();
     let result = extractor.extract_from_str::<DefaultNamespaceOnly>(xml);
-    
+
     // This should fail because the XML doesn't have the default namespace
     assert!(result.is_err());
-} 
+}

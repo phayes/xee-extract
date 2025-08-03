@@ -1,4 +1,4 @@
-use xee_extract::{Extractor, Extract};
+use xee_extract::{Extract, Extractor};
 
 // Test 1: Context only
 #[derive(Extract, Debug, PartialEq)]
@@ -117,7 +117,7 @@ fn test_error_handling_invalid_xpath() {
 
     let extractor = Extractor::new();
     let result = extractor.extract_from_str::<ContextOnly>(xml);
-    
+
     // This should fail because the XML doesn't have title and author elements
     assert!(result.is_err());
-} 
+}
