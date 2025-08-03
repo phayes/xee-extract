@@ -219,3 +219,41 @@ let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml)?;
 This mechanism works for other struct-level attributes like `context` and
 `default_ns`, enabling a single type to handle multiple extraction
 configurations.
+
+## Variables
+
+We also support binding xpath variables with with `Extractor::bind_value` to inject dynamic values into XPath expressions at runtime.
+
+```rust
+use xee_extract::{Extractor, Extract};
+
+#[derive(Extract)]
+struct ProductData {
+    #[xee(xpath("//product[@id = $product_id]/name"))]
+    name: String,
+
+    #[xee(xpath("//product[@id = $product_id]/price"))]
+    price: f64,
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let xml = r#"
+        <catalog>
+            <product id="P001">
+                <name>Laptop</name>
+                <price>999.99</price>
+            </product>
+            <product id="P002">
+                <name>Paperclip</name>
+                <price>0.01</price>
+            </product>
+        </catalog>
+    "#;
+
+    let extractor = Extractor::new().bind_value("product_id", "P001");
+    let laptop_data: ProductData = extractor.extract_from_str(xml)?;
+
+    let extractor = extractor.bind_value("product_id", "P002");
+    let paperclip_data: ProductData = extractor.extract_from_str(xml)?;
+}
+```
