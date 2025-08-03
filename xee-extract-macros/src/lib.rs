@@ -510,7 +510,7 @@ fn generate_unified_query(
                 .unwrap_or_else(|| quote! { None });
             quote! {
                 use xee_extract::Extract;
-                <#field_type>::extract(documents, item, #extract_id_expr).map_err(|e| {
+                <#field_type>::extract(documents, item, #extract_id_expr, variables).map_err(|e| {
                     xee_interpreter::error::SpannedError::from(
                         xee_interpreter::error::Error::Application(Box::new(
                             xee_interpreter::error::ApplicationError::new(

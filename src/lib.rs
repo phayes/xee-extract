@@ -114,6 +114,7 @@ impl Extractor {
     /// 
     /// Example:
     /// ```rust
+    /// use xee_extract::Extractor;
     /// let extractor = Extractor::new().bind_value("name", "John Doe").bind_value("is_student", true);
     /// ```
     pub fn bind_value<S: Into<String>, V: Into<Atomic>>(self, name: S, val: V) -> Self {
