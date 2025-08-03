@@ -8,7 +8,7 @@ use xot::xmlname::OwnedName;
 pub use xee_extract_macros::Extract;
 
 // Error types module
-pub mod error;
+mod error;
 
 // Re-export error types
 pub use error::{Error, ExtractError, FieldExtractionError};
@@ -61,8 +61,8 @@ where
 
 /// Extractor for XML documents using XPath expressions
 pub struct Extractor {
-    pub variables: std::collections::HashMap<String, Sequence>,
-    pub extract_name: Option<String>,
+    variables: std::collections::HashMap<String, Sequence>,
+    extract_name: Option<String>,
 }
 
 impl Default for Extractor {
