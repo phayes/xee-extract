@@ -8,6 +8,7 @@ Declarative data extraction from large XML documents using Xpath.
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
+#[xee(ns(xs = "http://www.w3.org/2001/XMLSchema"))]
 struct SimpleEntry {
     #[xee(xpath("//id"))]
     id: String,
@@ -29,8 +30,10 @@ struct Author {
 
     #[xee(xpath("email"))]
     email: Option<String>,
-}
 
+    #[xee(xpath("xs:base64Binary(avatar)"))]
+    avatar_picture: Vec<u8>
+}
 
 let xml = r#"
     <entry>
@@ -40,6 +43,7 @@ let xml = r#"
         <author>
             <name>John Doe</name>
             <email>john@example.com</email>
+            <avatar>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=</avatar>
         </author>
     </entry>
 "#;
@@ -165,8 +169,6 @@ struct Foo {
 Any type that implements `FromStr` works out of the box, but you can
 provide custom parsing by implementing this trait yourself.
 
-### Example: parsing a comma separated list
-
 ```rust
 use xee_extract::{Extract, Extractor, ExtractValue, Error, Documents, Item};
 
@@ -209,15 +211,15 @@ applied; attributes without a name form the default extraction used by
 use xee_extract::{Extractor, Extract};
 
 #[derive(Extract)]
-#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]                // default
-#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]       // named
+#[xee(ns(atom = "http://www.w3.org/2005/Atom"))]             // default
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]     // named
 struct Entry {
-    #[xee(xpath("//atom:id/text()"))]                          // default
-    #[xee(xpath("//nlm:id/text()", "nlm"))]                   // named
+    #[xee(xpath("//atom:id/text()"))]                        // default
+    #[xee(xpath("//nlm:id/text()", "nlm"))]                  // named
     id: String,
 
-    #[xee(xpath("//atom:title/text()"))]
-    #[xee(xpath("//nlm:title/text()", "nlm"))]
+    #[xee(xpath("//atom:title/text()"))]                     // default
+    #[xee(xpath("//nlm:title/text()", "nlm"))]               // named
     title: String,
 }
 
