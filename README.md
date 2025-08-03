@@ -31,29 +31,21 @@ struct Author {
     email: Option<String>,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let xml = r#"
-        <entry>
-            <id>123</id>
-            <title>Sample Title</title>
-            <category term="test"/>
-            <author>
-                <name>John Doe</name>
-                <email>john@example.com</email>
-            </author>
-        </entry>
-    "#;
 
-    let extractor = Extractor::new();
-    let entry: SimpleEntry = extractor.extract_from_str(xml)?;
+let xml = r#"
+    <entry>
+        <id>123</id>
+        <title>Sample Title</title>
+        <category term="test"/>
+        <author>
+            <name>John Doe</name>
+            <email>john@example.com</email>
+        </author>
+    </entry>
+"#;
 
-    println!("ID: {}", entry.id);
-    println!("Title: {}", entry.title);
-    println!("Category: {:?}", entry.category);
-    println!("Author: {} ({:?})", entry.author.name, entry.author.email);
-
-    Ok(())
-}
+let extractor = Extractor::new();
+let entry: SimpleEntry = extractor.extract_from_str(xml).unwrap();
 ```
 
 ## Field Attributes
@@ -184,7 +176,7 @@ struct CsvTags(Vec<String>);
 
 impl ExtractValue for CsvTags {
     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
-        let s = item.string_value(documents.xot())?;
+        let s = item.string_value(documents.xot()).unwrap();
         Ok(CsvTags(
             s.split(',')
                 .map(|s| s.trim().to_string())
@@ -199,13 +191,13 @@ struct TaggedEntry {
     tags: CsvTags,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
-    let extractor = Extractor::new();
-    let entry: TaggedEntry = extractor.extract_from_str(xml)?;
-    assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
-    Ok(())
-}
+
+let xml = r#"<entry><tags>alpha, beta, gamma</tags></entry>"#;
+let extractor = Extractor::new();
+let entry: TaggedEntry = extractor.extract_from_str(xml).unwrap();
+assert_eq!(entry.tags.0, vec!["alpha", "beta", "gamma"]);
+
+
 ```
 
 Note that if your type already implements `FromStr` you cannot also implement `ExtractValue`. This is a known limitation and will be resolved when [Specialization](https://std-dev-guide.rust-lang.org/policy/specialization.html) lands. 
@@ -235,17 +227,15 @@ struct Entry {
     title: String,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let atom_xml = r#"<entry xmlns:atom="http://www.w3.org/2005/Atom"><atom:id>123</atom:id><atom:title>Atom Title</atom:title></entry>"#;
-    let nlm_xml = r#"<entry xmlns:nlm="https://id.nlm.nih.gov/datmm/"><nlm:id>456</nlm:id><nlm:title>NLM Title</nlm:title></entry>"#;
 
-    // Parse Atom
-    let atom: Entry = Extractor::default().extract_from_str(atom_xml)?;
-    // Parse NLM using the named extraction
-    let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml)?;
+let atom_xml = r#"<entry xmlns:atom="http://www.w3.org/2005/Atom"><atom:id>123</atom:id><atom:title>Atom Title</atom:title></entry>"#;
+let nlm_xml = r#"<entry xmlns:nlm="https://id.nlm.nih.gov/datmm/"><nlm:id>456</nlm:id><nlm:title>NLM Title</nlm:title></entry>"#;
 
-    Ok(())
-}
+// Parse Atom
+let atom: Entry = Extractor::default().extract_from_str(atom_xml).unwrap();
+
+// Parse NLM using the named extraction
+let nlm: Entry = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
 ```
 
 This mechanism works for other struct-level attributes like `context` and
@@ -268,34 +258,30 @@ struct ProductData {
     price: f64,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let xml = r#"
-        <catalog>
-            <product id="P001">
-                <name>Laptop</name>
-                <price>999.99</price>
-            </product>
-            <product id="P002">
-                <name>Paperclip</name>
-                <price>0.01</price>
-            </product>
-        </catalog>
-    "#;
+let xml = r#"
+    <catalog>
+        <product id="P001">
+            <name>Laptop</name>
+            <price>999.99</price>
+        </product>
+        <product id="P002">
+            <name>Paperclip</name>
+            <price>0.01</price>
+        </product>
+    </catalog>
+"#;
 
-    // Parse XML once and reuse the document
-    let mut documents = xee_xpath::Documents::new();
-    let doc_handle = documents.add_string_without_uri(xml)?;
+// Parse XML once and reuse the document
+let mut documents = xee_xpath::Documents::new();
+let doc_handle = documents.add_string_without_uri(xml).unwrap();
 
-    // Extract laptop data
-    let laptop_data: ProductData = Extractor::new()
-        .bind_value("product_id", "P001")
-        .extract_from_docs(&mut documents, &doc_handle)?;
+// Extract laptop data
+let laptop_data: ProductData = Extractor::new()
+    .bind_value("product_id", "P001")
+    .extract_from_docs(&mut documents, &doc_handle).unwrap();
 
-    // Extract paperclip data
-    let paperclip_data: ProductData = Extractor::new()
-        .bind_value("product_id", "P002")
-        .extract_from_docs(&mut documents, &doc_handle)?;
-
-    Ok(())
-}
+// Extract paperclip data
+let paperclip_data: ProductData = Extractor::new()
+    .bind_value("product_id", "P002")
+    .extract_from_docs(&mut documents, &doc_handle).unwrap();
 ```
