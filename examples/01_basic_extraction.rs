@@ -52,7 +52,7 @@ fn main() {
         </person>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let person: Person = extractor.extract_from_str(person_xml).unwrap();
 
     println!("Person extracted:");

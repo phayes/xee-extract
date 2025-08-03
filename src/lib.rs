@@ -75,11 +75,6 @@ impl Default for Extractor {
 }
 
 impl Extractor {
-    /// Create a new extractor
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// Create a new extractor with a named extraction
     /// 
     /// Sometimes a single struct needs to support multiple XML formats.  Each
@@ -146,7 +141,7 @@ impl Extractor {
     /// Example:
     /// ```rust
     /// use xee_extract::Extractor;
-    /// let extractor = Extractor::new().bind_value("name", "John Doe").bind_value("is_student", true);
+    /// let extractor = Extractor::default().bind_value("name", "John Doe").bind_value("is_student", true);
     /// ```
     pub fn bind_value<S: Into<String>, V: Into<Atomic>>(self, name: S, val: V) -> Self {
         let atomic: Atomic = val.into();

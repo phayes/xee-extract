@@ -118,7 +118,7 @@ fn test_complex_book_with_metadata() {
         </book>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let book: Book = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(book.id, "B001");
@@ -175,7 +175,7 @@ fn test_library_with_complex_books() {
         </library>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let library: LibraryWithComplexBooks = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(library.name, "Tech Library");
@@ -234,7 +234,7 @@ fn test_company_with_departments() {
         </company>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let company: CompanyWithDepartments = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(company.id, "C001");
@@ -277,7 +277,7 @@ fn test_complex_scenario_without_variables() {
         </config>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ConfigStruct = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.base_url, "https://api.example.com");

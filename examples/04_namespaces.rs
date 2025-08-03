@@ -83,7 +83,7 @@ fn main() {
         </feed>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let feed: AtomFeed = extractor.extract_from_str(atom_xml).unwrap();
 
     println!("Atom feed with namespaces:");

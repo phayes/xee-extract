@@ -185,7 +185,7 @@ fn test_simple_cross_document_extraction() {
         )
         .unwrap();
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: CrossDocumentUser = extractor
         .extract_from_docs(&mut documents, &user_doc)
         .unwrap();
@@ -227,7 +227,7 @@ fn test_simple_direct_cross_document_extraction() {
         )
         .unwrap();
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: SimpleCrossDocument = extractor
         .extract_from_docs(&mut documents, &user_doc)
         .unwrap();
@@ -277,7 +277,7 @@ fn test_product_catalog_with_inventory() {
         )
         .unwrap();
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ProductWithInventory = extractor
         .extract_from_docs(&mut documents, &catalog_doc)
         .unwrap();
@@ -322,7 +322,7 @@ fn test_order_with_customer_info() {
         )
         .unwrap();
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: OrderWithCustomer = extractor
         .extract_from_docs(&mut documents, &order_doc)
         .unwrap();
@@ -374,7 +374,7 @@ fn test_library_book_with_availability() {
         )
         .unwrap();
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: LibraryBook = extractor
         .extract_from_docs(&mut documents, &books_doc)
         .unwrap();
@@ -472,7 +472,7 @@ fn test_multiple_documents_with_complex_relationships() {
         project_names: Vec<String>,
     }
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: DepartmentWithDetails = extractor
         .extract_from_docs(&mut documents, &dept_doc)
         .unwrap();
@@ -503,7 +503,7 @@ fn test_error_handling_for_missing_document() {
         )
         .unwrap();
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<CrossDocumentUser, _> =
         extractor.extract_from_docs(&mut documents, &user_doc);
 
@@ -554,7 +554,7 @@ fn test_document_without_uri_cannot_be_accessed_via_doc() {
         cross_ref_name: String,
     }
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: Result<UserWithPermissions, _> =
         extractor.extract_from_docs(&mut documents, &user_doc);
 

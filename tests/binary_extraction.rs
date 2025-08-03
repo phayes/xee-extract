@@ -36,7 +36,7 @@ fn test_binary_extraction_base64() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: BinaryData = extractor.extract_from_str(xml).unwrap();
 
     // "Hello World" in base64
@@ -59,7 +59,7 @@ fn test_binary_extraction_with_option() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: BinaryWithOption = extractor.extract_from_str(xml).unwrap();
 
     // "Hello" in base64
@@ -79,7 +79,7 @@ fn test_binary_extraction_missing_optional() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: BinaryWithOption = extractor.extract_from_str(xml).unwrap();
 
     // "Hello" in hex
@@ -99,7 +99,7 @@ fn test_binary_extraction_invalid_data() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result = extractor.extract_from_str::<BinaryData>(xml);
 
     // Should fail because the data is not valid base64
@@ -115,7 +115,7 @@ fn test_binary_extraction_empty_data() {
         </root>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: BinaryData = extractor.extract_from_str(xml).unwrap();
 
     // Empty data should result in empty Vec<u8>

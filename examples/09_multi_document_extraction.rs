@@ -95,7 +95,7 @@ fn main() {
         .unwrap();
 
     // Extract user data with cross-document permissions
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let user: UserWithPermissions = extractor
         .extract_from_docs(&mut documents, &user_doc)
         .unwrap();

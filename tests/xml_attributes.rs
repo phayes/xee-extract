@@ -59,7 +59,7 @@ fn test_xml_attribute_basic() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: DocumentWithXml = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -88,7 +88,7 @@ fn test_xml_attribute_with_vectors() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ComplexDocument = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "456");
@@ -110,7 +110,7 @@ fn test_xml_attribute_with_optional() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: XmlWithAttributes = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "789");
@@ -129,7 +129,7 @@ fn test_xml_attribute_missing_optional() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: XmlWithAttributes = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "789");
@@ -145,7 +145,7 @@ fn test_xml_attribute_empty_vector() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: ComplexDocument = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "999");
@@ -164,7 +164,7 @@ fn test_xml_attribute_simple() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: DocumentWithXml = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
@@ -183,7 +183,7 @@ fn test_xml_attribute_simple_xpath() {
         </document>
     "#;
 
-    let extractor = Extractor::new();
+    let extractor = Extractor::default();
     let result: SimpleXmlTest = extractor.extract_from_str(xml).unwrap();
 
     assert_eq!(result.id, "123");
