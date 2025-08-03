@@ -160,22 +160,4 @@ fn main() {
     println!("  Title: {}", data.title);
     println!("  Items: {:?}", data.items);
     println!();
-
-    // Example 5: Error handling for missing namespace
-    let no_namespace_xml = r#"
-        <feed>
-            <title>No Namespace Feed</title>
-            <entry>
-                <title>This won't work without namespace</title>
-            </entry>
-        </feed>
-    "#;
-
-    let result = extractor.extract_from_str::<AtomFeed>(no_namespace_xml);
-    
-    println!("Error handling for missing namespace:");
-    match result {
-        Ok(_feed) => println!("  Unexpected success: Feed extracted"),
-        Err(e) => println!("  Expected error: {}", e),
-    }
 } 

@@ -183,6 +183,11 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         match_arms.push(quote! {
             #key_arm => {
                 let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
+
+                if variables.len() > 0 {
+                    static_context_builder.variable_names(variables.keys().cloned());
+                }
+
                 #(#static_setup)*
                 let queries = Queries::new(static_context_builder);
                 #context_stmt
@@ -204,6 +209,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 documents: &mut xee_xpath::Documents,
                 context_item: &xee_xpath::Item,
                 extract_id: Option<&str>,
+                variables: &ahash::AHashMap<xot::xmlname::OwnedName, xee_xpath::Sequence>,
             ) -> Result<Self, xee_extract::Error> {
                 use xee_xpath::{Queries, Query};
 
@@ -597,6 +603,7 @@ fn generate_unified_query(
 
             match query.execute_build_context(documents, |builder| {
                 builder.context_item(#context_var.clone());
+                builder.variables(variables.clone());
             }) {
                 Ok(value) => value,
                 Err(inner) => {
@@ -644,6 +651,7 @@ fn generate_vec_u8_query(
         })?;
         query.execute_build_context(documents, |builder| {
             builder.context_item(#context_var.clone());
+            builder.variables(variables.clone());
         })?
     };
 

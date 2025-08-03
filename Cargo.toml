@@ -8,8 +8,7 @@ xee-xpath = { path = "vendor/xee/xee-xpath" }
 xee-interpreter = { path = "vendor/xee/xee-interpreter" }
 xot = "0.31.2"
 xee-extract-macros = { path = "xee-extract-macros" }
-hex = "0.4.3"
-base64 = "0.22.1"
+ahash = "0.8.11"
 
 [workspace]
 members = ["xee-extract-macros"]
@@ -38,4 +37,3 @@ iri-string = "0.7.7"
 json = "0.12.4"
 insta = "1.42.2"
 ron = "0.8.1"
-

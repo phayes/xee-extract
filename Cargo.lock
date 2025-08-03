@@ -2445,8 +2445,7 @@ dependencies = [
 name = "xee-extract"
 version = "0.1.0"
 dependencies = [
- "base64 0.22.1",
- "hex",
+ "ahash 0.8.12",
  "xee-extract-macros",
  "xee-interpreter",
  "xee-xpath",

@@ -234,20 +234,4 @@ fn main() {
         println!("    Footnote {}: {}", i + 1, footnote);
     }
     println!();
-
-    // Example 5: Error handling for missing XML elements
-    let incomplete_xml = r#"
-        <article>
-            <title>Incomplete Article</title>
-            <!-- Missing content and other elements -->
-        </article>
-    "#;
-
-    let result = extractor.extract_from_str::<RawXMLData>(incomplete_xml);
-    
-    println!("Error handling for missing XML elements:");
-    match result {
-        Ok(_data) => println!("  Unexpected success: Data extracted"),
-        Err(e) => println!("  Expected error: {}", e),
-    }
 } 

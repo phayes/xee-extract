@@ -50,7 +50,7 @@ fn main() {
     println!("  Author: {:?}", entry.author);
     println!();
 
-    // Example 2: Named NLM extraction
+    // Example 2: Named NLM extraction (named extraction "foo")
     let nlm_xml = r#"
         <article xmlns:nlm="https://id.nlm.nih.gov/datmm/">
             <nlm:id>abc123</nlm:id>
@@ -72,7 +72,7 @@ fn main() {
     println!("  Author: {:?}", entry.author);
     println!();
 
-    // Example 3: Context-based extraction
+    // Example 3: Context-based extraction, named extraction "bar"
     let context_xml = r#"
         <feed xmlns:atom="http://www.w3.org/2005/Atom">
             <atom:entry>
@@ -93,58 +93,4 @@ fn main() {
     println!("  Title: {}", entry.title);
     println!("  Author: {:?}", entry.author);
     println!();
-
-    // Example 4: Demonstrating error handling for wrong extraction
-    let wrong_xml = r#"
-        <unknown>
-            <id>wrong-id</id>
-            <title>Wrong Title</title>
-        </unknown>
-    "#;
-
-    let extractor = Extractor::named("foo");
-    let result = extractor.extract_from_str::<Entry>(wrong_xml);
-    
-    println!("Error handling for incompatible XML:");
-    match result {
-        Ok(_entry) => println!("  Unexpected success: Entry extracted"),
-        Err(e) => println!("  Expected error: {}", e),
-    }
-
-    // Example 5: Demonstrating that default extraction works with Atom XML
-    let atom_xml_2 = r#"
-        <entry xmlns="http://www.w3.org/2005/Atom">
-            <id>urn:uuid:87654321-4321-4321-4321-cba987654321</id>
-            <title>Another Atom Title</title>
-            <author>
-                <name>David Wilson</name>
-            </author>
-        </entry>
-    "#;
-
-    let extractor = Extractor::default(); // explicitly use default
-    let entry: Entry = extractor.extract_from_str(atom_xml_2).unwrap();
-
-    println!("Default extraction (explicit):");
-    println!("  ID: {}", entry.id);
-    println!("  Title: {}", entry.title);
-    println!("  Author: {:?}", entry.author);
-    println!();
-
-    // Example 6: Demonstrating that named extractions can have different structures
-    let nlm_xml_2 = r#"
-        <article xmlns:nlm="https://id.nlm.nih.gov/datmm/">
-            <nlm:id>xyz789</nlm:id>
-            <nlm:title>Another NLM Title</nlm:title>
-            <!-- No author in this example -->
-        </article>
-    "#;
-
-    let extractor = Extractor::named("foo");
-    let entry: Entry = extractor.extract_from_str(nlm_xml_2).unwrap();
-
-    println!("Named extraction with missing optional field:");
-    println!("  ID: {}", entry.id);
-    println!("  Title: {}", entry.title);
-    println!("  Author: {:?}", entry.author);
 } 
