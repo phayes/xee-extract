@@ -16,6 +16,7 @@ enum XeeExtractAttributeTag {
     DefaultNs,
     Extract,
     Xml,
+    Default,
 }
 
 impl XeeExtractAttributeTag {
@@ -27,6 +28,7 @@ impl XeeExtractAttributeTag {
             "default_ns" => Some(Self::DefaultNs),
             "extract" => Some(Self::Extract),
             "xml" => Some(Self::Xml),
+            "default" => Some(Self::Default),
             _ => None,
         }
     }
@@ -40,6 +42,7 @@ impl XeeExtractAttributeTag {
             Self::DefaultNs => &[Struct],
             Self::Extract => &[Field],
             Self::Xml => &[Field],
+            Self::Default => &[Struct, Field],
         }
     }
 }
@@ -61,6 +64,9 @@ struct XeeExtractAttribute {
     /// Primary string value:
     /// - for `xpath(...)` it's the XPath string (e.g., `"atom:id/text()"`)
     /// - for `ns(...)` it's the namespace URI (e.g., `"http://www.w3.org/2005/Atom"`)
+    /// - for `default` we could have either:
+    ///     - #[xee(default)], which indicates that Default::default() should be called. attr_value is an empty string.
+    ///     - #[xee(default("my_function"))], which indicates that my_function() should be called. The function must be callable as fn() -> T. 
     pub attr_value: String,
 
     /// Optional trailing string (used as an override variable name or alias)
@@ -152,6 +158,10 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                         };
                     },
                 );
+            }
+            
+            XeeExtractAttributeTag::Default => {
+                todo!();
             }
 
             _ => {
@@ -268,22 +278,7 @@ fn generate_extract_for_attr(
     use XeeExtractAttributeTag::*;
 
     match &attr.attr {
-        Ns => {
-            let key = attr.attr_key.as_ref().ok_or_else(|| {
-                syn::Error::new_spanned(
-                    field_ident,
-                    "ns(...) attribute must have a key=value pair like atom = \"uri\"",
-                )
-            })?;
-            let value = &attr.attr_value;
-            let registration = match attr.named_extract.as_deref() {
-                Some(alias) => quote! { static_context_builder.add_namespace(#alias, #value); },
-                None => quote! { static_context_builder.add_namespace(#key, #value); },
-            };
-            return Ok(quote! { #registration });
-        }
-
-        tag @ (Xpath | Context | DefaultNs | Extract | Xml) => {
+        tag @ (Xpath | Extract | Xml) => {
             let xpath_expr = &attr.attr_value;
             let extract_id: Option<&str> = attr.named_extract.as_deref();
 
@@ -309,6 +304,10 @@ fn generate_extract_for_attr(
                 field_ident,
                 extract_id,
             );
+        }
+
+        _ => {
+            panic!("Unsupported attribute at field level: {:?}. This should never happen and is a bug in xee-extract", attr.attr);
         }
     }
 }
