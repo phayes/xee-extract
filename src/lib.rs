@@ -10,7 +10,7 @@ pub use xee_extract_macros::Extract;
 mod error;
 
 // Re-export error types
-pub use error::{Error, ExtractError, FieldExtractionError};
+pub use error::{Error, ExtractError, FieldExtractionError, NoValueFoundError};
 
 // Re-export commong xee-xpath types
 pub use xee_xpath::{Atomic, Documents, Item, Sequence};

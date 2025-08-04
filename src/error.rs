@@ -1,6 +1,10 @@
 use xee_interpreter;
 use xee_xpath;
 
+// TODO: Top level error should be ExtractionError Struct, that has a lot of option fields that contains both field info and span info
+// Then an internal error enum to hold other error types
+// NoValueFoundError can then just become a variant of the internal error enum
+
 #[derive(Debug)]
 pub enum Error {
     InvalidXPath(String),
@@ -60,6 +64,17 @@ pub struct FieldExtractionError {
     pub extract_id: Option<&'static str>,
     pub source: Box<dyn std::error::Error + Send + Sync>,
 }
+
+#[derive(Debug)]
+pub struct NoValueFoundError {}
+
+impl std::fmt::Display for NoValueFoundError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "No value found")
+    }
+}
+
+impl std::error::Error for NoValueFoundError {}
 
 impl std::fmt::Display for FieldExtractionError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
