@@ -31,15 +31,15 @@ impl XeeExtractAttributeTag {
         }
     }
 
-    fn allowed_position(&self) -> XeeAttrPosition {
+    fn allowed_position(&self) -> &[XeeAttrPosition] {
         use XeeAttrPosition::*;
         match self {
-            Self::Xpath => Field,
-            Self::Ns => Struct,
-            Self::Context => Struct,
-            Self::DefaultNs => Struct,
-            Self::Extract => Field,
-            Self::Xml => Field,
+            Self::Xpath => &[Field],
+            Self::Ns => &[Struct],
+            Self::Context => &[Struct],
+            Self::DefaultNs => &[Struct],
+            Self::Extract => &[Field],
+            Self::Xml => &[Field],
         }
     }
 }
@@ -354,7 +354,7 @@ fn parse_xee_attrs(
                 syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident))
             })?;
 
-            if tag.allowed_position() != position {
+            if !tag.allowed_position().contains(&position) {
                 return Err(syn::Error::new_spanned(
                     inner_list,
                     format!("attribute {:?} not allowed on {:?}", tag, position),
