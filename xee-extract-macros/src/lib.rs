@@ -632,18 +632,27 @@ fn generate_unified_query(
     let value_match_arm = if is_option_type(outer_field_type) && is_vec_type(field_type) {
         quote! {
             if value.is_empty() {
+                // TODO: Check if we have a default attribute
                 None
             } else {
                 Some(value)
             }
         }
     } else if is_option_type(outer_field_type) || is_vec_type(outer_field_type) {
-        quote! { value }
+        quote! { match value {
+            Some(value) => Some(value),
+            None => {
+                // TODO: Check if we have a default attribute
+                None
+            }
+        } }
     } else {
         quote! {
             match value {
                 Some(value) => value,
                 None => {
+                    // TODO: Check if we have a default attribute
+
                     return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
                         field: #field_name_str,
                         xpath: #xpath_expr_lit,
