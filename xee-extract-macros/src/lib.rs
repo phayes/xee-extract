@@ -283,15 +283,13 @@ fn generate_extract_for_attr(
             let extract_id: Option<&str> = attr.named_extract.as_deref();
 
             if is_vec_u8_type(field_type) || is_option_vec_u8_type(field_type) {
-                return generate_vec_u8_query(field_ident, xpath_expr, field_type, context_var);
+                return generate_vec_u8_query(field_ident, xpath_expr, context_var, field_type);
             }
 
-            let query_method = if is_option_type(field_type) {
-                quote! { option }
-            } else if is_vec_type(field_type) {
+            let query_method = if is_vec_type(field_type) {
                 quote! { many }
             } else {
-                quote! { one }
+                quote! { option }
             };
 
             let inner_type = extract_inner_type(field_type);
@@ -303,6 +301,7 @@ fn generate_extract_for_attr(
                 query_method,
                 field_ident,
                 extract_id,
+                field_type, // Pass original field type for option checking
             );
         }
 
@@ -527,6 +526,7 @@ fn generate_unified_query(
     query_method: proc_macro2::TokenStream,
     field_name: &syn::Ident,
     extract_id: Option<&str>,
+    outer_field_type: &syn::Type,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
     let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
@@ -629,6 +629,24 @@ fn generate_unified_query(
         }
     };
 
+    let value_match_arm = if is_option_type(outer_field_type) || is_vec_type(outer_field_type) {
+        quote! { value }
+    } else {
+        quote! {
+            match value {
+                Some(value) => value,
+                None => {
+                    return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
+                        field: #field_name_str,
+                        xpath: #xpath_expr_lit,
+                        extract_id: #extract_id_match,
+                        source: Box::new(xee_extract::NoValueFoundError {}),
+                    }));
+                }
+            }
+        }
+    };
+
     Ok(quote! {
         let #field_name = {
             let query = queries.#query_method(#xpath_expr, |documents, item| {
@@ -639,7 +657,9 @@ fn generate_unified_query(
                 builder.context_item(#context_var.clone());
                 builder.variables(variables.clone());
             }) {
-                Ok(value) => value,
+                Ok(value) => {
+                    #value_match_arm
+                },
                 Err(inner) => {
                     return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
                         field: #field_name_str,
@@ -656,45 +676,74 @@ fn generate_unified_query(
 fn generate_vec_u8_query(
     field_name: &syn::Ident,
     xpath_expr: &str,
-    field_type: &syn::Type,
     context_var: &proc_macro2::TokenStream,
+    field_type: &syn::Type,
 ) -> syn::Result<proc_macro2::TokenStream> {
-    // Check if this is Option<Vec<u8>>
-    let is_option = is_option_vec_u8_type(field_type);
-
-    let query_method = if is_option {
-        quote! { option }
-    } else {
-        quote! { one }
-    };
-
-    let query_code = quote! {
-        let query = queries.#query_method(#xpath_expr, |documents, item| {
-            // Special handling for Vec<u8> - check if item is Binary atomic
-            match item {
-                xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
-                    // For binary atomic values, return the data directly
-                    Ok(data.as_ref().to_vec())
-                }
-                _ => {
-                    // Just extract the binary value of the string value of the item
-                    let string_value = item.string_value(documents.xot())?;
-                    Ok(string_value.as_bytes().to_vec())
-                }
-            }
-        })?;
-        query.execute_build_context(documents, |builder| {
-            builder.context_item(#context_var.clone());
-            builder.variables(variables.clone());
-        })?
-    };
-
     let field_name_token = quote! { #field_name };
-    Ok(quote! {
-        let #field_name_token = {
-            #query_code
-        };
-    })
+    let field_name_str = field_name.to_string();
+    let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
+    
+    let assignment = if is_option_type(field_type) {
+        // For Option<Vec<u8>>, return the Option directly
+        quote! {
+            let #field_name_token = {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    // Special handling for Vec<u8> - check if item is Binary atomic
+                    match item {
+                        xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
+                            // For binary atomic values, return the data directly
+                            Ok(data.as_ref().to_vec())
+                        }
+                        _ => {
+                            // Just extract the binary value of the string value of the item
+                            let string_value = item.string_value(documents.xot())?;
+                            Ok(string_value.as_bytes().to_vec())
+                        }
+                    }
+                })?;
+                query.execute_build_context(documents, |builder| {
+                    builder.context_item(#context_var.clone());
+                    builder.variables(variables.clone());
+                })?
+            };
+        }
+    } else {
+        // For Vec<u8>, unwrap the Option
+        quote! {
+            let #field_name_token = {
+                let query = queries.option(#xpath_expr, |documents, item| {
+                    // Special handling for Vec<u8> - check if item is Binary atomic
+                    match item {
+                        xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
+                            // For binary atomic values, return the data directly
+                            Ok(data.as_ref().to_vec())
+                        }
+                        _ => {
+                            // Just extract the binary value of the string value of the item
+                            let string_value = item.string_value(documents.xot())?;
+                            Ok(string_value.as_bytes().to_vec())
+                        }
+                    }
+                })?;
+                match query.execute_build_context(documents, |builder| {
+                    builder.context_item(#context_var.clone());
+                    builder.variables(variables.clone());
+                })? {
+                    Some(value) => value,
+                    None => {
+                        return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
+                            field: #field_name_str,
+                            xpath: #xpath_expr_lit,
+                            extract_id: None,
+                            source: Box::new(xee_extract::NoValueFoundError {}),
+                        }));
+                    }
+                }
+            };
+        }
+    };
+    
+    Ok(assignment)
 }
 
 #[cfg(test)]
