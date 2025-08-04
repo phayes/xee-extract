@@ -286,15 +286,14 @@ fn generate_extract_for_attr(
                 return generate_vec_u8_query(field_ident, xpath_expr, context_var, field_type);
             }
 
-            let inner_type = extract_inner_type(field_type);
+            
             return generate_unified_query(
                 xpath_expr,
-                inner_type.unwrap_or(field_type),
+                field_type,
                 *tag,
                 context_var,
                 field_ident,
-                extract_id,
-                field_type, // Pass original field type for option checking
+                extract_id
             );
         }
 
@@ -302,10 +301,6 @@ fn generate_extract_for_attr(
             panic!("Unsupported attribute at field level: {:?}. This should never happen and is a bug in xee-extract", attr.attr);
         }
     }
-}
-
-fn extract_inner_type(ty: &syn::Type) -> Option<&syn::Type> {
-    extract_option_inner_type(ty).or_else(|| extract_vec_inner_type(ty))
 }
 
 fn parse_xee_attrs(
@@ -518,7 +513,6 @@ fn generate_unified_query(
     context_var: &proc_macro2::TokenStream,
     field_name: &syn::Ident,
     extract_id: Option<&str>,
-    outer_field_type: &syn::Type,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
     let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
@@ -529,7 +523,15 @@ fn generate_unified_query(
         None => quote! { None },
     };
 
-    let query_method = if is_vec_type(field_type)  || (is_option_type(outer_field_type) && is_vec_type(field_type)) {
+    let (field_type, outer_field_type) = if is_option_type(field_type) {
+        (extract_option_inner_type(field_type).unwrap(), field_type)
+    } else if is_vec_type(field_type) {
+        (extract_vec_inner_type(field_type).unwrap(), field_type)
+    } else {
+        (field_type, field_type)
+    };
+
+    let query_method = if is_vec_type(outer_field_type)  || (is_option_type(outer_field_type) && is_vec_type(field_type)) {
         quote! { many }
     } else {
         quote! { option }

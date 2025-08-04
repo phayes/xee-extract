@@ -70,7 +70,7 @@ pub struct NoValueFoundError {}
 
 impl std::fmt::Display for NoValueFoundError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "No value found")
+        write!(f, "No value found. Make sure the xpath target exists in the XML document.")
     }
 }
 

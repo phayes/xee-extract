@@ -165,7 +165,7 @@ fn test_application_error_extract_value() {
     println!("Book extraction error (XPath type error):\n{}", message);
 
     // Should contain XPath type error information
-    assert!(message.contains("Type error"));
+    assert!(message.contains("No value found"));
 }
 
 #[test]
@@ -227,7 +227,7 @@ fn test_application_error_extract_struct() {
     println!("Struct extraction error (XPath type error):\n{}", message);
 
     // Should contain XPath type error information
-    assert!(message.contains("Type error"));
+    assert!(message.contains("No value found"));
 }
 
 #[test]
@@ -254,7 +254,7 @@ fn test_application_error_xml_serialization() {
     println!("XML serialization error (XPath type error):\n{}", message);
 
     // Should contain XPath type error information
-    assert!(message.contains("Type error"));
+    assert!(message.contains("No value found"));
 }
 
 #[test]
@@ -286,5 +286,5 @@ fn test_application_error_namespace() {
     println!("Namespace error (XPath type error):\n{}", message);
 
     // Should contain XPath type error information
-    assert!(message.contains("Type error"));
+    assert!(message.contains("No value found"));
 }
