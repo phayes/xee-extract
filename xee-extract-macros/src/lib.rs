@@ -638,7 +638,7 @@ fn generate_unified_query(
                 Some(value)
             }
         }
-    } else if is_option_type(outer_field_type) || is_vec_type(outer_field_type) {
+    } else if is_option_type(outer_field_type) {
         quote! { match value {
             Some(value) => Some(value),
             None => {
@@ -646,6 +646,15 @@ fn generate_unified_query(
                 None
             }
         } }
+    } else if is_vec_type(outer_field_type) {
+        quote! {
+            if value.is_empty() {
+                // TODO: Check if we have a default attribute
+                value
+            } else {
+                value
+            }
+        }
     } else {
         quote! {
             match value {
