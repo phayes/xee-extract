@@ -8,10 +8,6 @@ fn default_opt() -> Option<String> {
     Some("fallback".to_string())
 }
 
-fn default_named_value() -> String {
-    "named_default".to_string()
-}
-
 #[derive(Extract, Debug, PartialEq)]
 struct FieldDefaults {
     #[xee(xpath("//id/text()"))]
@@ -75,6 +71,7 @@ fn test_struct_default() {
 
 // Test named extracts with defaults
 #[derive(Extract, Debug, PartialEq)]
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]
 struct NamedExtractWithDefaults {
     #[xee(xpath("//id/text()"))]
     #[xee(xpath("//nlm:id/text()", "nlm"))]
@@ -116,11 +113,11 @@ fn test_named_extract_with_defaults() {
     assert_eq!(res.author, Some("Alice".to_string()));
 
     // Test named extraction
-    let nlm_xml = "<root><nlm:id>2</nlm:id><nlm:author>Bob</nlm:author></root>";
+    let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id><nlm:author>Bob</nlm:author></root>";
     let res: NamedExtractWithDefaults = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
     assert_eq!(res.name, String::default());
-    assert_eq!(res.title, "named_default");
+    assert_eq!(res.title, "generated");
     assert_eq!(res.author, Some("Bob".to_string()));
 }
 
@@ -135,17 +132,18 @@ fn test_named_extract_with_missing_values() {
     assert_eq!(res.author, Some("fallback".to_string()));
 
     // Test named extraction with missing values
-    let nlm_xml = "<root><nlm:id>2</nlm:id></root>";
+    let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id></root>";
     let res: NamedExtractWithDefaults = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
     assert_eq!(res.name, String::default());
-    assert_eq!(res.title, "named_default");
+    assert_eq!(res.title, "generated");
     assert_eq!(res.author, Some("fallback".to_string()));
 }
 
 // Test struct-level defaults with named extracts
 #[derive(Extract, Debug, PartialEq)]
 #[xee(default)]
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]
 struct StructDefaultWithNamedExtract {
     #[xee(xpath("//id/text()"))]
     #[xee(xpath("//nlm:id/text()", "nlm"))]
@@ -182,7 +180,7 @@ fn test_struct_default_with_named_extract() {
     assert_eq!(res.active, true);
 
     // Test named extraction
-    let nlm_xml = "<root><nlm:id>2</nlm:id><nlm:title>NLM Title</nlm:title></root>";
+    let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id><nlm:title>NLM Title</nlm:title></root>";
     let res: StructDefaultWithNamedExtract = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
     assert_eq!(res.title, "NLM Title");
@@ -193,6 +191,7 @@ fn test_struct_default_with_named_extract() {
 // Test mixed field and struct defaults with named extracts
 #[derive(Extract, Debug, PartialEq)]
 #[xee(default)]
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]
 struct MixedDefaultsWithNamedExtract {
     #[xee(xpath("//id/text()"))]
     #[xee(xpath("//nlm:id/text()", "nlm"))]
@@ -232,7 +231,7 @@ fn test_mixed_defaults_with_named_extract() {
     assert_eq!(res.metadata, Some("fallback".to_string()));
 
     // Test named extraction
-    let nlm_xml = "<root><nlm:id>2</nlm:id></root>";
+    let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id></root>";
     let res: MixedDefaultsWithNamedExtract = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
     assert_eq!(res.name, "generated");
@@ -242,6 +241,8 @@ fn test_mixed_defaults_with_named_extract() {
 
 // Test multiple named extracts with different defaults
 #[derive(Extract, Debug, PartialEq)]
+#[xee(ns(nlm = "https://id.nlm.nih.gov/datmm/", "nlm"))]
+#[xee(ns(atom = "http://www.w3.org/2005/Atom", "atom"))]
 struct MultipleNamedExtracts {
     #[xee(xpath("//id/text()"))]
     #[xee(xpath("//nlm:id/text()", "nlm"))]
@@ -278,14 +279,14 @@ fn test_multiple_named_extracts() {
     assert_eq!(res.author, Some("Alice".to_string()));
 
     // Test NLM named extraction
-    let nlm_xml = "<root><nlm:id>2</nlm:id><nlm:author>Bob</nlm:author></root>";
+    let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id><nlm:author>Bob</nlm:author></root>";
     let res: MultipleNamedExtracts = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
-    assert_eq!(res.title, "named_default");
+    assert_eq!(res.title, "generated");
     assert_eq!(res.author, Some("Bob".to_string()));
 
     // Test Atom named extraction
-    let atom_xml = "<root><atom:id>3</atom:id><atom:author>Carol</atom:author></root>";
+    let atom_xml = "<root xmlns:atom=\"http://www.w3.org/2005/Atom\"><atom:id>3</atom:id><atom:author>Carol</atom:author></root>";
     let res: MultipleNamedExtracts = Extractor::named("atom").extract_from_str(atom_xml).unwrap();
     assert_eq!(res.id, "3");
     assert_eq!(res.title, "generated");
@@ -302,14 +303,14 @@ fn test_multiple_named_extracts_with_missing_values() {
     assert_eq!(res.author, Some("fallback".to_string()));
 
     // Test NLM named extraction with missing values
-    let nlm_xml = "<root><nlm:id>2</nlm:id></root>";
+    let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id></root>";
     let res: MultipleNamedExtracts = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
-    assert_eq!(res.title, "named_default");
+    assert_eq!(res.title, "generated");
     assert_eq!(res.author, Some("fallback".to_string()));
 
     // Test Atom named extraction with missing values
-    let atom_xml = "<root><atom:id>3</atom:id></root>";
+    let atom_xml = "<root xmlns:atom=\"http://www.w3.org/2005/Atom\"><atom:id>3</atom:id></root>";
     let res: MultipleNamedExtracts = Extractor::named("atom").extract_from_str(atom_xml).unwrap();
     assert_eq!(res.id, "3");
     assert_eq!(res.title, "generated");

@@ -18,7 +18,6 @@ pub fn derive_xee_extract(input: TokenStream) -> TokenStream {
     // Parse the input into a DeriveInput
     let input = syn::parse_macro_input!(input as syn::DeriveInput);
 
-    // Call your implementation logic
     match impl_xee_extract(&input) {
         Ok(tokens) => tokens.into(),
         Err(err) => err.to_compile_error().into(),
@@ -135,12 +134,27 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
     let has_struct_default = struct_default_expr.is_some();
 
+    // First pass: collect all extract_ids that exist
+    let mut all_extract_ids: std::collections::HashSet<Option<String>> = std::collections::HashSet::new();
+    all_extract_ids.insert(None); // Always include the default extract
+
+    for field in fields {
+        let xee_attrs = XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
+        
+        for attr in &xee_attrs {
+            if attr.attr != XeeExtractAttributeTag::Default {
+                all_extract_ids.insert(attr.named_extract.clone());
+            }
+        }
+    }
+
+    // Second pass: process each field
     for field in fields {
         let field_ident = field.ident.as_ref().unwrap();
         let xee_attrs = XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
 
         let mut default_attr = None;
-        let mut other_attrs = Vec::new();
+        let mut other_attrs: Vec<XeeExtractAttribute> = Vec::new();
         for attr in xee_attrs {
             if attr.attr == XeeExtractAttributeTag::Default {
                 default_attr = Some(attr);
@@ -157,16 +171,19 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
         if other_attrs.is_empty() {
             if let Some(expr) = default_expr {
-                group_extractions
-                    .entry(None)
-                    .or_default()
-                    .push(quote! { let #field_ident = { #expr }; });
-                group_fields
-                    .entry(None)
-                    .or_default()
-                    .push((field_ident, quote! { #field_ident }));
+                // Field has only a default attribute - add to ALL extracts
+                for extract_id in &all_extract_ids {
+                    group_extractions
+                        .entry(extract_id.clone())
+                        .or_default()
+                        .push(quote! { let #field_ident = { #expr }; });
+                    group_fields
+                        .entry(extract_id.clone())
+                        .or_default()
+                        .push((field_ident, quote! { #field_ident }));
+                }
             } else if has_struct_default {
-                // Field will be provided by struct default
+                // Field will be provided by struct default - no action needed
             } else {
                 return Err(syn::Error::new_spanned(
                     field_ident,
@@ -174,6 +191,12 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 ));
             }
         } else {
+            // Field has other attributes - process each one
+            let covered_extracts: std::collections::HashSet<_> = other_attrs
+                .iter()
+                .map(|attr| attr.named_extract.clone())
+                .collect();
+
             for xee_attr in other_attrs {
                 let group_key = xee_attr.named_extract.clone();
                 let extract_code = generate_extract_for_attr(
@@ -193,6 +216,60 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                     .or_default()
                     .push((field_ident, quote! { #field_ident }));
             }
+
+            // If field has a default attribute, also add it to extracts that don't have other attributes
+            if let Some(expr) = default_expr {
+                for extract_id in &all_extract_ids {
+                    if !covered_extracts.contains(extract_id) {
+                        group_extractions
+                            .entry(extract_id.clone())
+                            .or_default()
+                            .push(quote! { let #field_ident = { #expr }; });
+                        group_fields
+                            .entry(extract_id.clone())
+                            .or_default()
+                            .push((field_ident, quote! { #field_ident }));
+                    }
+                }
+            }
+        }
+    }
+
+    // Validate that all fields are covered in each extract
+    for extract_id in &all_extract_ids {
+        let covered_fields: std::collections::HashSet<_> = group_fields
+            .get(extract_id)
+            .map(|fields| fields.iter().map(|(ident, _)| ident).collect())
+            .unwrap_or_default();
+
+        let mut uncovered_fields = Vec::new();
+        for field in fields {
+            let field_ident = field.ident.as_ref().unwrap();
+            if !covered_fields.contains(&field_ident) {
+                // Check if this field is covered by struct default
+                let xee_attrs = XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
+                let has_field_default = xee_attrs.iter().any(|attr| attr.attr == XeeExtractAttributeTag::Default);
+                
+                if !has_field_default && !has_struct_default {
+                    uncovered_fields.push(field_ident.to_string());
+                }
+            }
+        }
+
+        if !uncovered_fields.is_empty() {
+            let extract_name = match extract_id {
+                Some(name) => format!("extract '{}'", name),
+                None => "default extract".to_string(),
+            };
+            
+            let field_list = uncovered_fields.join(", ");
+            return Err(syn::Error::new_spanned(
+                &input.ident,
+                format!(
+                    "fields [{}] are not covered in {} - they need either an xpath/xtract/xml attribute, a default attribute, or a struct-level default",
+                    field_list, extract_name
+                ),
+            ));
         }
     }
 
