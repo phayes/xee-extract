@@ -5,6 +5,10 @@
 
 use xee_extract::{Extract, Extractor};
 
+fn default_description() -> String {
+    "No description provided".to_string()
+}
+
 /// Struct for extracting Atom feed data with namespaces
 #[derive(Extract)]
 #[xee(ns(atom = "http://www.w3.org/2005/Atom"))]
@@ -58,7 +62,12 @@ struct DefaultNamespaceData {
     #[xee(xpath("//root/title"))]
     title: String,
 
+    #[xee(xpath("//root/description"))]
+    #[xee(default("default_description"))]
+    description: String,
+
     #[xee(xpath("//root/items/item"))]
+    #[xee(default)]
     items: Vec<String>,
 }
 
@@ -158,6 +167,7 @@ fn main() {
 
     println!("Data with default namespace:");
     println!("  Title: {}", data.title);
+    println!("  Description: {}", data.description);
     println!("  Items: {:?}", data.items);
     println!();
 }
