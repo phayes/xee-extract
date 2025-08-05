@@ -50,7 +50,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     };
 
     // Parse struct-level attributes
-    let struct_level_attrs = parse_xee_attrs(&input.attrs, XeeAttrPosition::Struct)?;
+    let struct_level_attrs = XeeExtractAttribute::parse_many(&input.attrs, XeeAttrPosition::Struct)?;
     let struct_default_attrs: Vec<_> = struct_level_attrs
         .iter()
         .filter(|a| a.attr == XeeExtractAttributeTag::Default)
@@ -136,7 +136,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
     for field in fields {
         let field_ident = field.ident.as_ref().unwrap();
-        let xee_attrs = parse_xee_attrs(&field.attrs, XeeAttrPosition::Field)?;
+        let xee_attrs = XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
 
         let mut default_attr = None;
         let mut other_attrs = Vec::new();

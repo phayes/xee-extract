@@ -45,7 +45,7 @@ impl XeeExtractAttributeTag {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub(crate) enum XeeAttrPosition {
     Struct,
     Field,
@@ -72,195 +72,199 @@ pub(crate) struct XeeExtractAttribute {
     pub named_extract: Option<String>,
 }
 
-pub(crate) fn parse_xee_attrs(
-    attrs: &[Attribute],
-    position: XeeAttrPosition,
-) -> syn::Result<Vec<XeeExtractAttribute>> {
-    let mut results = Vec::new();
+impl XeeExtractAttribute {
+    pub(crate) fn parse_many(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Result<Vec<Self>> {
+        let mut results = Vec::new();
 
-    for attr in attrs {
-        if !attr.path.is_ident("xee") {
-            continue;
+        for attr in attrs {
+            if !attr.path.is_ident("xee") {
+                continue;
+            }
+
+            let meta = attr.parse_meta()?;
+            let Meta::List(MetaList { nested, .. }) = meta else {
+                return Err(syn::Error::new_spanned(attr, "expected #[xee(...)]"));
+            };
+
+            for nested_meta in nested {
+                let parsed_attr = Self::parse_one(&nested_meta, position)?;
+                results.push(parsed_attr);
+            }
         }
 
-        let meta = attr.parse_meta()?;
-        let Meta::List(MetaList { nested, .. }) = meta else {
-            return Err(syn::Error::new_spanned(attr, "expected #[xee(...)]"));
-        };
+        Ok(results)
+    }
 
-        for nested_meta in nested {
-            match &nested_meta {
-                NestedMeta::Meta(Meta::List(inner_list)) => {
-                    let tag_ident = inner_list
-                        .path
-                        .get_ident()
-                        .ok_or_else(|| {
-                            syn::Error::new_spanned(&inner_list.path, "expected tag ident")
-                        })?
-                        .to_string();
+    fn parse_one(nested_meta: &NestedMeta, position: XeeAttrPosition) -> syn::Result<Self> {
+        match nested_meta {
+            NestedMeta::Meta(Meta::List(inner_list)) => {
+                let tag_ident = inner_list
+                    .path
+                    .get_ident()
+                    .ok_or_else(|| {
+                        syn::Error::new_spanned(&inner_list.path, "expected xee tag like xee(xpath(...)) etc.")
+                    })?
+                    .to_string();
 
-                    let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
-                        syn::Error::new_spanned(
-                            inner_list,
-                            format!("unknown xee tag: {}", tag_ident),
-                        )
-                    })?;
+                let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
+                    syn::Error::new_spanned(
+                        inner_list,
+                        format!("unknown xee tag: {}", tag_ident),
+                    )
+                })?;
 
-                    if !tag.allowed_position().contains(&position) {
-                        return Err(syn::Error::new_spanned(
-                            inner_list,
-                            format!("attribute {:?} not allowed on {:?}", tag, position),
-                        ));
-                    }
-
-                    match tag {
-                        XeeExtractAttributeTag::Ns => {
-                            let mut attr_key = None;
-                            let mut attr_value = None;
-                            let mut named_extract = None;
-
-                            for item in &inner_list.nested {
-                                match item {
-                                    NestedMeta::Meta(Meta::NameValue(MetaNameValue {
-                                        path,
-                                        lit: Lit::Str(s),
-                                        ..
-                                    })) => {
-                                        let key = path
-                                            .get_ident()
-                                            .ok_or_else(|| {
-                                                syn::Error::new_spanned(
-                                                    path,
-                                                    "expected identifier key",
-                                                )
-                                            })?
-                                            .to_string();
-                                        attr_key = Some(key);
-                                        attr_value = Some(s.value());
-                                    }
-                                    NestedMeta::Lit(Lit::Str(s)) => {
-                                        named_extract = Some(s.value());
-                                    }
-                                    _ => {
-                                        return Err(syn::Error::new_spanned(
-                                            item,
-                                            "unexpected item in ns(...)",
-                                        ))
-                                    }
-                                }
-                            }
-
-                            let attr = XeeExtractAttribute {
-                                attr: tag,
-                                attr_key,
-                                attr_value: attr_value.ok_or_else(|| {
-                                    syn::Error::new_spanned(&inner_list, "missing ns value")
-                                })?,
-                                named_extract,
-                            };
-
-                            results.push(attr);
-                        }
-
-                        XeeExtractAttributeTag::Default => {
-                            let mut args = inner_list.nested.iter();
-                            let value = match args.next() {
-                                Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
-                                Some(other) => {
-                                    return Err(syn::Error::new_spanned(
-                                        other,
-                                        "expected string literal",
-                                    ))
-                                }
-                                None => String::new(),
-                            };
-
-                            // default(...) does not support named extracts
-                            results.push(XeeExtractAttribute {
-                                attr: tag,
-                                attr_key: None,
-                                attr_value: value,
-                                named_extract: None,
-                            });
-                        }
-
-                        _ => {
-                            let mut args = inner_list.nested.iter();
-
-                            let first = match args.next() {
-                                Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
-                                Some(other) => {
-                                    return Err(syn::Error::new_spanned(
-                                        other,
-                                        "expected string literal",
-                                    ))
-                                }
-                                None => {
-                                    return Err(syn::Error::new_spanned(
-                                        &inner_list,
-                                        "missing argument",
-                                    ))
-                                }
-                            };
-
-                            let second = match args.next() {
-                                Some(NestedMeta::Lit(Lit::Str(s))) => Some(s.value()),
-                                Some(other) => {
-                                    return Err(syn::Error::new_spanned(
-                                        other,
-                                        "expected string literal",
-                                    ))
-                                }
-                                None => None,
-                            };
-
-                            results.push(XeeExtractAttribute {
-                                attr: tag,
-                                attr_key: None,
-                                attr_value: first,
-                                named_extract: second,
-                            });
-                        }
-                    }
-                }
-                NestedMeta::Meta(Meta::Path(path)) => {
-                    let tag_ident = path
-                        .get_ident()
-                        .ok_or_else(|| syn::Error::new_spanned(path, "expected tag ident"))?
-                        .to_string();
-                    let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
-                        syn::Error::new_spanned(path, format!("unknown xee tag: {}", tag_ident))
-                    })?;
-
-                    if tag != XeeExtractAttributeTag::Default {
-                        return Err(syn::Error::new_spanned(path, "expected #[xee(tag(...))]"));
-                    }
-
-                    if !tag.allowed_position().contains(&position) {
-                        return Err(syn::Error::new_spanned(
-                            path,
-                            format!("attribute {:?} not allowed on {:?}", tag, position),
-                        ));
-                    }
-
-                    results.push(XeeExtractAttribute {
-                        attr: tag,
-                        attr_key: None,
-                        attr_value: String::new(),
-                        named_extract: None,
-                    });
-                }
-                _ => {
+                if !tag.allowed_position().contains(&position) {
                     return Err(syn::Error::new_spanned(
-                        &nested_meta,
-                        "expected #[xee(tag(...))]",
+                        inner_list,
+                        format!("attribute {:?} not allowed on {:?}", tag, position),
                     ));
                 }
+
+                match tag {
+                    XeeExtractAttributeTag::Ns => {
+                        let mut attr_key = None;
+                        let mut attr_value = None;
+                        let mut named_extract = None;
+
+                        for item in &inner_list.nested {
+                            match item {
+                                NestedMeta::Meta(Meta::NameValue(MetaNameValue {
+                                    path,
+                                    lit: Lit::Str(s),
+                                    ..
+                                })) => {
+                                    let key = path
+                                        .get_ident()
+                                        .ok_or_else(|| {
+                                            syn::Error::new_spanned(
+                                                path,
+                                                "expected identifier key",
+                                            )
+                                        })?
+                                        .to_string();
+                                    attr_key = Some(key);
+                                    attr_value = Some(s.value());
+                                }
+                                NestedMeta::Lit(Lit::Str(s)) => {
+                                    named_extract = Some(s.value());
+                                }
+                                _ => {
+                                    return Err(syn::Error::new_spanned(
+                                        item,
+                                        "unexpected item in ns(...)",
+                                    ))
+                                }
+                            }
+                        }
+
+                        let attr = XeeExtractAttribute {
+                            attr: tag,
+                            attr_key,
+                            attr_value: attr_value.ok_or_else(|| {
+                                syn::Error::new_spanned(&inner_list, "missing ns value")
+                            })?,
+                            named_extract,
+                        };
+
+                        Ok(attr)
+                    }
+
+                    XeeExtractAttributeTag::Default => {
+                        let mut args = inner_list.nested.iter();
+                        let value = match args.next() {
+                            Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
+                            Some(other) => {
+                                return Err(syn::Error::new_spanned(
+                                    other,
+                                    "expected string literal",
+                                ))
+                            }
+                            None => String::new(),
+                        };
+
+                        Ok(XeeExtractAttribute {
+                            attr: tag,
+                            attr_key: None,
+                            attr_value: value,
+                            named_extract: None,
+                        })
+                    }
+
+                    _ => {
+                        let mut args = inner_list.nested.iter();
+
+                        let first = match args.next() {
+                            Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
+                            Some(other) => {
+                                return Err(syn::Error::new_spanned(
+                                    other,
+                                    "expected string literal",
+                                ))
+                            }
+                            None => {
+                                return Err(syn::Error::new_spanned(
+                                    &inner_list,
+                                    "missing argument",
+                                ))
+                            }
+                        };
+
+                        let second = match args.next() {
+                            Some(NestedMeta::Lit(Lit::Str(s))) => Some(s.value()),
+                            Some(other) => {
+                                return Err(syn::Error::new_spanned(
+                                    other,
+                                    "expected string literal",
+                                ))
+                            }
+                            None => None,
+                        };
+
+                        Ok(XeeExtractAttribute {
+                            attr: tag,
+                            attr_key: None,
+                            attr_value: first,
+                            named_extract: second,
+                        })
+                    }
+                }
+            }
+            NestedMeta::Meta(Meta::Path(path)) => {
+                let tag_ident = path
+                    .get_ident()
+                    .ok_or_else(|| syn::Error::new_spanned(path, "expected tag ident"))?
+                    .to_string();
+                let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
+                    syn::Error::new_spanned(path, format!("unknown xee tag: {}", tag_ident))
+                })?;
+
+                // Only Default is allowed as a single-argument attribute
+                if tag != XeeExtractAttributeTag::Default {
+                    return Err(syn::Error::new_spanned(path, "expected #[xee(tag(...))]"));
+                }
+
+                if !tag.allowed_position().contains(&position) {
+                    return Err(syn::Error::new_spanned(
+                        path,
+                        format!("attribute {:?} not allowed on {:?}", tag, position),
+                    ));
+                }
+
+                Ok(XeeExtractAttribute {
+                    attr: tag,
+                    attr_key: None,
+                    attr_value: String::new(),
+                    named_extract: None,
+                })
+            }
+            _ => {
+                Err(syn::Error::new_spanned(
+                    nested_meta,
+                    "expected #[xee(tag(...))]",
+                ))
             }
         }
     }
-
-    Ok(results)
 }
 
 #[cfg(test)]
@@ -277,7 +281,7 @@ mod tests {
     fn test_xpath_single_arg() {
         let attrs = vec![attr(quote!(xpath("foo/bar")))];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Field).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Field).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Xpath));
@@ -289,7 +293,7 @@ mod tests {
     fn test_xpath_with_alias() {
         let attrs = vec![attr(quote!(xpath("foo/bar", "my_alias")))];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Field).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Field).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert_eq!(attr.attr_value, "foo/bar");
@@ -300,7 +304,7 @@ mod tests {
     fn test_ns_with_key_value() {
         let attrs = vec![attr(quote!(ns(atom = "http://www.w3.org/2005/Atom")))];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Ns));
@@ -316,7 +320,7 @@ mod tests {
             "ns_alias"
         )))];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert_eq!(attr.attr_key.as_deref(), Some("atom"));
@@ -331,7 +335,7 @@ mod tests {
             attr(quote!(context("ctx", "ctx_alias"))),
         ];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 2);
 
         assert!(matches!(parsed[0].attr, XeeExtractAttributeTag::Ns));
@@ -342,7 +346,7 @@ mod tests {
     fn test_invalid_tag() {
         let attrs = vec![attr(quote!(nonsense("abc")))];
 
-        let result = parse_xee_attrs(&attrs, XeeAttrPosition::Struct);
+        let result = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());
     }
 
@@ -350,7 +354,7 @@ mod tests {
     fn test_invalid_ns_missing_value() {
         let attrs = vec![attr(quote!(ns(atom = 123)))];
 
-        let result = parse_xee_attrs(&attrs, XeeAttrPosition::Struct);
+        let result = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());
     }
 
@@ -358,7 +362,7 @@ mod tests {
     fn test_default_attr() {
         let attrs = vec![attr(quote!(default))];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Default));
@@ -370,7 +374,7 @@ mod tests {
     fn test_default_attr_with_function() {
         let attrs = vec![attr(quote!(default("my_function")))];
 
-        let parsed = parse_xee_attrs(&attrs, XeeAttrPosition::Struct).unwrap();
+        let parsed = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct).unwrap();
         assert_eq!(parsed.len(), 1);
         let attr = &parsed[0];
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Default));
