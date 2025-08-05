@@ -6,13 +6,11 @@ fn default_title() -> String {
 
 #[derive(Extract, Debug, PartialEq)]
 struct FieldDefaults {
-    #[xee(xpath("//id/text()"))]
-    id: String,
-
     #[xee(xpath("//missing/text()"))]
     #[xee(default)]
     name: String,
 
     #[xee(default("default_title"))]
+    #[xee(xpath("//missing/text()", "foo"))]
     title: String,
 }
