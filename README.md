@@ -101,9 +101,31 @@ use xee_extract::Extract;
 struct Foo {
     #[xee(xml("//content"))]
     content: String,
-    
+
     #[xee(xml("//metadata"))]
     metadata: Option<String>,
+}
+```
+
+### `#[xee(default)]`
+
+Provide a fallback value when an XPath expression does not match. Using
+`#[xee(default)]` calls `Default::default()` for the field type, while
+`#[xee(default("function"))]` invokes a custom zero-argument function.
+
+```rust
+use xee_extract::Extract;
+
+fn default_title() -> String { "Untitled".into() }
+
+#[derive(Extract)]
+struct Article {
+    #[xee(xpath("//title/text()"))]
+    #[xee(default("default_title"))]
+    title: String,
+
+    #[xee(default)]
+    views: u64,
 }
 ```
 
@@ -154,6 +176,28 @@ use xee_extract::Extract;
 struct Foo {
     #[xee(xpath("name/text()"))]
     name: String,
+}
+```
+
+### `#[xee(default)]`
+
+Initialize a struct with default values that can be overridden by
+extracted fields. Without arguments this uses `Default::default()` for
+the struct. Passing a function name allows custom construction.
+
+```rust
+use xee_extract::Extract;
+
+fn default_config() -> Config {
+    Config { host: "localhost".into(), port: 8080 }
+}
+
+#[derive(Extract)]
+#[xee(default("default_config"))]
+struct Config {
+    #[xee(xpath("//port/text()"))]
+    port: u16,
+    host: String,
 }
 ```
 
