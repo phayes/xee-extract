@@ -5,6 +5,57 @@ use xee_xpath;
 // Then an internal error enum to hold other error types
 // NoValueFoundError can then just become a variant of the internal error enum
 
+/// Error type returned from `ExtractValue::extract_value` implementations.
+#[derive(Debug)]
+pub enum ErrorType {
+    InvalidXPath(String),
+    DeserializationError(String),
+    UnknownExtractId(String),
+    SpannedError(xee_interpreter::error::SpannedError),
+    XeeInterpreterError(xee_interpreter::error::Error),
+    DocumentsError(xee_xpath::error::DocumentsError),
+}
+
+impl From<xee_interpreter::error::SpannedError> for ErrorType {
+    fn from(err: xee_interpreter::error::SpannedError) -> Self {
+        ErrorType::SpannedError(err)
+    }
+}
+
+impl From<xee_interpreter::error::Error> for ErrorType {
+    fn from(err: xee_interpreter::error::Error) -> Self {
+        ErrorType::XeeInterpreterError(err)
+    }
+}
+
+impl From<xee_xpath::error::DocumentsError> for ErrorType {
+    fn from(err: xee_xpath::error::DocumentsError) -> Self {
+        ErrorType::DocumentsError(err)
+    }
+}
+
+// Add conversion for xot serialize errors
+impl From<xot::Error> for ErrorType {
+    fn from(_err: xot::Error) -> Self {
+        ErrorType::XeeInterpreterError(xee_interpreter::error::Error::FODC0002)
+    }
+}
+
+impl std::error::Error for ErrorType {}
+
+impl std::fmt::Display for ErrorType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ErrorType::InvalidXPath(msg) => write!(f, "Invalid XPath: {}", msg),
+            ErrorType::DeserializationError(msg) => write!(f, "Deserialization error: {}", msg),
+            ErrorType::UnknownExtractId(msg) => write!(f, "Unknown extract named: {}", msg),
+            ErrorType::SpannedError(err) => write!(f, "Spanned error: {}", err),
+            ErrorType::XeeInterpreterError(err) => write!(f, "Xee interpreter error: {}", err),
+            ErrorType::DocumentsError(err) => write!(f, "Documents error: {}", err),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum Error {
     InvalidXPath(String),
@@ -14,6 +65,19 @@ pub enum Error {
     SpannedError(xee_interpreter::error::SpannedError),
     XeeInterpreterError(xee_interpreter::error::Error),
     DocumentsError(xee_xpath::error::DocumentsError),
+}
+
+impl From<ErrorType> for Error {
+    fn from(err: ErrorType) -> Self {
+        match err {
+            ErrorType::InvalidXPath(msg) => Error::InvalidXPath(msg),
+            ErrorType::DeserializationError(msg) => Error::DeserializationError(msg),
+            ErrorType::UnknownExtractId(msg) => Error::UnknownExtractId(msg),
+            ErrorType::SpannedError(e) => Error::SpannedError(e),
+            ErrorType::XeeInterpreterError(e) => Error::XeeInterpreterError(e),
+            ErrorType::DocumentsError(e) => Error::DocumentsError(e),
+        }
+    }
 }
 
 impl From<xee_interpreter::error::SpannedError> for Error {

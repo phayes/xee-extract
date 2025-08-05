@@ -3,7 +3,7 @@
 //! This example demonstrates how to implement custom ExtractValue for custom types
 //! that don't implement FromStr or need custom parsing logic.
 
-use xee_extract::{Documents, Error, Extract, ExtractValue, Extractor, Item};
+use xee_extract::{Documents, ErrorType, Extract, ExtractValue, Extractor, Item};
 
 /// Custom struct for CSV data that implements ExtractValue
 struct CSV {
@@ -18,7 +18,7 @@ impl CSV {
 
 /// Custom ExtractValue implementation for CSV
 impl ExtractValue for CSV {
-    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType> {
         let s = match item.string_value(documents.xot()) {
             Ok(s) => s,
             Err(_) => return Ok(CSV::new(Vec::new())), // Return empty CSV for any string value error
@@ -57,13 +57,13 @@ impl Coordinates {
 
 /// Custom ExtractValue implementation for Coordinates
 impl ExtractValue for Coordinates {
-    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType> {
         let s = item.string_value(documents.xot())?;
 
         // Parse "lat,lon" format
         let parts: Vec<&str> = s.split(',').collect();
         if parts.len() != 2 {
-            return Err(Error::DeserializationError(format!(
+            return Err(ErrorType::DeserializationError(format!(
                 "Invalid coordinates format: {}",
                 s
             )));
@@ -72,12 +72,12 @@ impl ExtractValue for Coordinates {
         let lat = parts[0]
             .trim()
             .parse::<f64>()
-            .map_err(|_| Error::DeserializationError(format!("Invalid latitude: {}", parts[0])))?;
+            .map_err(|_| ErrorType::DeserializationError(format!("Invalid latitude: {}", parts[0])))?;
 
         let lon = parts[1]
             .trim()
             .parse::<f64>()
-            .map_err(|_| Error::DeserializationError(format!("Invalid longitude: {}", parts[1])))?;
+            .map_err(|_| ErrorType::DeserializationError(format!("Invalid longitude: {}", parts[1])))?;
 
         Ok(Coordinates::new(lat, lon))
     }
@@ -100,13 +100,13 @@ impl DateRange {
 
 /// Custom ExtractValue implementation for DateRange
 impl ExtractValue for DateRange {
-    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType> {
         let s = item.string_value(documents.xot())?;
 
         // Parse "start to end" format
         let parts: Vec<&str> = s.split(" to ").collect();
         if parts.len() != 2 {
-            return Err(Error::DeserializationError(format!(
+            return Err(ErrorType::DeserializationError(format!(
                 "Invalid date range format: {}",
                 s
             )));

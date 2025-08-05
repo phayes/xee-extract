@@ -165,12 +165,12 @@ Any type that implements `FromStr` works out of the box, but you can
 provide custom parsing by implementing this trait yourself.
 
 ```rust
-use xee_extract::{Extract, Extractor, ExtractValue, Error, Documents, Item};
+use xee_extract::{Extract, Extractor, ExtractValue, ErrorType, Documents, Item};
 
 struct CsvTags(Vec<String>);
 
 impl ExtractValue for CsvTags {
-    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType> {
         let s = item.string_value(documents.xot()).unwrap();
         Ok(CsvTags(
             s.split(',')
