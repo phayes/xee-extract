@@ -17,11 +17,11 @@ pub use xee_xpath::{Atomic, Documents, Item, Sequence};
 
 /// Trait for extracting a type from an XPath item.
 /// Don't implement this trait directly. Instead, derive it using the `#[derive(Extract)]` attribute.
-/// 
+///
 /// # Example
 /// ```
 /// use xee_extract::Extract;
-/// 
+///
 /// #[derive(Extract)]
 /// struct MyStruct {
 ///     #[xee(xpath("//id"))]
@@ -38,22 +38,22 @@ pub trait Extract: Sized {
     ) -> Result<Self, Error>;
 }
 
-/// Trait for deserializing a type from an XPath item. 
+/// Trait for deserializing a type from an XPath item.
 /// By default, this trait is implemented for all types that implement FromStr.
-/// 
+///
 /// There is a known issue where any type that implements FromStr cannot implement ExtractValue.
 /// This will be resolved when the Specialization feature is stabilized.
-/// 
+///
 /// Example:
-/// 
+///
 /// ```rust
 /// use xee_extract::{ExtractValue, Error, Documents, Item};
-/// 
+///
 /// struct Coordinates {
 ///     latitude: f64,
 ///     longitude: f64,
 /// }
-/// 
+///
 /// impl ExtractValue for Coordinates {
 ///     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
 ///         let s = item.string_value(documents.xot())?;
@@ -112,7 +112,7 @@ impl Default for Extractor {
 
 impl Extractor {
     /// Create a new extractor with a named extraction
-    /// 
+    ///
     /// Sometimes a single struct needs to support multiple XML formats.  Each
     /// `#[xee(...)]` attribute can take an optional second string argument that
     /// associates it with a named extraction.  When using
@@ -238,14 +238,14 @@ impl Extractor {
         }
     }
 
-    /// Extract a single struct from a documents store. 
+    /// Extract a single struct from a documents store.
     /// This can be useful to avoid parsing XML twice for different extractions, or to do a multi-document extraction
     /// where a single extraction uses the `doc()` function to reference other documents.
     ///
     /// # Example
     /// ```
     /// use xee_extract::{Extract, Extractor, Documents};
-    /// 
+    ///
     /// let mut docs = Documents::new();
     /// let doc1 = docs.add_string_without_uri("<root><foo>bar</foo></root>").unwrap();
     /// let doc2 = docs.add_string("http://example.com/baz.xml".try_into().unwrap(), "<root><baz>qux</baz></root>").unwrap();

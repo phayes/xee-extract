@@ -3,7 +3,7 @@
 //! This example demonstrates how to extract data that spans multiple XML documents
 //! using the doc() function to cross-reference information between documents.
 
-use xee_extract::{Extract, Extractor, Documents};
+use xee_extract::{Documents, Extract, Extractor};
 
 /// A struct that combines user profile data with permissions from a separate document
 #[derive(Extract)]
