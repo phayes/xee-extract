@@ -395,6 +395,8 @@ mod tests {
         let result = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct);
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.to_string().contains("named_extract is not supported for default attributes"));
+        assert!(err
+            .to_string()
+            .contains("named_extract is not supported for default attributes"));
     }
 }

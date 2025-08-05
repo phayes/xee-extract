@@ -185,7 +185,8 @@ fn test_struct_default_with_named_extract() {
 
     // Test named extraction
     let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id><nlm:title>NLM Title</nlm:title></root>";
-    let res: StructDefaultWithNamedExtract = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
+    let res: StructDefaultWithNamedExtract =
+        Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
     assert_eq!(res.title, "NLM Title");
     assert_eq!(res.count, 100);
@@ -236,7 +237,8 @@ fn test_mixed_defaults_with_named_extract() {
 
     // Test named extraction
     let nlm_xml = "<root xmlns:nlm=\"https://id.nlm.nih.gov/datmm/\"><nlm:id>2</nlm:id></root>";
-    let res: MixedDefaultsWithNamedExtract = Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
+    let res: MixedDefaultsWithNamedExtract =
+        Extractor::named("nlm").extract_from_str(nlm_xml).unwrap();
     assert_eq!(res.id, "2");
     assert_eq!(res.name, "generated");
     assert_eq!(res.count, 42);
