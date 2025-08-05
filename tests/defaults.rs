@@ -8,6 +8,10 @@ fn default_opt() -> Option<String> {
     Some("fallback".to_string())
 }
 
+fn field_default() -> String {
+    "field_default".to_string()
+}
+
 #[derive(Extract, Debug, PartialEq)]
 struct FieldDefaults {
     #[xee(xpath("//id/text()"))]
@@ -315,4 +319,27 @@ fn test_multiple_named_extracts_with_missing_values() {
     assert_eq!(res.id, "3");
     assert_eq!(res.title, "generated");
     assert_eq!(res.author, Some("fallback".to_string()));
+}
+
+// Test that field-level defaults override struct-level defaults
+#[derive(Extract, Debug, PartialEq)]
+#[xee(default)]
+struct FieldOverridesStruct {
+    #[xee(default("field_default"))]
+    value: String,
+}
+
+impl Default for FieldOverridesStruct {
+    fn default() -> Self {
+        Self {
+            value: "struct_default".to_string(),
+        }
+    }
+}
+
+#[test]
+fn test_field_default_overrides_struct_default() {
+    let xml = "<root/>";
+    let res: FieldOverridesStruct = Extractor::default().extract_from_str(xml).unwrap();
+    assert_eq!(res.value, "field_default"); // Should use field default, not struct default
 }
