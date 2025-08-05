@@ -5,8 +5,9 @@
 
 use xee_extract::{Extract, Extractor};
 
-/// Nested struct for book metadata
-#[derive(Extract)]
+/// Nested struct for book metadata demonstrating struct-level defaults
+#[derive(Extract, Default)]
+#[xee(default)]
 struct BookMetadata {
     #[xee(xpath("isbn"))]
     isbn: String,
@@ -54,6 +55,7 @@ struct Book {
     author: Author,
 
     #[xee(extract("metadata"))]
+    #[xee(default)]
     metadata: BookMetadata,
 }
 
@@ -166,7 +168,25 @@ fn main() {
     println!("  Reviews: {:?}", book.metadata.reviews);
     println!();
 
-    // Example 2: Company with nested departments
+    // Example 2: Book without metadata demonstrating struct defaults
+    let book_without_metadata = r#"
+        <book id="B002" genre="fiction">
+            <title>Defaulted Book</title>
+            <price>9.99</price>
+            <author>
+                <name>Unknown</name>
+            </author>
+        </book>
+    "#;
+
+    let book2: Book = extractor.extract_from_str(book_without_metadata).unwrap();
+
+    println!("Book missing metadata uses defaults:");
+    println!("  ISBN: {}", book2.metadata.isbn);
+    println!("  Publisher: {:?}", book2.metadata.publisher);
+    println!();
+
+    // Example 3: Company with nested departments
     let company_xml = r#"
         <company id="C001">
             <name>Tech Corp</name>
@@ -222,7 +242,7 @@ fn main() {
     }
     println!();
 
-    // Example 3: Order with nested items and customer
+    // Example 4: Order with nested items and customer
     let order_xml = r#"
         <order order_id="ORD001">
             <order_date>2024-01-15</order_date>

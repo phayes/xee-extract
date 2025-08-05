@@ -5,6 +5,10 @@
 
 use xee_extract::{Extract, Extractor};
 
+fn default_nickname() -> String {
+    "No nickname".to_string()
+}
+
 /// A simple struct demonstrating basic field extraction
 #[derive(Extract)]
 struct Person {
@@ -14,10 +18,15 @@ struct Person {
     #[xee(xpath("//age"))]
     age: u32,
 
+    #[xee(xpath("//nickname"))]
+    #[xee(default("default_nickname"))]
+    nickname: String,
+
     #[xee(xpath("//email"))]
     email: Option<String>,
 
     #[xee(xpath("//hobbies/hobby"))]
+    #[xee(default)]
     hobbies: Vec<String>,
 }
 
@@ -43,6 +52,7 @@ fn main() {
         <person>
             <name>John Doe</name>
             <age>30</age>
+            <nickname>Johnny</nickname>
             <email>john@example.com</email>
             <hobbies>
                 <hobby>reading</hobby>
@@ -58,6 +68,7 @@ fn main() {
     println!("Person extracted:");
     println!("  Name: {}", person.name);
     println!("  Age: {}", person.age);
+    println!("  Nickname: {}", person.nickname);
     println!("  Email: {:?}", person.email);
     println!("  Hobbies: {:?}", person.hobbies);
     println!();
@@ -92,22 +103,20 @@ fn main() {
     println!("  City: {:?}", company.city);
     println!();
 
-    // Example 3: Handling missing optional fields
-    let person_without_email = r#"
+    // Example 3: Handling missing data with defaults
+    let person_with_defaults = r#"
         <person>
             <name>Jane Smith</name>
             <age>25</age>
-            <hobbies>
-                <hobby>painting</hobby>
-            </hobbies>
         </person>
     "#;
 
-    let person2: Person = extractor.extract_from_str(person_without_email).unwrap();
+    let person2: Person = extractor.extract_from_str(person_with_defaults).unwrap();
 
-    println!("Person without email:");
+    println!("Person with defaults:");
     println!("  Name: {}", person2.name);
     println!("  Age: {}", person2.age);
+    println!("  Nickname: {}", person2.nickname);
     println!("  Email: {:?}", person2.email);
     println!("  Hobbies: {:?}", person2.hobbies);
 }
