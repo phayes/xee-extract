@@ -1,4 +1,6 @@
-use xee_extract::{Extract, ExtractError, Extractor};
+use xee_extract::{
+    Documents, ErrorType, Extract, ExtractError, ExtractValue, Extractor, Item,
+};
 
 #[derive(Extract, Debug)]
 struct SimpleStruct {
@@ -43,6 +45,21 @@ struct Author {
 struct XmlTestStruct {
     #[xee(xml("author"))]
     _author_xml: String,
+}
+
+// A custom type whose ExtractValue implementation always returns an error
+#[derive(Debug)]
+struct FailingValue;
+
+impl ExtractValue for FailingValue {
+    fn extract_value(
+        _documents: &mut Documents,
+        _item: &Item,
+    ) -> Result<Self, ErrorType> {
+        Err(ErrorType::DeserializationError(
+            "custom extract value failure".to_string(),
+        ))
+    }
 }
 
 #[test]
@@ -201,6 +218,46 @@ fn test_application_error_value_extraction() {
     // The error should mention the field name and the parsing error
     assert!(message.contains("Error extracting field '_year'"));
     assert!(message.contains("invalid digit found in string"));
+}
+
+#[test]
+fn test_custom_extract_value_error_includes_field_and_xpath() {
+    #[derive(Extract, Debug)]
+    struct CustomStruct {
+        #[xee(xpath("//value/text()"))]
+        _value: FailingValue,
+    }
+
+    let xml = r#"<entry><value>bad</value></entry>"#;
+    let extractor = Extractor::default();
+    let result: Result<CustomStruct, ExtractError> = extractor.extract_from_str(xml);
+
+    assert!(result.is_err());
+    let message = result.unwrap_err().message();
+
+    assert!(message.contains("Error extracting field '_value'"));
+    assert!(message.contains("//value/text()"));
+    assert!(message.contains("custom extract value failure"));
+}
+
+#[test]
+fn test_custom_extract_value_option_error_includes_field_and_xpath() {
+    #[derive(Extract, Debug)]
+    struct CustomStruct {
+        #[xee(xpath("//opt/text()"))]
+        _opt: Option<FailingValue>,
+    }
+
+    let xml = r#"<entry><opt>bad</opt></entry>"#;
+    let extractor = Extractor::default();
+    let result: Result<CustomStruct, ExtractError> = extractor.extract_from_str(xml);
+
+    assert!(result.is_err());
+    let message = result.unwrap_err().message();
+
+    assert!(message.contains("Error extracting field '_opt'"));
+    assert!(message.contains("//opt/text()"));
+    assert!(message.contains("custom extract value failure"));
 }
 
 #[test]
