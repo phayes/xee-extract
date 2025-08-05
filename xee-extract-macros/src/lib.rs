@@ -135,12 +135,13 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let has_struct_default = struct_default_expr.is_some();
 
     // First pass: collect all extract_ids that exist
-    let mut all_extract_ids: std::collections::HashSet<Option<String>> = std::collections::HashSet::new();
+    let mut all_extract_ids: std::collections::HashSet<Option<String>> =
+        std::collections::HashSet::new();
     all_extract_ids.insert(None); // Always include the default extract
 
     for field in fields {
         let xee_attrs = XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
-        
+
         for attr in &xee_attrs {
             if attr.attr != XeeExtractAttributeTag::Default {
                 all_extract_ids.insert(attr.named_extract.clone());
@@ -247,9 +248,12 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             let field_ident = field.ident.as_ref().unwrap();
             if !covered_fields.contains(&field_ident) {
                 // Check if this field is covered by struct default
-                let xee_attrs = XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
-                let has_field_default = xee_attrs.iter().any(|attr| attr.attr == XeeExtractAttributeTag::Default);
-                
+                let xee_attrs =
+                    XeeExtractAttribute::parse_many(&field.attrs, XeeAttrPosition::Field)?;
+                let has_field_default = xee_attrs
+                    .iter()
+                    .any(|attr| attr.attr == XeeExtractAttributeTag::Default);
+
                 if !has_field_default && !has_struct_default {
                     uncovered_fields.push(field_ident.to_string());
                 }
@@ -261,7 +265,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 Some(name) => format!("extract '{}'", name),
                 None => "default extract".to_string(),
             };
-            
+
             let field_list = uncovered_fields.join(", ");
             return Err(syn::Error::new_spanned(
                 &input.ident,
@@ -681,96 +685,56 @@ fn generate_vec_u8_query(
     let field_name_token = quote! { #field_name };
     let field_name_str = field_name.to_string();
     let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
+    let query_exec = quote! {{
+        let query = queries.option(#xpath_expr, |documents, item| {
+            match item {
+                xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(_, data)) => Ok(data.as_ref().to_vec()),
+                _ => {
+                    let string_value = item.string_value(documents.xot())?;
+                    Ok(string_value.as_bytes().to_vec())
+                }
+            }
+        })?;
+        query.execute_build_context(documents, |builder| {
+            builder.context_item(#context_var.clone());
+            builder.variables(variables.clone());
+        })?
+    }};
 
     let assignment = if is_option_type(field_type) {
-        // For Option<Vec<u8>>, return the Option directly
         let default_tokens = default_expr.unwrap_or_else(|| quote! { None });
         quote! {
             let #field_name_token = {
-                let query = queries.option(#xpath_expr, |documents, item| {
-                    // Special handling for Vec<u8> - check if item is Binary atomic
-                    match item {
-                        xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
-                            // For binary atomic values, return the data directly
-                            Ok(data.as_ref().to_vec())
-                        }
-                        _ => {
-                            // Just extract the binary value of the string value of the item
-                            let string_value = item.string_value(documents.xot())?;
-                            Ok(string_value.as_bytes().to_vec())
-                        }
-                    }
-                })?;
-                match query.execute_build_context(documents, |builder| {
-                    builder.context_item(#context_var.clone());
-                    builder.variables(variables.clone());
-                })? {
+                match #query_exec {
                     Some(value) => Some(value),
                     None => { #default_tokens }
                 }
             };
         }
+    } else if let Some(expr) = default_expr {
+        quote! {
+            let #field_name_token = {
+                match #query_exec {
+                    Some(value) => value,
+                    None => { #expr }
+                }
+            };
+        }
     } else {
-        // For Vec<u8>, unwrap the Option
-        if let Some(expr) = default_expr {
-            quote! {
-                let #field_name_token = {
-                    let query = queries.option(#xpath_expr, |documents, item| {
-                        // Special handling for Vec<u8> - check if item is Binary atomic
-                        match item {
-                            xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
-                                // For binary atomic values, return the data directly
-                                Ok(data.as_ref().to_vec())
-                            }
-                            _ => {
-                                // Just extract the binary value of the string value of the item
-                                let string_value = item.string_value(documents.xot())?;
-                                Ok(string_value.as_bytes().to_vec())
-                            }
-                        }
-                    })?;
-                    match query.execute_build_context(documents, |builder| {
-                        builder.context_item(#context_var.clone());
-                        builder.variables(variables.clone());
-                    })? {
-                        Some(value) => value,
-                        None => { #expr }
+        quote! {
+            let #field_name_token = {
+                match #query_exec {
+                    Some(value) => value,
+                    None => {
+                        return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
+                            field: #field_name_str,
+                            xpath: #xpath_expr_lit,
+                            extract_id: None,
+                            source: Box::new(xee_extract::NoValueFoundError {}),
+                        }));
                     }
-                };
-            }
-        } else {
-            quote! {
-                let #field_name_token = {
-                    let query = queries.option(#xpath_expr, |documents, item| {
-                        // Special handling for Vec<u8> - check if item is Binary atomic
-                        match item {
-                            xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
-                                // For binary atomic values, return the data directly
-                                Ok(data.as_ref().to_vec())
-                            }
-                            _ => {
-                                // Just extract the binary value of the string value of the item
-                                let string_value = item.string_value(documents.xot())?;
-                                Ok(string_value.as_bytes().to_vec())
-                            }
-                        }
-                    })?;
-                    match query.execute_build_context(documents, |builder| {
-                        builder.context_item(#context_var.clone());
-                        builder.variables(variables.clone());
-                    })? {
-                        Some(value) => value,
-                        None => {
-                            return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
-                                field: #field_name_str,
-                                xpath: #xpath_expr_lit,
-                                extract_id: None,
-                                source: Box::new(xee_extract::NoValueFoundError {}),
-                            }));
-                        }
-                    }
-                };
-            }
+                }
+            };
         }
     };
 
