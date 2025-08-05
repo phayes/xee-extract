@@ -182,6 +182,14 @@ impl XeeExtractAttribute {
                             None => String::new(),
                         };
 
+                        // Check for additional arguments that would become named_extract
+                        if let Some(additional_arg) = args.next() {
+                            return Err(syn::Error::new_spanned(
+                                additional_arg,
+                                "named_extract is not supported for default attributes",
+                            ));
+                        }
+
                         Ok(XeeExtractAttribute {
                             attr: tag,
                             attr_key: None,
@@ -378,5 +386,15 @@ mod tests {
         assert!(matches!(attr.attr, XeeExtractAttributeTag::Default));
         assert_eq!(attr.attr_value, "my_function");
         assert_eq!(attr.named_extract, None);
+    }
+
+    #[test]
+    fn test_default_attr_with_named_extract_error() {
+        let attrs = vec![attr(quote!(default("my_function", "named_extract")))];
+
+        let result = XeeExtractAttribute::parse_many(&attrs, XeeAttrPosition::Struct);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("named_extract is not supported for default attributes"));
     }
 }
