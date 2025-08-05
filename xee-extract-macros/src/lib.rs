@@ -6,9 +6,11 @@
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use quote::quote;
-use syn::{Attribute, DeriveInput, Lit, Meta, MetaList, MetaNameValue, NestedMeta};
+use syn::{
+    parse_str, Attribute, DeriveInput, Lit, Meta, MetaList, MetaNameValue, NestedMeta, Path,
+};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum XeeExtractAttributeTag {
     Ns,
     Xpath,
@@ -66,7 +68,7 @@ struct XeeExtractAttribute {
     /// - for `ns(...)` it's the namespace URI (e.g., `"http://www.w3.org/2005/Atom"`)
     /// - for `default` we could have either:
     ///     - #[xee(default)], which indicates that Default::default() should be called. attr_value is an empty string.
-    ///     - #[xee(default("my_function"))], which indicates that my_function() should be called. The function must be callable as fn() -> T. 
+    ///     - #[xee(default("my_function"))], which indicates that my_function() should be called. The function must be callable as fn() -> T.
     pub attr_value: String,
 
     /// Optional trailing string (used as an override variable name or alias)
@@ -113,6 +115,21 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
 
     // Parse struct-level attributes
     let struct_level_attrs = parse_xee_attrs(&input.attrs, XeeAttrPosition::Struct)?;
+    let struct_default_attrs: Vec<_> = struct_level_attrs
+        .iter()
+        .filter(|a| a.attr == XeeExtractAttributeTag::Default)
+        .collect();
+    if struct_default_attrs.len() > 1 {
+        return Err(syn::Error::new_spanned(
+            &input.ident,
+            "multiple #[xee(default)] attributes on struct",
+        ));
+    }
+    let struct_default_expr = if let Some(attr) = struct_default_attrs.first() {
+        Some(default_expr_from_attr(attr)?)
+    } else {
+        None
+    };
 
     // Collect static context setup instructions per extract_id
     let mut static_context_setup: HashMap<Option<String>, Vec<proc_macro2::TokenStream>> =
@@ -121,6 +138,10 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
         HashMap::new();
 
     for attr in &struct_level_attrs {
+        if attr.attr == XeeExtractAttributeTag::Default {
+            continue;
+        }
+
         let key = attr.named_extract.clone();
         let entry = static_context_setup.entry(key.clone()).or_default();
 
@@ -159,10 +180,6 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                     },
                 );
             }
-            
-            XeeExtractAttributeTag::Default => {
-                todo!();
-            }
 
             _ => {
                 return Err(syn::Error::new_spanned(
@@ -179,27 +196,66 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     let mut group_fields: HashMap<Option<String>, Vec<(&syn::Ident, proc_macro2::TokenStream)>> =
         HashMap::new();
 
+    let has_struct_default = struct_default_expr.is_some();
+
     for field in fields {
         let field_ident = field.ident.as_ref().unwrap();
         let xee_attrs = parse_xee_attrs(&field.attrs, XeeAttrPosition::Field)?;
 
-        for xee_attr in xee_attrs {
-            let group_key = xee_attr.named_extract.clone();
-            let extract_code = generate_extract_for_attr(
-                field_ident,
-                &xee_attr,
-                &quote! { effective_context_item },
-                &field.ty,
-            )?;
+        let mut default_attr = None;
+        let mut other_attrs = Vec::new();
+        for attr in xee_attrs {
+            if attr.attr == XeeExtractAttributeTag::Default {
+                default_attr = Some(attr);
+            } else {
+                other_attrs.push(attr);
+            }
+        }
 
-            group_extractions
-                .entry(group_key.clone())
-                .or_default()
-                .push(extract_code);
-            group_fields
-                .entry(group_key)
-                .or_default()
-                .push((field_ident, quote! { #field_ident }));
+        let default_expr = if let Some(attr) = default_attr.as_ref() {
+            Some(default_expr_from_attr(attr)?)
+        } else {
+            None
+        };
+
+        if other_attrs.is_empty() {
+            if let Some(expr) = default_expr {
+                group_extractions
+                    .entry(None)
+                    .or_default()
+                    .push(quote! { let #field_ident = { #expr }; });
+                group_fields
+                    .entry(None)
+                    .or_default()
+                    .push((field_ident, quote! { #field_ident }));
+            } else if has_struct_default {
+                // Field will be provided by struct default
+            } else {
+                return Err(syn::Error::new_spanned(
+                    field_ident,
+                    format!("field `{}` has no xee attribute or default", field_ident),
+                ));
+            }
+        } else {
+            for xee_attr in other_attrs {
+                let group_key = xee_attr.named_extract.clone();
+                let extract_code = generate_extract_for_attr(
+                    field_ident,
+                    &xee_attr,
+                    &quote! { effective_context_item },
+                    &field.ty,
+                    default_expr.clone(),
+                )?;
+
+                group_extractions
+                    .entry(group_key.clone())
+                    .or_default()
+                    .push(extract_code);
+                group_fields
+                    .entry(group_key)
+                    .or_default()
+                    .push((field_ident, quote! { #field_ident }));
+            }
         }
     }
 
@@ -226,6 +282,8 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
             None => quote! { None },
         };
 
+        let struct_default_tokens = struct_default_expr.as_ref().map(|expr| quote! { ..#expr });
+
         match_arms.push(quote! {
             #key_arm => {
                 let mut static_context_builder = xee_xpath::context::StaticContextBuilder::default();
@@ -240,6 +298,7 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
                 #(#stmts)*
                 Ok(Self {
                     #(#field_names: #field_values,)*
+                    #struct_default_tokens
                 })
             }
         });
@@ -274,6 +333,7 @@ fn generate_extract_for_attr(
     attr: &XeeExtractAttribute,
     context_var: &proc_macro2::TokenStream,
     field_type: &syn::Type,
+    default_expr: Option<proc_macro2::TokenStream>,
 ) -> syn::Result<proc_macro2::TokenStream> {
     use XeeExtractAttributeTag::*;
 
@@ -283,17 +343,23 @@ fn generate_extract_for_attr(
             let extract_id: Option<&str> = attr.named_extract.as_deref();
 
             if is_vec_u8_type(field_type) || is_option_vec_u8_type(field_type) {
-                return generate_vec_u8_query(field_ident, xpath_expr, context_var, field_type);
+                return generate_vec_u8_query(
+                    field_ident,
+                    xpath_expr,
+                    context_var,
+                    field_type,
+                    default_expr,
+                );
             }
 
-            
             return generate_unified_query(
                 xpath_expr,
                 field_type,
                 *tag,
                 context_var,
                 field_ident,
-                extract_id
+                extract_id,
+                default_expr,
             );
         }
 
@@ -320,106 +386,172 @@ fn parse_xee_attrs(
         };
 
         for nested_meta in nested {
-            let inner_list = match &nested_meta {
-                NestedMeta::Meta(Meta::List(list)) => list,
-                _ => {
-                    return Err(syn::Error::new_spanned(
-                        &nested_meta,
-                        "expected #[xee(tag(...))]",
-                    ))
-                }
-            };
+            match &nested_meta {
+                NestedMeta::Meta(Meta::List(inner_list)) => {
+                    let tag_ident = inner_list
+                        .path
+                        .get_ident()
+                        .ok_or_else(|| {
+                            syn::Error::new_spanned(&inner_list.path, "expected tag ident")
+                        })?
+                        .to_string();
 
-            let tag_ident = inner_list
-                .path
-                .get_ident()
-                .ok_or_else(|| syn::Error::new_spanned(&inner_list.path, "expected tag ident"))?
-                .to_string();
+                    let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
+                        syn::Error::new_spanned(
+                            inner_list,
+                            format!("unknown xee tag: {}", tag_ident),
+                        )
+                    })?;
 
-            let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
-                syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident))
-            })?;
-
-            if !tag.allowed_position().contains(&position) {
-                return Err(syn::Error::new_spanned(
-                    inner_list,
-                    format!("attribute {:?} not allowed on {:?}", tag, position),
-                ));
-            }
-
-            match tag {
-                XeeExtractAttributeTag::Ns => {
-                    let mut attr_key = None;
-                    let mut attr_value = None;
-                    let mut named_extract = None;
-
-                    for item in &inner_list.nested {
-                        match item {
-                            NestedMeta::Meta(Meta::NameValue(MetaNameValue {
-                                path,
-                                lit: Lit::Str(s),
-                                ..
-                            })) => {
-                                let key = path
-                                    .get_ident()
-                                    .ok_or_else(|| {
-                                        syn::Error::new_spanned(path, "expected identifier key")
-                                    })?
-                                    .to_string();
-                                attr_key = Some(key);
-                                attr_value = Some(s.value());
-                            }
-                            NestedMeta::Lit(Lit::Str(s)) => {
-                                named_extract = Some(s.value());
-                            }
-                            _ => {
-                                return Err(syn::Error::new_spanned(
-                                    item,
-                                    "unexpected item in ns(...)",
-                                ))
-                            }
-                        }
+                    if !tag.allowed_position().contains(&position) {
+                        return Err(syn::Error::new_spanned(
+                            inner_list,
+                            format!("attribute {:?} not allowed on {:?}", tag, position),
+                        ));
                     }
 
-                    let attr = XeeExtractAttribute {
-                        attr: tag,
-                        attr_key,
-                        attr_value: attr_value.ok_or_else(|| {
-                            syn::Error::new_spanned(&inner_list, "missing ns value")
-                        })?,
-                        named_extract,
-                    };
+                    match tag {
+                        XeeExtractAttributeTag::Ns => {
+                            let mut attr_key = None;
+                            let mut attr_value = None;
+                            let mut named_extract = None;
 
-                    results.push(attr);
+                            for item in &inner_list.nested {
+                                match item {
+                                    NestedMeta::Meta(Meta::NameValue(MetaNameValue {
+                                        path,
+                                        lit: Lit::Str(s),
+                                        ..
+                                    })) => {
+                                        let key = path
+                                            .get_ident()
+                                            .ok_or_else(|| {
+                                                syn::Error::new_spanned(
+                                                    path,
+                                                    "expected identifier key",
+                                                )
+                                            })?
+                                            .to_string();
+                                        attr_key = Some(key);
+                                        attr_value = Some(s.value());
+                                    }
+                                    NestedMeta::Lit(Lit::Str(s)) => {
+                                        named_extract = Some(s.value());
+                                    }
+                                    _ => {
+                                        return Err(syn::Error::new_spanned(
+                                            item,
+                                            "unexpected item in ns(...)",
+                                        ))
+                                    }
+                                }
+                            }
+
+                            let attr = XeeExtractAttribute {
+                                attr: tag,
+                                attr_key,
+                                attr_value: attr_value.ok_or_else(|| {
+                                    syn::Error::new_spanned(&inner_list, "missing ns value")
+                                })?,
+                                named_extract,
+                            };
+
+                            results.push(attr);
+                        }
+
+                        XeeExtractAttributeTag::Default => {
+                            let mut args = inner_list.nested.iter();
+                            let value = match args.next() {
+                                Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
+                                Some(other) => {
+                                    return Err(syn::Error::new_spanned(
+                                        other,
+                                        "expected string literal",
+                                    ))
+                                }
+                                None => String::new(),
+                            };
+
+                            // default(...) does not support named extracts
+                            results.push(XeeExtractAttribute {
+                                attr: tag,
+                                attr_key: None,
+                                attr_value: value,
+                                named_extract: None,
+                            });
+                        }
+
+                        _ => {
+                            let mut args = inner_list.nested.iter();
+
+                            let first = match args.next() {
+                                Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
+                                Some(other) => {
+                                    return Err(syn::Error::new_spanned(
+                                        other,
+                                        "expected string literal",
+                                    ))
+                                }
+                                None => {
+                                    return Err(syn::Error::new_spanned(
+                                        &inner_list,
+                                        "missing argument",
+                                    ))
+                                }
+                            };
+
+                            let second = match args.next() {
+                                Some(NestedMeta::Lit(Lit::Str(s))) => Some(s.value()),
+                                Some(other) => {
+                                    return Err(syn::Error::new_spanned(
+                                        other,
+                                        "expected string literal",
+                                    ))
+                                }
+                                None => None,
+                            };
+
+                            results.push(XeeExtractAttribute {
+                                attr: tag,
+                                attr_key: None,
+                                attr_value: first,
+                                named_extract: second,
+                            });
+                        }
+                    }
                 }
+                NestedMeta::Meta(Meta::Path(path)) => {
+                    let tag_ident = path
+                        .get_ident()
+                        .ok_or_else(|| syn::Error::new_spanned(path, "expected tag ident"))?
+                        .to_string();
+                    let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
+                        syn::Error::new_spanned(path, format!("unknown xee tag: {}", tag_ident))
+                    })?;
 
-                _ => {
-                    let mut args = inner_list.nested.iter();
+                    if tag != XeeExtractAttributeTag::Default {
+                        return Err(syn::Error::new_spanned(path, "expected #[xee(tag(...))]"));
+                    }
 
-                    let first = match args.next() {
-                        Some(NestedMeta::Lit(Lit::Str(s))) => s.value(),
-                        Some(other) => {
-                            return Err(syn::Error::new_spanned(other, "expected string literal"))
-                        }
-                        None => {
-                            return Err(syn::Error::new_spanned(&inner_list, "missing argument"))
-                        }
-                    };
-
-                    let second = match args.next() {
-                        Some(NestedMeta::Lit(Lit::Str(s))) => Some(s.value()),
-                        Some(other) => {
-                            return Err(syn::Error::new_spanned(other, "expected string literal"))
-                        }
-                        None => None,
-                    };
+                    if !tag.allowed_position().contains(&position) {
+                        return Err(syn::Error::new_spanned(
+                            path,
+                            format!("attribute {:?} not allowed on {:?}", tag, position),
+                        ));
+                    }
 
                     results.push(XeeExtractAttribute {
                         attr: tag,
                         attr_key: None,
-                        attr_value: first,
-                        named_extract: second,
+                        attr_value: String::new(),
+                        named_extract: None,
                     });
+                }
+                _ => {
+                    return Err(syn::Error::new_spanned(
+                        &nested_meta,
+                        "expected #[xee(tag(...))]",
+                    ));
                 }
             }
         }
@@ -506,6 +638,15 @@ fn is_bool_type(ty: &syn::Type) -> bool {
     matches!(ty, syn::Type::Path(type_path) if type_path.qself.is_none() && type_path.path.is_ident("bool"))
 }
 
+fn default_expr_from_attr(attr: &XeeExtractAttribute) -> syn::Result<proc_macro2::TokenStream> {
+    if attr.attr_value.is_empty() {
+        Ok(quote! { Default::default() })
+    } else {
+        let path: Path = parse_str(&attr.attr_value)?;
+        Ok(quote! { #path() })
+    }
+}
+
 fn generate_unified_query(
     xpath_expr: &str,
     field_type: &syn::Type,
@@ -513,6 +654,7 @@ fn generate_unified_query(
     context_var: &proc_macro2::TokenStream,
     field_name: &syn::Ident,
     extract_id: Option<&str>,
+    default_expr: Option<proc_macro2::TokenStream>,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_str = field_name.to_string();
     let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
@@ -531,7 +673,9 @@ fn generate_unified_query(
         (field_type, field_type)
     };
 
-    let query_method = if is_vec_type(outer_field_type)  || (is_option_type(outer_field_type) && is_vec_type(field_type)) {
+    let query_method = if is_vec_type(outer_field_type)
+        || (is_option_type(outer_field_type) && is_vec_type(field_type))
+    {
         quote! { many }
     } else {
         quote! { option }
@@ -630,44 +774,49 @@ fn generate_unified_query(
     };
 
     let value_match_arm = if is_option_type(outer_field_type) && is_vec_type(field_type) {
+        let default_tokens = default_expr.unwrap_or_else(|| quote! { None });
         quote! {
             if value.is_empty() {
-                // TODO: Check if we have a default attribute
-                None
+                #default_tokens
             } else {
                 Some(value)
             }
         }
     } else if is_option_type(outer_field_type) {
+        let default_tokens = default_expr.unwrap_or_else(|| quote! { None });
         quote! { match value {
             Some(value) => Some(value),
-            None => {
-                // TODO: Check if we have a default attribute
-                None
-            }
+            None => { #default_tokens }
         } }
     } else if is_vec_type(outer_field_type) {
+        let default_tokens = default_expr.clone().unwrap_or_else(|| quote! { value });
         quote! {
             if value.is_empty() {
-                // TODO: Check if we have a default attribute
-                value
+                #default_tokens
             } else {
                 value
             }
         }
     } else {
-        quote! {
-            match value {
-                Some(value) => value,
-                None => {
-                    // TODO: Check if we have a default attribute
-
-                    return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
-                        field: #field_name_str,
-                        xpath: #xpath_expr_lit,
-                        extract_id: #extract_id_match,
-                        source: Box::new(xee_extract::NoValueFoundError {}),
-                    }));
+        if let Some(expr) = default_expr {
+            quote! {
+                match value {
+                    Some(value) => value,
+                    None => { #expr }
+                }
+            }
+        } else {
+            quote! {
+                match value {
+                    Some(value) => value,
+                    None => {
+                        return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
+                            field: #field_name_str,
+                            xpath: #xpath_expr_lit,
+                            extract_id: #extract_id_match,
+                            source: Box::new(xee_extract::NoValueFoundError {}),
+                        }));
+                    }
                 }
             }
         }
@@ -704,37 +853,15 @@ fn generate_vec_u8_query(
     xpath_expr: &str,
     context_var: &proc_macro2::TokenStream,
     field_type: &syn::Type,
+    default_expr: Option<proc_macro2::TokenStream>,
 ) -> syn::Result<proc_macro2::TokenStream> {
     let field_name_token = quote! { #field_name };
     let field_name_str = field_name.to_string();
     let xpath_expr_lit = proc_macro2::Literal::string(xpath_expr);
-    
+
     let assignment = if is_option_type(field_type) {
         // For Option<Vec<u8>>, return the Option directly
-        quote! {
-            let #field_name_token = {
-                let query = queries.option(#xpath_expr, |documents, item| {
-                    // Special handling for Vec<u8> - check if item is Binary atomic
-                    match item {
-                        xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
-                            // For binary atomic values, return the data directly
-                            Ok(data.as_ref().to_vec())
-                        }
-                        _ => {
-                            // Just extract the binary value of the string value of the item
-                            let string_value = item.string_value(documents.xot())?;
-                            Ok(string_value.as_bytes().to_vec())
-                        }
-                    }
-                })?;
-                query.execute_build_context(documents, |builder| {
-                    builder.context_item(#context_var.clone());
-                    builder.variables(variables.clone());
-                })?
-            };
-        }
-    } else {
-        // For Vec<u8>, unwrap the Option
+        let default_tokens = default_expr.unwrap_or_else(|| quote! { None });
         quote! {
             let #field_name_token = {
                 let query = queries.option(#xpath_expr, |documents, item| {
@@ -755,20 +882,75 @@ fn generate_vec_u8_query(
                     builder.context_item(#context_var.clone());
                     builder.variables(variables.clone());
                 })? {
-                    Some(value) => value,
-                    None => {
-                        return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
-                            field: #field_name_str,
-                            xpath: #xpath_expr_lit,
-                            extract_id: None,
-                            source: Box::new(xee_extract::NoValueFoundError {}),
-                        }));
-                    }
+                    Some(value) => Some(value),
+                    None => { #default_tokens }
                 }
             };
         }
+    } else {
+        // For Vec<u8>, unwrap the Option
+        if let Some(expr) = default_expr {
+            quote! {
+                let #field_name_token = {
+                    let query = queries.option(#xpath_expr, |documents, item| {
+                        // Special handling for Vec<u8> - check if item is Binary atomic
+                        match item {
+                            xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
+                                // For binary atomic values, return the data directly
+                                Ok(data.as_ref().to_vec())
+                            }
+                            _ => {
+                                // Just extract the binary value of the string value of the item
+                                let string_value = item.string_value(documents.xot())?;
+                                Ok(string_value.as_bytes().to_vec())
+                            }
+                        }
+                    })?;
+                    match query.execute_build_context(documents, |builder| {
+                        builder.context_item(#context_var.clone());
+                        builder.variables(variables.clone());
+                    })? {
+                        Some(value) => value,
+                        None => { #expr }
+                    }
+                };
+            }
+        } else {
+            quote! {
+                let #field_name_token = {
+                    let query = queries.option(#xpath_expr, |documents, item| {
+                        // Special handling for Vec<u8> - check if item is Binary atomic
+                        match item {
+                            xee_xpath::Item::Atomic(xee_xpath::Atomic::Binary(binary_type, data)) => {
+                                // For binary atomic values, return the data directly
+                                Ok(data.as_ref().to_vec())
+                            }
+                            _ => {
+                                // Just extract the binary value of the string value of the item
+                                let string_value = item.string_value(documents.xot())?;
+                                Ok(string_value.as_bytes().to_vec())
+                            }
+                        }
+                    })?;
+                    match query.execute_build_context(documents, |builder| {
+                        builder.context_item(#context_var.clone());
+                        builder.variables(variables.clone());
+                    })? {
+                        Some(value) => value,
+                        None => {
+                            return Err(xee_extract::Error::FieldExtract(xee_extract::FieldExtractionError {
+                                field: #field_name_str,
+                                xpath: #xpath_expr_lit,
+                                extract_id: None,
+                                source: Box::new(xee_extract::NoValueFoundError {}),
+                            }));
+                        }
+                    }
+                };
+            }
+        }
     };
-    
+
     Ok(assignment)
 }
 
