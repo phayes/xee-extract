@@ -73,7 +73,10 @@ pub(crate) struct XeeExtractAttribute {
 }
 
 impl XeeExtractAttribute {
-    pub(crate) fn parse_many(attrs: &[Attribute], position: XeeAttrPosition) -> syn::Result<Vec<Self>> {
+    pub(crate) fn parse_many(
+        attrs: &[Attribute],
+        position: XeeAttrPosition,
+    ) -> syn::Result<Vec<Self>> {
         let mut results = Vec::new();
 
         for attr in attrs {
@@ -102,15 +105,15 @@ impl XeeExtractAttribute {
                     .path
                     .get_ident()
                     .ok_or_else(|| {
-                        syn::Error::new_spanned(&inner_list.path, "expected xee tag like xee(xpath(...)) etc.")
+                        syn::Error::new_spanned(
+                            &inner_list.path,
+                            "expected xee tag like xee(xpath(...)) etc.",
+                        )
                     })?
                     .to_string();
 
                 let tag = XeeExtractAttributeTag::from_str(&tag_ident).ok_or_else(|| {
-                    syn::Error::new_spanned(
-                        inner_list,
-                        format!("unknown xee tag: {}", tag_ident),
-                    )
+                    syn::Error::new_spanned(inner_list, format!("unknown xee tag: {}", tag_ident))
                 })?;
 
                 if !tag.allowed_position().contains(&position) {
@@ -136,10 +139,7 @@ impl XeeExtractAttribute {
                                     let key = path
                                         .get_ident()
                                         .ok_or_else(|| {
-                                            syn::Error::new_spanned(
-                                                path,
-                                                "expected identifier key",
-                                            )
+                                            syn::Error::new_spanned(path, "expected identifier key")
                                         })?
                                         .to_string();
                                     attr_key = Some(key);
@@ -257,12 +257,10 @@ impl XeeExtractAttribute {
                     named_extract: None,
                 })
             }
-            _ => {
-                Err(syn::Error::new_spanned(
-                    nested_meta,
-                    "expected #[xee(tag(...))]",
-                ))
-            }
+            _ => Err(syn::Error::new_spanned(
+                nested_meta,
+                "expected #[xee(tag(...))]",
+            )),
         }
     }
 }
@@ -270,8 +268,8 @@ impl XeeExtractAttribute {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use syn::parse_quote;
     use quote::quote;
+    use syn::parse_quote;
 
     fn attr(input: proc_macro2::TokenStream) -> syn::Attribute {
         parse_quote!(#[xee(#input)])

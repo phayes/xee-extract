@@ -50,7 +50,8 @@ fn impl_xee_extract(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream
     };
 
     // Parse struct-level attributes
-    let struct_level_attrs = XeeExtractAttribute::parse_many(&input.attrs, XeeAttrPosition::Struct)?;
+    let struct_level_attrs =
+        XeeExtractAttribute::parse_many(&input.attrs, XeeAttrPosition::Struct)?;
     let struct_default_attrs: Vec<_> = struct_level_attrs
         .iter()
         .filter(|a| a.attr == XeeExtractAttributeTag::Default)
