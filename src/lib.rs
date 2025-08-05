@@ -10,7 +10,7 @@ pub use xee_extract_macros::Extract;
 mod error;
 
 // Re-export error types
-pub use error::{Error, ExtractError, FieldExtractionError, NoValueFoundError};
+pub use error::{Error, ErrorType, ExtractError, FieldExtractionError, NoValueFoundError};
 
 // Re-export commong xee-xpath types
 pub use xee_xpath::{Atomic, Documents, Item, Sequence};
@@ -47,7 +47,7 @@ pub trait Extract: Sized {
 /// Example:
 ///
 /// ```rust
-/// use xee_extract::{ExtractValue, Error, Documents, Item};
+/// use xee_extract::{ExtractValue, ErrorType, Documents, Item};
 ///
 /// struct Coordinates {
 ///     latitude: f64,
@@ -55,12 +55,12 @@ pub trait Extract: Sized {
 /// }
 ///
 /// impl ExtractValue for Coordinates {
-///     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+///     fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType> {
 ///         let s = item.string_value(documents.xot())?;
 ///         // Parse "lat,lon" format
 ///         let parts: Vec<&str> = s.split(',').collect();
 ///         if parts.len() != 2 {
-///             return Err(Error::DeserializationError(format!(
+///             return Err(ErrorType::DeserializationError(format!(
 ///                 "Invalid coordinates format: {}",
 ///                 s
 ///             )));
@@ -68,18 +68,18 @@ pub trait Extract: Sized {
 ///         let lat = parts[0]
 ///             .trim()
 ///             .parse::<f64>()
-///             .map_err(|_| Error::DeserializationError(format!("Invalid latitude: {}", parts[0])))?;
+///             .map_err(|_| ErrorType::DeserializationError(format!("Invalid latitude: {}", parts[0])))?;
 ///         let lon = parts[1]
 ///             .trim()
 ///             .parse::<f64>()
-///             .map_err(|_| Error::DeserializationError(format!("Invalid longitude: {}", parts[1])))?;
+///             .map_err(|_| ErrorType::DeserializationError(format!("Invalid longitude: {}", parts[1])))?;
 ///         Ok(Coordinates { latitude: lat, longitude: lon })
 ///     }
 /// }
 /// ```
 pub trait ExtractValue: Sized {
     /// Deserialize a value from an XPath item
-    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error>;
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType>;
 }
 
 /// Default ExtractValue impl that punts to FromStr
@@ -88,10 +88,10 @@ where
     T: FromStr,
     T::Err: std::fmt::Display,
 {
-    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, Error> {
+    fn extract_value(documents: &mut Documents, item: &Item) -> Result<Self, ErrorType> {
         let s = item.string_value(documents.xot())?;
         s.parse::<T>()
-            .map_err(|e| Error::DeserializationError(e.to_string()))
+            .map_err(|e| ErrorType::DeserializationError(e.to_string()))
     }
 }
 
