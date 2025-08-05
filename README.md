@@ -107,7 +107,7 @@ struct Foo {
 }
 ```
 
-### `#[xee(default)]`
+### `#[xee(default)]` | `#[xee(default("function_name")]`
 
 Provide a fallback value when an XPath expression does not match. Using
 `#[xee(default)]` calls `Default::default()` for the field type, while
@@ -179,7 +179,7 @@ struct Foo {
 }
 ```
 
-### `#[xee(default)]`
+### `#[xee(default)]` | `#[xee(default("function_name")]`
 
 Initialize a struct with default values that can be overridden by
 extracted fields. Without arguments this uses `Default::default()` for
